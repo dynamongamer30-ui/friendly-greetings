@@ -23,7 +23,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
   const totalDownloads = (mods || []).reduce((s, m) => s + (m.downloads || 0), 0)
   const totalMods = (mods || []).length
   const lastUpdate = (mods || []).reduce<number>(
-    (a, m) => Math.max(a, m.updatedAt || m.createdAt || 0),
+    (a, m) => Math.max(a, Number(m.updatedAt) || Number(m.createdAt) || 0),
     0,
   )
   const updatedLabel = lastUpdate
