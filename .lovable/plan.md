@@ -1,77 +1,66 @@
-## Goal
+# Fix overlap, comments, /main flow, visual polish
 
-Wipe the current Lovable TanStack Start template, drop in the full contents of `dynamon-universe-main.zip` (a React 18 + Vite 5 + TanStack Router + Firebase app), then apply your 41 UI / animation / sound / a11y / deploy upgrades on top.
+## Issues found
 
-## Important heads-up before we start
-
-A few things are worth flagging so there are no surprises — none are blockers, but they affect what works inside the Lovable preview vs. on your live GitHub Pages site:
-
-1. **Stack swap is large.** The current project is TanStack **Start** (SSR on Cloudflare Workers, routes under `src/routes/`). Your zip is plain **Vite SPA** with TanStack Router code-based routing in `src/App.tsx` + `react-router-dom` also listed. I will fully replace it — `src/routes/`, `src/router.tsx`, `src/server.ts`, `src/start.ts`, `wrangler.jsonc`, `src/styles.css`, the existing `vite.config.ts`, `tsconfig.json`, `package.json`, and `index.html` all get deleted/overwritten by the zip versions.
-2. **Lovable preview vs GitHub Pages.** Lovable's sandbox runs the Vite dev server, so the preview will work. But the deploy target you described (GitHub Pages via `gh-pages` branch + Cloudflare DNS) is **outside Lovable** — I can write the workflow file and `CNAME`, but pushing to GitHub, adding the 8 Firebase secrets, enabling Pages, and configuring Cloudflare are manual steps you do yourself. I'll include the step-by-step guide.
-3. **Service worker in preview.** PWA service workers cause stale-cache problems inside the Lovable iframe preview. I'll register the SW only when **not** on a `lovable.app` / `lovableproject.com` host and **not** inside an iframe, so it activates on `dynamongamer.space` but stays out of the way in preview. Functionally identical for end users.
-4. **Firebase config.** The zip's `src/lib/firebase.ts` will read from `import.meta.env.VITE_FIREBASE_*`. For the preview to actually talk to Firebase you'll need to add those 8 vars as Lovable project secrets too (or it'll just no-op until deployed). I'll list them.
-5. **`build:dev`.** Lovable's harness runs `bun run build` after edits. The zip's `package.json` already defines `build` and `build:dev`, so that's fine.
+1. **Floating buttons overlap content** — `NotificationBell` (`fixed top-4 left-4`) and `AchievementHistory` (`fixed top-4 left-16`) sit on top of the "Back to Home" link on `/download` and on top of the "Admin Panel" header in the admin dashboard. Same buttons also collide with the announcement banner on home.
+2. **No "delete comment" for admin** — only Approve/Reject exist on already-approved comments. Approved comments cannot be removed later. Also no bulk action.
+3. **Comment approval flow is fine on backend, but UI is unclear** — pending comments are mixed with approved ones in one list; no filter (Pending / Approved / All).
+4. **`/main` (admin panel HTML) keeps buffering and asks for Database URL** — `appInit()` throws on first DB read (rules / init order), then falls back to `viewSetup` which shows the DB URL form. We just want password-only login.
+5. **Visual issues** — clunky default cyan-on-black, the `Syne` hero font + typewriter looks generic, hero has too many overlapping aurora/star/ray layers fighting the logo and title (the screenshot shows a low-quality "fuzzy" look), category chips and stat row crowded on mobile (384 px viewport).
 
 ## Plan
 
-### Phase 1 — Wipe & replace with zip contents
+### A. Stop overlapping (UI/CSS only)
 
-Delete every file in the current project except `.git`-managed metadata, then write all 60 files from the zip exactly as-is:
+- `NotificationBell` and `AchievementHistory`:
+  - Move both off `fixed top-4 left-*`. Render them inline inside `HeroHeader` (top-right cluster, next to the existing sound toggle) on home, and **hide them entirely on `/download` and `/admin`** (pass a `placement` prop or read route via `useLocation`).
+  - On home, group as a single rounded pill: `[🔔] [🏆] [🔊]` with consistent 36 px sizing, gap-2, sitting in the hero's safe area (top-4 right-4) so nothing overlaps "Back to Home" or the admin header.
+- Add `pt-14` / `pt-16` safe padding to `DownloadPage` and `AdminPage` headers so even legacy floats can't cover content.
 
-- All `src/**` files listed in your message (pages, components, hooks, lib, types, `App.tsx`, `main.tsx`, `index.css`, `vite-env.d.ts`)
-- Root configs: `package.json`, `vite.config.ts`, `tailwind.config.cjs`, `postcss.config.cjs`, `tsconfig.json`, `index.html`
-- `public/manifest.json`, `public/404.html`, `public/CNAME`, `public/favicon.ico`, `public/favicon.png`
-- `.github/workflows/deploy.yml`
+### B. Comment moderation upgrades
 
-Then `bun install` to pull the new dependency tree (firebase, framer-motion, tanstack-router, react-router-dom, crypto-js, dompurify, canvas-confetti, recharts, zod, lucide-react, etc.).
+- `CommentsTab`:
+  - Add filter tabs at top: **Pending • Approved • All** (default Pending), with counts.
+  - On every comment card add a third action **Delete** (trash icon, red) — calls a new `useDeleteComment` mutation that removes `/Comments/{modId}/{commentId}` regardless of approval state. Approve/Reject stay for pending only.
+  - Add a "select all + bulk delete / bulk approve" footer bar when items are selected.
+  - Show small `APPROVED` / `PENDING` status pill on each card.
+- `useModeration.ts`: add `useDeleteComment` (same shape as `useRejectComment` but semantically separate, plus optimistic invalidation).
+- Confirm delete via existing `glassToast` confirm pattern (or simple `window.confirm` if no confirm toast exists).
 
-### Phase 2 — Apply the 41 upgrades
+### C. `/main` admin panel — password-only, no DB URL prompt
 
-I'll work through them grouped by area, rewriting each affected file in full (no partial edits, per your instruction):
+In `public/main.html`:
+- Remove `viewSetup` entirely from the auth/init flow. Never show the "Enter Database URL" screen.
+- The `databaseURL` is already hard-coded in `firebaseConfig` at line 1177 — use it directly, no prompt.
+- Rewrite `appInit()` failure branch: instead of `show('viewSetup')`, retry once with backoff, then surface a clean toast `"Cannot reach database — check your connection"` and stay on the login screen.
+- Remove the buffering "Establishing Uplink…" loader after auth — go straight from login → dashboard. Show a small inline spinner on the login button instead.
+- Delete the now-dead `saveUrlAndConnect()` function and the `inputDbUrl` markup.
+- Result: user opens `/main` → sees password field only → enters password → dashboard.
 
-**UI / Design (1–11)** — HeroHeader word-by-word subtitle reveal, ModCard back-face animated stat bars, EmptyState looping illustration, SearchBar ink-spread pill morph, Footer cyber grid + cyan top glow, ModHero shimmer skeleton, TrendingCarousel mouse + touch drag, ModHero click-to-zoom lightbox, DownloadPage copy-link with tick, "New" badge (≤7d), BackToTop scale+fade.
+### D. Visual / "good looking" upgrades
 
-**Animations (12–17)** — ModGrid stagger entrance, mouse-reactive particle repulsion (120px), per-route PageTransition variants (Home fade+scale / Download slide-left / Unlock zoom-in), optional particle connection lines (off by default), ScrollProgress pause-when-idle, BackToTop smooth in/out.
+- **Hero (`HeroHeader.tsx`)**: simplify the stack — keep ONE aurora layer + stars + particles canvas, drop the duplicate aurora-2/3 and god-rays that muddy the image. Replace `Syne` with a cleaner pair: **Space Grotesk** (display) + **Inter** (body), loaded via `index.html`. Drop the typewriter effect (it stutters on slow phones); use a subtle gradient-shimmer on the title instead.
+- **Color system**: tighten tokens in `src/index.css` — primary `#22D3EE` (cyan), accent `#A78BFA` (violet), surface `#0B1220`, border `rgba(255,255,255,0.08)`. Apply via CSS vars so existing classes inherit the cleaner palette.
+- **Cards / chips**: increase corner radius to 16 px, soften shadow, add a 1 px inner highlight; category chips become full-pill with active glow.
+- **Mobile (≤400 px)**: stat row becomes 3-up with smaller numbers; search bar gets a sticky behavior under the hero.
+- **Announcement banner**: lower contrast, thinner height, no pulsing border (currently distracting).
+- **Footer**: tighten spacing, group socials in a single row, add subtle divider.
 
-**Sounds (18–23)** — Route-change whoosh, pill-switch tick, throttled keystroke tick (≥80ms), 4-tone download fanfare, banner-dismiss swoosh, ambient drone toggle next to sound icon. All via existing `src/lib/sound.ts` (extended) using Web Audio API.
+## Files to touch
 
-**Notifications / Toasts (24–27)** — Cap stack at 3 (auto-dismiss oldest), swipe-to-dismiss on touch, position setting persisted to localStorage (top-center / bottom-center / bottom-right), notification bell with unread badge + slide-down panel of last 10 (sessionStorage).
+- `src/components/ui/NotificationBell.tsx` — accept `inline` prop, drop `fixed`.
+- `src/components/ui/AchievementHistory.tsx` — same.
+- `src/components/home/HeroHeader.tsx` — render notif + achievement + sound buttons together; simplify background layers; new fonts.
+- `src/pages/DownloadPage.tsx`, `src/pages/AdminPage.tsx` — do NOT mount the floating bell/trophy here.
+- `src/hooks/useModeration.ts` — add `useDeleteComment`.
+- `src/components/admin/CommentsTab.tsx` — filter tabs, delete button, status pill, bulk bar.
+- `src/components/home/AnnouncementBanner.tsx` — calmer styling.
+- `src/index.css` — token refresh, font import, simplified hero classes.
+- `index.html` — preconnect + Space Grotesk/Inter font links.
+- `public/main.html` — remove `viewSetup` + DB URL prompt, fix `appInit` fallback, password-only flow.
 
-**Achievements (28–30)** — New triggers (Critic, Student, Explorer Pro, Sharer, Conversationalist, Popular Taste), tap-to-dismiss AchievementToast, trophy-icon achievement-history modal with timestamps + locked silhouettes.
+## Out of scope (ask if you want these too)
 
-**Accessibility / Other (31–35)** — Enter/Space flip + Escape unflip on ModCard, PWA `public/sw.js` + iframe-safe registration in `main.tsx`, search-history pills (last 5, localStorage) on focus, LoadingScreen reads `siteMeta.siteName`, DownloadPage Share button (Web Share API + clipboard fallback) firing "Sharer!" achievement.
-
-**Deployment files (36–40)** — `.github/workflows/deploy.yml` (Bun build, deploy to `gh-pages`, CNAME, all 8 `VITE_FIREBASE_*` secrets wired), `public/CNAME` = `dynamongamer.space`, `vite.config.ts` `base: '/'`, `public/404.html` SPA fallback, `public/manifest.json` (Dynamon Gamer / DG Mods / `#00F0FF`).
-
-### Phase 3 — Verify
-
-- Build passes (`bun run build`)
-- Preview loads home page, hero animates, particles render
-- Route navigation works (Home, Download, Unlock, Tutorial, Admin, DMCA, Keys, 404)
-- Toast / achievement / sound systems wired
-- Service worker stays disabled in Lovable preview
-
-### Phase 4 — Deployment guide (item 41)
-
-End-of-task message with copy-pasteable steps:
-
-1. Create public repo `dynamongamer30-ui` on GitHub, push the project.
-2. Repo **Settings → Secrets and variables → Actions** → add 8 secrets: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_DATABASE_URL`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`.
-3. Push to `main` → workflow runs → **Settings → Pages** → Source = `gh-pages` branch, `/ (root)`.
-4. Cloudflare DNS: `CNAME @ → dynamongamer30-ui.github.io`, proxy = **DNS only (grey cloud)**, SSL/TLS mode = **Full**.
-5. Wait for cert, verify `https://dynamongamer.space`.
-6. Common issues: 404 on refresh → confirm `public/404.html` deployed; CNAME missing → re-add `public/CNAME`; Firebase auth blocked → add `dynamongamer.space` to Firebase Console → Authentication → Settings → Authorized domains.
-
----
-
-## Tech notes
-
-- Routing: zip uses `@tanstack/react-router` with code-based router defined in `src/App.tsx`. `react-router-dom` is also a dep but unused by routes — kept to match zip exactly.
-- SW registration guard pattern: skip if `window.self !== window.top` or hostname includes `lovable.app` / `lovableproject.com` / `localhost`.
-- Sound layer extends existing `src/lib/sound.ts` Web Audio context; ambient drone is a separate gain node toggleable independently from SFX.
-- Achievement state: localStorage `dg_achievements` = `{ id: { unlockedAt: ISO } }`.
-- Toast position: localStorage `dg_toast_pos`, defaults `top-center`.
-
-## Open question
-
-Want me to also push the 8 `VITE_FIREBASE_*` placeholders into Lovable secrets so the **preview** can talk to Firebase, or are you fine with preview being inert until deployed to `dynamongamer.space`? (Either way the GitHub Actions secrets are still required for the live build.)
+- Reworking the whole admin panel (`/main`) UI to match the React app's look.
+- Avatar uploads / display names for commenters.
+- Server-side rate limit on comments (currently client-only).
