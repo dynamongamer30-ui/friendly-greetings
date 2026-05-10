@@ -35,8 +35,8 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
           position: 'absolute', inset: 0,
           borderRadius: '50%',
           border: '2px solid transparent',
-          borderTopColor: '#00F0FF',
-          borderRightColor: 'rgba(0,240,255,0.3)',
+          borderTopColor: '#22D3EE',
+          borderRightColor: 'rgba(34,211,238,0.3)',
           animation: 'spin 1s linear infinite',
         }} />
         <div style={{
@@ -50,12 +50,12 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
         <div style={{
           position: 'absolute', inset: 14,
           borderRadius: '50%',
-          background: 'rgba(0,240,255,0.08)',
-          border: '1px solid rgba(0,240,255,0.2)',
+          background: 'rgba(34,211,238,0.08)',
+          border: '1px solid rgba(34,211,238,0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 20px rgba(0,240,255,0.3)',
+          boxShadow: '0 0 20px rgba(34,211,238,0.3)',
         }}>
-          <Gamepad2 size={28} color="#00F0FF" />
+          <Gamepad2 size={28} color="#22D3EE" />
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
         fontFamily: "'Syne', sans-serif",
         fontSize: '1.4rem',
         fontWeight: 800,
-        background: 'linear-gradient(90deg, #00F0FF, #a855f7)',
+        background: 'linear-gradient(90deg, #22D3EE, #a855f7)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         opacity: phase === 'in' ? 0 : 1,
@@ -80,10 +80,10 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
       }}>
         <div style={{
           height: '100%',
-          background: 'linear-gradient(90deg, #00F0FF, #a855f7)',
+          background: 'linear-gradient(90deg, #22D3EE, #a855f7)',
           borderRadius: 999,
           animation: 'loadBar 1.6s ease forwards',
-          boxShadow: '0 0 8px rgba(0,240,255,0.6)',
+          boxShadow: '0 0 8px rgba(34,211,238,0.6)',
         }} />
       </div>
 

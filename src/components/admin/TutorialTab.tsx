@@ -45,7 +45,7 @@ export function TutorialTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-[#00F0FF] animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#22D3EE] animate-spin" />
       </div>
     )
   }

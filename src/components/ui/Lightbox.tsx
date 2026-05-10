@@ -37,7 +37,7 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
         alt={alt || ''}
         onClick={e => e.stopPropagation()}
         className="max-w-full max-h-full object-contain rounded-lg cursor-default"
-        style={{ boxShadow: '0 20px 60px rgba(0,240,255,0.2)' }}
+        style={{ boxShadow: '0 20px 60px rgba(34,211,238,0.2)' }}
       />
     </div>
   )

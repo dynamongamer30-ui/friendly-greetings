@@ -28,7 +28,7 @@ export function SearchBar({
         <div className="relative flex-1">
           <Search
             className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors duration-300"
-            style={{ color: focused ? '#00F0FF' : '#475569' }}
+            style={{ color: focused ? '#22D3EE' : '#475569' }}
           />
           <input
             type="text"
@@ -41,12 +41,12 @@ export function SearchBar({
             style={{
               transition: 'box-shadow 0.4s ease, border-color 0.4s ease',
               boxShadow: focused
-                ? '0 0 0 1px rgba(0,240,255,0.5), 0 0 20px rgba(0,240,255,0.15), inset 0 0 20px rgba(0,240,255,0.03)'
+                ? '0 0 0 1px rgba(34,211,238,0.5), 0 0 20px rgba(34,211,238,0.15), inset 0 0 20px rgba(34,211,238,0.03)'
                 : undefined,
-              borderColor: focused ? 'rgba(0,240,255,0.5)' : undefined,
+              borderColor: focused ? 'rgba(34,211,238,0.5)' : undefined,
               // Neon sweep via animated background-position
               backgroundImage: focused
-                ? 'linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.06) 50%, transparent 100%)'
+                ? 'linear-gradient(90deg, transparent 0%, rgba(34,211,238,0.06) 50%, transparent 100%)'
                 : 'none',
               backgroundSize: '200% 100%',
               animation: focused ? 'search-sweep 1.5s ease-in-out infinite' : 'none',
@@ -87,14 +87,14 @@ export function SearchBar({
               borderRadius: 999,
               cursor: 'pointer',
               border: category === cat
-                ? '1px solid rgba(0,240,255,0.4)'
+                ? '1px solid rgba(34,211,238,0.4)'
                 : '1px solid rgba(255,255,255,0.08)',
-              color: category === cat ? '#00F0FF' : '#94a3b8',
+              color: category === cat ? '#22D3EE' : '#94a3b8',
               background: category === cat
-                ? 'rgba(0,240,255,0.12)'
+                ? 'rgba(34,211,238,0.12)'
                 : 'rgba(255,255,255,0.04)',
               boxShadow: category === cat
-                ? '0 0 14px rgba(0,240,255,0.12), inset 0 0 12px rgba(0,240,255,0.05)'
+                ? '0 0 14px rgba(34,211,238,0.12), inset 0 0 12px rgba(34,211,238,0.05)'
                 : 'none',
               transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
               whiteSpace: 'nowrap',
@@ -107,7 +107,7 @@ export function SearchBar({
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'radial-gradient(circle at 50% 120%, rgba(0,240,255,0.18) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle at 50% 120%, rgba(34,211,238,0.18) 0%, transparent 70%)',
                   animation: 'liquid-fill 0.4s cubic-bezier(0.16,1,0.3,1) forwards',
                   pointerEvents: 'none',
                 }}

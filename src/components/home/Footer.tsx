@@ -30,10 +30,10 @@ export function Footer({ siteMeta }: FooterProps) {
 
   return (
     <footer
-      className="relative mt-20 border-t border-[rgba(0,240,255,0.18)]"
+      className="relative mt-20 border-t border-[rgba(34,211,238,0.18)]"
       style={{
-        background: 'linear-gradient(180deg, transparent 0%, rgba(0,240,255,0.025) 100%)',
-        boxShadow: '0 -1px 24px rgba(0,240,255,0.08), inset 0 1px 0 rgba(0,240,255,0.18)',
+        background: 'linear-gradient(180deg, transparent 0%, rgba(34,211,238,0.025) 100%)',
+        boxShadow: '0 -1px 24px rgba(34,211,238,0.08), inset 0 1px 0 rgba(34,211,238,0.18)',
       }}
     >
       {/* Cyber grid lines */}
@@ -42,7 +42,7 @@ export function Footer({ siteMeta }: FooterProps) {
         className="absolute inset-0 pointer-events-none opacity-[0.07]"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(0,240,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.5) 1px, transparent 1px)',
+            'linear-gradient(rgba(34,211,238,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.5) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
           maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
           WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
@@ -53,8 +53,8 @@ export function Footer({ siteMeta }: FooterProps) {
         aria-hidden="true"
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.6) 50%, transparent 100%)',
-          boxShadow: '0 0 18px rgba(0,240,255,0.45)',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(34,211,238,0.6) 50%, transparent 100%)',
+          boxShadow: '0 0 18px rgba(34,211,238,0.45)',
         }}
       />
 
@@ -64,15 +64,15 @@ export function Footer({ siteMeta }: FooterProps) {
             <div className="w-9 h-9 rounded-full bg-black overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
               {siteMeta?.logoUrl
                 ? <img src={siteMeta.logoUrl} className="w-full h-full object-cover" />
-                : <div className="w-full h-full flex items-center justify-center bg-[rgba(0,240,255,0.1)]"><Gamepad2 className="w-5 h-5 text-[#00F0FF]" /></div>}
+                : <div className="w-full h-full flex items-center justify-center bg-[rgba(34,211,238,0.1)]"><Gamepad2 className="w-5 h-5 text-[#22D3EE]" /></div>}
             </div>
             <span className="text-sm font-bold text-[#E2E8F0]">{name}</span>
           </div>
 
           <nav className="flex items-center gap-6">
-            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">Home</Link>
-            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">Tutorial</Link>
-            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">DMCA</Link>
+            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">Home</Link>
+            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">Tutorial</Link>
+            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">DMCA</Link>
           </nav>
 
           <div className="flex items-center gap-2">

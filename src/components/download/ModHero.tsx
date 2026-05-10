@@ -58,11 +58,11 @@ export function ModHero({ mod, onDownload, isDownloading }: ModHeroProps) {
         {/* Features */}
         {features.length > 0 && (
           <div className="pt-2 space-y-1.5">
-            <h3 className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider mb-2">Features</h3>
+            <h3 className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider mb-2">Features</h3>
             <ul className="space-y-1.5">
               {features.map((f, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-[#94a3b8]">
-                  <span className="text-[#00F0FF] font-bold">•</span>
+                  <span className="text-[#22D3EE] font-bold">•</span>
                   {f}
                 </li>
               ))}
@@ -86,8 +86,8 @@ export function ModHero({ mod, onDownload, isDownloading }: ModHeroProps) {
             <Download className="w-3.5 h-3.5" /> {mod.downloads?.toLocaleString() || 0} downloads
           </span>
           {ratingCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-[rgba(255,215,0,0.10)] border border-[rgba(255,215,0,0.30)] text-[#FFD700]">
-              <Star className="w-3 h-3 fill-[#FFD700]" /> {ratingAvg.toFixed(1)} ★
+            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-[rgba(167,139,250,0.10)] border border-[rgba(167,139,250,0.30)] text-[#A78BFA]">
+              <Star className="w-3 h-3 fill-[#A78BFA]" /> {ratingAvg.toFixed(1)} ★
               <span className="text-[10px] text-[#94a3b8] font-normal ml-0.5">({ratingCount})</span>
             </span>
           )}
@@ -102,7 +102,7 @@ export function ModHero({ mod, onDownload, isDownloading }: ModHeroProps) {
         {/* Changelog */}
         {mod.changelog && (
           <div className="pt-4 border-t border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider mb-2">Changelog</h3>
+            <h3 className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider mb-2">Changelog</h3>
             <p className="text-xs text-[#64748b] leading-relaxed whitespace-pre-line">{mod.changelog}</p>
           </div>
         )}
@@ -110,7 +110,7 @@ export function ModHero({ mod, onDownload, isDownloading }: ModHeroProps) {
         {/* Video */}
         {mod.videoUrl && (
           <div className="pt-4 border-t border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider mb-3">Preview</h3>
+            <h3 className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider mb-3">Preview</h3>
             <div className="video-wrap">
               <iframe
                 src={`https://www.youtube.com/embed/${mod.videoUrl}`}

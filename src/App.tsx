@@ -10,11 +10,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { GlassToaster } from './components/ui/GlassToast'
 import CursorGlow from './components/system/CursorGlow'
 import PageTransition from './components/system/PageTransition'
+import AuroraOrb from './components/system/AuroraOrb'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { LoadingScreen } from './components/system/LoadingScreen'
 import { AchievementToast } from './components/ui/AchievementToast'
-import { AchievementHistory } from './components/ui/AchievementHistory'
-import { NotificationBell } from './components/ui/NotificationBell'
 import { useEffect, useRef, useState } from 'react'
 import { playClick, playWhoosh, tryResumeAmbient } from './lib/sound'
 
@@ -44,17 +43,8 @@ function RouteSoundEffect() {
   return null
 }
 
-function HomeOnlyOverlays() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const isHome = pathname === '/' || pathname === '/index'
-  if (!isHome) return null
-  return (
-    <>
-      <NotificationBell />
-      <AchievementHistory />
-    </>
-  )
-}
+// Bell + Achievements now live inside HeroHeader top-right cluster on home.
+
 
 function RootShell() {
   const [loaded, setLoaded] = useState(false)
@@ -121,10 +111,10 @@ function RootShell() {
   return (
     <>
       {!loaded && <LoadingScreen onDone={() => setLoaded(true)} />}
+      <AuroraOrb />
       <ScrollProgress />
       <CursorGlow />
       <RouteSoundEffect />
-      <HomeOnlyOverlays />
       <AchievementToast />
       <GlassToaster />
       <PageTransition>

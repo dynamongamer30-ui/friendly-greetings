@@ -96,7 +96,7 @@ export function RepliesBlock({ modId, commentId }: RepliesBlockProps) {
           {!showInput ? (
             <button
               onClick={() => setShowInput(true)}
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#00F0FF] hover:text-[#7B2FFF] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#22D3EE] hover:text-[#A78BFA] transition-colors"
             >
               <ReplyIcon className="w-3 h-3" /> Reply as Admin
             </button>

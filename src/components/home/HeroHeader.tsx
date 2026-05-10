@@ -1,6 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
-import { Gamepad2, Volume2, VolumeX } from 'lucide-react'
+import { useState } from 'react'
+import { Gamepad2, Volume2, VolumeX, Download, Package, Clock } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getSoundEnabled, toggleSound, playClick } from '@/lib/sound'
+import { NotificationBell } from '@/components/ui/NotificationBell'
+import { AchievementHistory } from '@/components/ui/AchievementHistory'
+import { useMods } from '@/hooks/useDb'
+import { formatDistanceToNow } from 'date-fns'
 
 interface HeroHeaderProps {
   siteMeta: { siteName?: string; siteTagline?: string; logoUrl?: string } | null
@@ -8,197 +13,139 @@ interface HeroHeaderProps {
 
 export function HeroHeader({ siteMeta }: HeroHeaderProps) {
   const title = siteMeta?.siteName || 'Dynamon Universe'
-  const subtitle = siteMeta?.siteTagline || ''
+  const subtitle = siteMeta?.siteTagline || 'The Ultimate Mod of Dynamons World'
   const logoUrl = siteMeta?.logoUrl || ''
   const [imgError, setImgError] = useState(false)
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled())
-  const [typed, setTyped] = useState('')
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const rafRef = useRef(0)
-
   const showImage = logoUrl && !imgError
 
-  // Typewriter
-  useEffect(() => {
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    if (reduce) { setTyped(title); return }
-    setTyped('')
-    let i = 0
-    const id = window.setInterval(() => {
-      i += 1
-      setTyped(title.slice(0, i))
-      if (i >= title.length) window.clearInterval(id)
-    }, 60)
-    return () => window.clearInterval(id)
-  }, [title])
-
-  // Magic particles canvas inside hero only
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-    }
-    resize()
-    const ro = new ResizeObserver(resize)
-    ro.observe(canvas)
-
-    type MP = { x: number; y: number; vx: number; vy: number; size: number; opacity: number; color: string; life: number; maxLife: number }
-    const COLORS = ['#FFD700', '#FFA500', '#a855f7', '#00F0FF', '#fff8dc']
-    const particles: MP[] = []
-
-    const spawn = () => {
-      const x = Math.random() * canvas.width
-      const y = canvas.height + 4
-      particles.push({
-        x, y,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: -(0.4 + Math.random() * 0.8),
-        size: 1 + Math.random() * 2.5,
-        opacity: 0.5 + Math.random() * 0.5,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        life: 0,
-        maxLife: 120 + Math.random() * 80,
-      })
-    }
-
-    let frame = 0
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      frame++
-      if (frame % 4 === 0) spawn()
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i]
-        p.x += p.vx
-        p.y += p.vy
-        p.life++
-        const fade = 1 - p.life / p.maxLife
-        ctx.globalAlpha = p.opacity * fade
-        // Glow halo
-        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5)
-        g.addColorStop(0, p.color)
-        g.addColorStop(1, 'transparent')
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size * 5, 0, Math.PI * 2)
-        ctx.fillStyle = g
-        ctx.fill()
-        // Core dot
-        ctx.globalAlpha = p.opacity * fade
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = p.color
-        ctx.fill()
-        ctx.globalAlpha = 1
-        if (p.life >= p.maxLife) particles.splice(i, 1)
-      }
-      rafRef.current = requestAnimationFrame(draw)
-    }
-    rafRef.current = requestAnimationFrame(draw)
-
-    return () => {
-      cancelAnimationFrame(rafRef.current)
-      ro.disconnect()
-    }
-  }, [])
+  const { data: mods } = useMods()
+  const totalDownloads = (mods || []).reduce((s, m) => s + (m.downloads || 0), 0)
+  const totalMods = (mods || []).length
+  const lastUpdate = (mods || []).reduce<number>(
+    (a, m) => Math.max(a, Number(m.updatedAt) || Number(m.createdAt) || 0),
+    0,
+  )
+  const updatedLabel = lastUpdate
+    ? formatDistanceToNow(new Date(lastUpdate), { addSuffix: false }).replace('about ', '')
+    : '—'
 
   return (
-    <header className="relative flex flex-col items-center pt-16 pb-0 px-4 text-center overflow-hidden">
-      {/* ── Epic fantasy background ── */}
-      {/* Deep dark sky base */}
-      <div className="absolute inset-0 z-0" style={{
-        background: 'linear-gradient(180deg, #03010d 0%, #0a0220 40%, #060118 100%)',
-      }} />
-
-      {/* Aurora — single soft band */}
-      <div className="fantasy-aurora-1 absolute inset-0 z-0 pointer-events-none opacity-60" />
-
-      {/* Star field — pure CSS dots */}
-      <div className="fantasy-stars absolute inset-0 z-0 pointer-events-none" />
-
-
-      {/* Magic particles canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 z-0 pointer-events-none w-full h-full"
-        aria-hidden="true"
-      />
-
-      {/* Mountain silhouette at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-1 pointer-events-none" style={{ height: 80 }}>
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-          <path
-            d="M0,80 L0,55 L80,30 L160,50 L260,10 L340,40 L420,20 L500,45 L580,15 L680,38 L760,5 L840,35 L920,18 L1020,42 L1100,22 L1200,48 L1300,28 L1380,50 L1440,35 L1440,80 Z"
-            fill="rgba(10,2,30,0.85)"
-          />
-          <path
-            d="M0,80 L0,65 L100,45 L200,60 L300,38 L400,55 L500,42 L600,58 L700,40 L800,62 L900,44 L1000,60 L1100,42 L1200,58 L1300,45 L1440,55 L1440,80 Z"
-            fill="rgba(5,1,18,0.95)"
-          />
-        </svg>
+    <header className="relative flex flex-col items-center pt-12 pb-10 px-4 text-center">
+      {/* Top-right glass cluster — bell · trophy · sound */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        <NotificationBell />
+        <AchievementHistory />
+        <button
+          type="button"
+          onClick={() => { playClick(); setSoundOn(toggleSound()) }}
+          aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
+          style={{
+            background: 'rgba(20,20,50,0.55)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(167,139,250,0.18)',
+            color: '#A78BFA',
+          }}
+        >
+          {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+        </button>
       </div>
 
-      {/* Sound toggle — top-left to avoid the bell+trophy cluster on the right */}
-      <button
-        type="button"
-        onClick={() => { playClick(); setSoundOn(toggleSound()) }}
-        className="absolute top-4 left-4 z-20 w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(255,215,0,0.2)', color: '#FFD700' }}
-        aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
-      >
-        {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-      </button>
-
       {/* Logo */}
-      <div className="relative z-10 w-24 h-24 mb-8">
-        <div className="logo-aura" />
-        <div className="logo-ring" />
-        <div className="logo-ring-2" />
-        <div className="logo-ring-3" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 w-24 h-24 mt-6 mb-7"
+      >
+        <div
+          aria-hidden="true"
+          className="absolute -inset-3 rounded-full"
+          style={{
+            background: 'conic-gradient(from 0deg, #22D3EE, #A78BFA, #22D3EE)',
+            mask: 'radial-gradient(circle, transparent 54%, black 56%)',
+            WebkitMask: 'radial-gradient(circle, transparent 54%, black 56%)',
+            animation: 'logo-ring-spin 8s linear infinite',
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -inset-6 rounded-full opacity-60 blur-2xl"
+          style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.45), transparent 70%)' }}
+        />
         <div
           className="absolute inset-0 z-10 flex items-center justify-center rounded-full overflow-hidden"
           style={{
             backgroundImage: showImage ? `url(${logoUrl})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundColor: '#000',
-            clipPath: 'circle(50%)',
+            backgroundColor: '#0A0A1A',
+            border: '1.5px solid rgba(167,139,250,0.35)',
           }}
         >
-          {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#FFD700' }} />}
-          {showImage && (
-            <img src={logoUrl} alt="" className="sr-only" onError={() => setImgError(true)} />
-          )}
+          {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />}
+          {showImage && <img src={logoUrl} alt="" className="sr-only" onError={() => setImgError(true)} />}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Title with golden shimmer */}
-      <h1
-        className="hero-title-fantasy relative z-10 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 mt-4"
-        style={{ fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif" }}
+      {/* Title */}
+      <motion.h1
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        className="aurora-text relative z-10 text-[44px] sm:text-6xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-3"
+        style={{ fontFamily: "'Space Grotesk', 'DM Sans', sans-serif" }}
       >
-        {typed}
-        {typed.length < title.length && <span className="typewriter-caret" aria-hidden="true">&nbsp;</span>}
-      </h1>
+        {title}
+      </motion.h1>
 
+      {/* Subtitle */}
       {subtitle && (
-        <p className="relative z-10 text-sm sm:text-base max-w-md leading-relaxed mb-2" style={{ color: 'rgba(255,220,150,0.7)' }}>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="relative z-10 text-sm sm:text-base max-w-md leading-relaxed mb-8"
+          style={{ color: '#8B92B8' }}
+        >
           {subtitle}
-        </p>
+        </motion.p>
       )}
 
-      {/* Fog/mist divider — bottom fade into main bg */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none" style={{
-        height: 60,
-        background: 'linear-gradient(to bottom, transparent 0%, #05080A 100%)',
-      }} />
-
-      {/* Spacer so content below clears the mountains */}
-      <div className="relative z-10" style={{ height: 60 }} />
+      {/* Stat pill row */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-md"
+      >
+        {[
+          { icon: Download, label: 'Downloads', value: totalDownloads.toLocaleString(), color: '#22D3EE' },
+          { icon: Package, label: 'Mods', value: String(totalMods), color: '#A78BFA' },
+          { icon: Clock, label: 'Updated', value: updatedLabel, color: '#E8ECFF' },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="rounded-2xl px-2 py-3 flex flex-col items-center gap-1"
+            style={{
+              background: 'rgba(20,20,50,0.45)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+              border: '1px solid rgba(167,139,250,0.14)',
+            }}
+          >
+            <s.icon className="w-3.5 h-3.5" style={{ color: s.color }} />
+            <div className="text-[15px] sm:text-base font-bold" style={{ color: s.color, fontFamily: "'Space Grotesk', sans-serif" }}>
+              {s.value}
+            </div>
+            <div className="text-[9px] uppercase tracking-wider" style={{ color: '#8B92B8' }}>
+              {s.label}
+            </div>
+          </div>
+        ))}
+      </motion.div>
     </header>
   )
 }

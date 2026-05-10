@@ -78,8 +78,8 @@ export function AchievementToast() {
         padding: '0.75rem 1.25rem',
         borderRadius: '1rem',
         background: 'rgba(5,8,10,0.96)',
-        border: '1px solid rgba(0,240,255,0.35)',
-        boxShadow: '0 0 24px rgba(0,240,255,0.12), 0 8px 32px rgba(0,0,0,0.5)',
+        border: '1px solid rgba(34,211,238,0.35)',
+        boxShadow: '0 0 24px rgba(34,211,238,0.12), 0 8px 32px rgba(0,0,0,0.5)',
         backdropFilter: 'blur(16px)',
         minWidth: 220,
         maxWidth: 320,
@@ -89,18 +89,18 @@ export function AchievementToast() {
     >
       <div style={{
         width: 36, height: 36, borderRadius: '50%',
-        background: 'rgba(0,240,255,0.1)',
-        border: '1px solid rgba(0,240,255,0.3)',
+        background: 'rgba(34,211,238,0.1)',
+        border: '1px solid rgba(34,211,238,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
         animation: 'trophyBounce 0.5s ease',
       }}>
-        <Trophy size={18} color="#00F0FF" />
+        <Trophy size={18} color="#22D3EE" />
       </div>
 
       <div>
         <div style={{
-          fontSize: 10, color: '#00F0FF', fontWeight: 700,
+          fontSize: 10, color: '#22D3EE', fontWeight: 700,
           letterSpacing: '0.1em', textTransform: 'uppercase',
         }}>
           Achievement Unlocked
@@ -117,12 +117,12 @@ export function AchievementToast() {
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
         height: 2, borderRadius: '0 0 1rem 1rem',
-        background: 'rgba(0,240,255,0.15)', overflow: 'hidden',
+        background: 'rgba(34,211,238,0.15)', overflow: 'hidden',
       }}>
         <div style={{
-          height: '100%', background: '#00F0FF',
+          height: '100%', background: '#22D3EE',
           animation: show ? 'toast-drain 3s linear forwards' : 'none',
-          boxShadow: '0 0 6px #00F0FF',
+          boxShadow: '0 0 6px #22D3EE',
         }} />
       </div>
 
