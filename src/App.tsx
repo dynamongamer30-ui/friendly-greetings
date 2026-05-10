@@ -44,6 +44,18 @@ function RouteSoundEffect() {
   return null
 }
 
+function HomeOnlyOverlays() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isHome = pathname === '/' || pathname === '/index'
+  if (!isHome) return null
+  return (
+    <>
+      <NotificationBell />
+      <AchievementHistory />
+    </>
+  )
+}
+
 function RootShell() {
   const [loaded, setLoaded] = useState(false)
 
@@ -112,8 +124,7 @@ function RootShell() {
       <ScrollProgress />
       <CursorGlow />
       <RouteSoundEffect />
-      <NotificationBell />
-      <AchievementHistory />
+      <HomeOnlyOverlays />
       <AchievementToast />
       <GlassToaster />
       <PageTransition>
