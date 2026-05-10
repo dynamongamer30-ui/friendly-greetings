@@ -39,6 +39,15 @@ export function CommentsTab() {
   const reject = useRejectComment()
   const del = useDeleteComment()
   const [filter, setFilter] = useState<FilterId>('pending')
+  // Optimistic overrides keyed by `${modId}/${commentId}` → 'approved' | 'deleted'
+  const [overrides, setOverrides] = useState<Record<string, 'approved' | 'deleted'>>({})
+  const keyOf = (c: ModeratedComment) => `${c.modId}/${c.id}`
+
+  const effective = useMemo(() => {
+    return comments
+      .filter((c) => overrides[keyOf(c)] !== 'deleted')
+      .map((c) => overrides[keyOf(c)] === 'approved' ? { ...c, approved: true } : c)
+  }, [comments, overrides])
 
   const modTitleById = useMemo(() => {
     const map = new Map<string, string>()
@@ -48,18 +57,18 @@ export function CommentsTab() {
 
   const counts = useMemo(() => {
     let pending = 0, approved = 0
-    for (const c of comments) {
+    for (const c of effective) {
       if (c.approved === true) approved++
       else pending++
     }
-    return { pending, approved, all: comments.length }
-  }, [comments])
+    return { pending, approved, all: effective.length }
+  }, [effective])
 
   const filtered = useMemo(() => {
-    if (filter === 'pending') return comments.filter((c) => c.approved !== true)
-    if (filter === 'approved') return comments.filter((c) => c.approved === true)
-    return comments
-  }, [comments, filter])
+    if (filter === 'pending') return effective.filter((c) => c.approved !== true)
+    if (filter === 'approved') return effective.filter((c) => c.approved === true)
+    return effective
+  }, [effective, filter])
 
   const grouped = useMemo(() => {
     const m = new Map<string, ModeratedComment[]>()
@@ -72,25 +81,37 @@ export function CommentsTab() {
   }, [filtered])
 
   const handleApprove = async (c: ModeratedComment) => {
+    setOverrides((o) => ({ ...o, [keyOf(c)]: 'approved' }))
     try {
       await approve.mutateAsync({ modId: c.modId, commentId: c.id })
       toast.success('Comment approved')
-    } catch { toast.error('Failed to approve') }
+    } catch {
+      setOverrides((o) => { const n = { ...o }; delete n[keyOf(c)]; return n })
+      toast.error('Failed to approve')
+    }
   }
 
   const handleReject = async (c: ModeratedComment) => {
+    setOverrides((o) => ({ ...o, [keyOf(c)]: 'deleted' }))
     try {
       await reject.mutateAsync({ modId: c.modId, commentId: c.id })
       toast.success('Comment rejected')
-    } catch { toast.error('Failed to reject') }
+    } catch {
+      setOverrides((o) => { const n = { ...o }; delete n[keyOf(c)]; return n })
+      toast.error('Failed to reject')
+    }
   }
 
   const handleDelete = async (c: ModeratedComment) => {
     if (!window.confirm('Permanently delete this comment? This cannot be undone.')) return
+    setOverrides((o) => ({ ...o, [keyOf(c)]: 'deleted' }))
     try {
       await del.mutateAsync({ modId: c.modId, commentId: c.id })
       toast.success('Comment deleted')
-    } catch { toast.error('Failed to delete') }
+    } catch {
+      setOverrides((o) => { const n = { ...o }; delete n[keyOf(c)]; return n })
+      toast.error('Failed to delete')
+    }
   }
 
   const TABS: { id: FilterId; label: string; count: number }[] = [
