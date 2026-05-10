@@ -109,7 +109,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
 
   // Download milestone glow
   const dl = mod.downloads || 0
-  const milestone = dl >= 1000 ? { color: '#a855f7' } : dl >= 500 ? { color: '#FFD700' } : dl >= 100 ? { color: '#00F0FF' } : null
+  const milestone = dl >= 1000 ? { color: '#a855f7' } : dl >= 500 ? { color: '#A78BFA' } : dl >= 100 ? { color: '#22D3EE' } : null
 
   return (
     <div
@@ -141,9 +141,9 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
             className="glass-panel group flex flex-col overflow-hidden"
             style={{
               boxShadow: glowing
-                ? `0 0 0 1px rgba(0,240,255,0.35), 0 0 30px rgba(0,240,255,0.14), 0 0 60px rgba(0,240,255,0.06)`
+                ? `0 0 0 1px rgba(34,211,238,0.35), 0 0 30px rgba(34,211,238,0.14), 0 0 60px rgba(34,211,238,0.06)`
                 : '0 0 0 1px rgba(255,255,255,0.09)',
-              borderColor: glowing ? 'rgba(0,240,255,0.28)' : 'rgba(255,255,255,0.09)',
+              borderColor: glowing ? 'rgba(34,211,238,0.28)' : 'rgba(255,255,255,0.09)',
               transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
               position: 'relative',
             }}
@@ -158,7 +158,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
                   zIndex: 5,
                   pointerEvents: 'none',
                   borderRadius: 'inherit',
-                  background: `radial-gradient(circle at ${shimmerX}% ${shimmerY}%, rgba(255,255,255,0.12) 0%, rgba(0,240,255,0.06) 30%, rgba(123,47,255,0.05) 60%, transparent 80%)`,
+                  background: `radial-gradient(circle at ${shimmerX}% ${shimmerY}%, rgba(255,255,255,0.12) 0%, rgba(34,211,238,0.06) 30%, rgba(167,139,250,0.05) 60%, transparent 80%)`,
                   mixBlendMode: 'screen',
                   transition: 'background 0.08s ease',
                 }}
@@ -176,7 +176,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
                   width: 8, height: 8,
                   marginLeft: -4, marginTop: -4,
                   borderRadius: '50%',
-                  background: 'rgba(0,240,255,0.4)',
+                  background: 'rgba(34,211,238,0.4)',
                   zIndex: 10,
                   pointerEvents: 'none',
                   animation: 'download-ripple 0.7s ease-out forwards',
@@ -214,17 +214,17 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
                 type="button"
                 onClick={e => { e.preventDefault(); e.stopPropagation(); setFlipped(true) }}
                 className="absolute bottom-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: 'rgba(0,240,255,0.15)', border: '1px solid rgba(0,240,255,0.3)' }}
+                style={{ background: 'rgba(34,211,238,0.15)', border: '1px solid rgba(34,211,238,0.3)' }}
                 title="See details"
                 data-no-click-sound="true"
               >
-                <Zap size={12} color="#00F0FF" />
+                <Zap size={12} color="#22D3EE" />
               </button>
             </div>
 
             {/* Content */}
             <div className="flex flex-col flex-1 p-4 gap-2.5">
-              <h3 className="text-sm font-bold text-[#E2E8F0] group-hover:text-[#00F0FF] transition-colors line-clamp-2">
+              <h3 className="text-sm font-bold text-[#E2E8F0] group-hover:text-[#22D3EE] transition-colors line-clamp-2">
                 {mod.title}
               </h3>
               <p className="text-xs text-[#64748b] line-clamp-2 leading-relaxed flex-1">
@@ -261,20 +261,20 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
 
         {/* ── BACK ── */}
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-          <div className="glass-panel h-full flex flex-col p-5 gap-4" style={{ border: '1px solid rgba(0,240,255,0.2)' }}>
+          <div className="glass-panel h-full flex flex-col p-5 gap-4" style={{ border: '1px solid rgba(34,211,238,0.2)' }}>
             <div className="flex items-start justify-between">
-              <h3 className="text-sm font-bold text-[#00F0FF]">{mod.title}</h3>
+              <h3 className="text-sm font-bold text-[#22D3EE]">{mod.title}</h3>
               <button type="button" onClick={() => setFlipped(false)} className="text-xs text-[#475569] hover:text-[#94a3b8] transition-colors" data-no-click-sound="true">✕</button>
             </div>
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2">
-                <Download size={14} color="#00F0FF" />
+                <Download size={14} color="#22D3EE" />
                 <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#e2e8f0]">{(mod.downloads || 0).toLocaleString()}</span> downloads</span>
               </div>
               {mod.ratingCount ? (
                 <div className="flex items-center gap-2">
-                  <Star size={14} color="#FFD700" />
-                  <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#FFD700]">{ratingAvg.toFixed(1)}</span> avg rating <span className="text-[#475569] ml-1">({mod.ratingCount})</span></span>
+                  <Star size={14} color="#A78BFA" />
+                  <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#A78BFA]">{ratingAvg.toFixed(1)}</span> avg rating <span className="text-[#475569] ml-1">({mod.ratingCount})</span></span>
                 </div>
               ) : null}
               <div className="flex items-center gap-2">

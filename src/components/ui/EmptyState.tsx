@@ -23,12 +23,12 @@ export function EmptyState({ title, message, className = '' }: EmptyStateProps) 
         <svg viewBox="0 0 120 120" width="96" height="96" fill="none">
           <defs>
             <linearGradient id="es-g1" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#7B2FFF" stopOpacity="0.85" />
+              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.85" />
             </linearGradient>
             <radialGradient id="es-g2" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#00F0FF" stopOpacity="0" />
+              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
             </radialGradient>
           </defs>
 
@@ -45,16 +45,16 @@ export function EmptyState({ title, message, className = '' }: EmptyStateProps) 
 
           {/* Rotating square */}
           <g style={{ transformOrigin: '73px 53px', animation: 'es-spin-rev 11s linear infinite' }}>
-            <rect x="62" y="42" width="22" height="22" rx="5" stroke="#7B2FFF" strokeWidth="2" />
+            <rect x="62" y="42" width="22" height="22" rx="5" stroke="#A78BFA" strokeWidth="2" />
           </g>
 
           {/* Floating triangle */}
           <g style={{ animation: 'es-float 3.6s ease-in-out infinite' }}>
-            <path d="M30 80 L50 70 L48 92 Z" stroke="#00F0FF" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M30 80 L50 70 L48 92 Z" stroke="#22D3EE" strokeWidth="2" strokeLinejoin="round" />
           </g>
 
           {/* Pulsing dot */}
-          <circle cx="80" cy="80" r="6" fill="#00F0FF" fillOpacity="0.5">
+          <circle cx="80" cy="80" r="6" fill="#22D3EE" fillOpacity="0.5">
             <animate attributeName="r" values="5;9;5" dur="1.8s" repeatCount="indefinite" />
             <animate attributeName="fillOpacity" values="0.3;0.7;0.3" dur="1.8s" repeatCount="indefinite" />
           </circle>

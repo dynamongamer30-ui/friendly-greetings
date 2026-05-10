@@ -9,7 +9,7 @@ interface Particle {
 }
 
 // Pure cyan/white — matches site theme exactly
-const COLORS = ['#00F0FF', '#00d4e0', '#80f8ff', '#ffffff', '#b0f0ff']
+const COLORS = ['#22D3EE', '#00d4e0', '#80f8ff', '#ffffff', '#b0f0ff']
 const COUNT = 40
 
 export function Particles() {

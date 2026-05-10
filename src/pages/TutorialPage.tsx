@@ -9,7 +9,7 @@ export default function TutorialPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00F0FF] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#22D3EE] animate-spin" />
       </div>
     )
   }
@@ -27,7 +27,7 @@ export default function TutorialPage() {
         {/* Back link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#00F0FF] transition-colors uppercase tracking-wider"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#22D3EE] transition-colors uppercase tracking-wider"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
@@ -35,8 +35,8 @@ export default function TutorialPage() {
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.15)] flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-[#00F0FF]" />
+          <div className="w-10 h-10 rounded-xl bg-[rgba(34,211,238,0.08)] border border-[rgba(34,211,238,0.15)] flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-[#22D3EE]" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#E2E8F0]">{title}</h1>
         </div>
@@ -58,11 +58,11 @@ export default function TutorialPage() {
         {/* Written guide */}
         {script && (
           <div className="glass-panel p-6 sm:p-8">
-            <h2 className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider mb-4">
+            <h2 className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider mb-4">
               Written Guide
             </h2>
             <div
-              className="prose prose-invert prose-sm max-w-none text-[#94a3b8] [&_a]:text-[#00F0FF] [&_a]:underline [&_h1]:text-[#E2E8F0] [&_h2]:text-[#E2E8F0] [&_h3]:text-[#E2E8F0] [&_strong]:text-[#E2E8F0] [&_code]:text-[#00F0FF] [&_code]:bg-[rgba(0,240,255,0.08)] [&_code]:px-1 [&_code]:rounded"
+              className="prose prose-invert prose-sm max-w-none text-[#94a3b8] [&_a]:text-[#22D3EE] [&_a]:underline [&_h1]:text-[#E2E8F0] [&_h2]:text-[#E2E8F0] [&_h3]:text-[#E2E8F0] [&_strong]:text-[#E2E8F0] [&_code]:text-[#22D3EE] [&_code]:bg-[rgba(34,211,238,0.08)] [&_code]:px-1 [&_code]:rounded"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(script),
               }}

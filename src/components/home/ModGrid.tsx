@@ -103,12 +103,12 @@ export function ModGrid({ mods, isLoading, isError }: ModGridProps) {
         className="grid grid-cols-3 gap-3 rounded-2xl p-4"
         style={{
           background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,215,0,0.1)',
+          border: '1px solid rgba(167,139,250,0.1)',
           backdropFilter: 'blur(12px)',
         }}
       >
         <div className="flex flex-col items-center gap-1">
-          <div className="flex items-center gap-1.5 text-[#FFD700]">
+          <div className="flex items-center gap-1.5 text-[#A78BFA]">
             <Download className="w-3.5 h-3.5" />
             <span className="text-base font-extrabold tracking-tight">
               <CountUp target={totalDownloads} />
@@ -126,7 +126,7 @@ export function ModGrid({ mods, isLoading, isError }: ModGridProps) {
           <span className="text-[10px] text-[#475569] font-semibold uppercase tracking-wider">Mods</span>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <div className="flex items-center gap-1.5 text-[#00F0FF]">
+          <div className="flex items-center gap-1.5 text-[#22D3EE]">
             <RefreshCw className="w-3.5 h-3.5" />
             <span className="text-base font-extrabold tracking-tight">{lastUpdated}</span>
           </div>

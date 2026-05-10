@@ -161,7 +161,7 @@ export default function DownloadPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00F0FF] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#22D3EE] animate-spin" />
       </div>
     )
   }
@@ -183,7 +183,7 @@ export default function DownloadPage() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8 relative z-10">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#00F0FF] transition-colors uppercase tracking-wider"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#22D3EE] transition-colors uppercase tracking-wider"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home

@@ -18,7 +18,7 @@ export default function NotFoundPage() {
         <Link
           to="/"
           className="inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-xl font-semibold text-[#05080A] active:scale-95 transition-transform"
-          style={{ background: 'linear-gradient(135deg,#00F0FF,#7B2FFF)', boxShadow: '0 0 24px rgba(0,240,255,0.35)' }}
+          style={{ background: 'linear-gradient(135deg,#22D3EE,#A78BFA)', boxShadow: '0 0 24px rgba(34,211,238,0.35)' }}
         >
           <Home className="w-4 h-4" />
           Go Home

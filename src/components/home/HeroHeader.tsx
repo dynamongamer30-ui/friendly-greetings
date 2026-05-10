@@ -48,7 +48,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
     ro.observe(canvas)
 
     type MP = { x: number; y: number; vx: number; vy: number; size: number; opacity: number; color: string; life: number; maxLife: number }
-    const COLORS = ['#FFD700', '#FFA500', '#a855f7', '#00F0FF', '#fff8dc']
+    const COLORS = ['#A78BFA', '#FFA500', '#a855f7', '#22D3EE', '#fff8dc']
     const particles: MP[] = []
 
     const spawn = () => {
@@ -147,7 +147,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         type="button"
         onClick={() => { playClick(); setSoundOn(toggleSound()) }}
         className="absolute top-4 left-4 z-20 w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(255,215,0,0.2)', color: '#FFD700' }}
+        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(167,139,250,0.2)', color: '#A78BFA' }}
         aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
       >
         {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -169,7 +169,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
             clipPath: 'circle(50%)',
           }}
         >
-          {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#FFD700' }} />}
+          {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />}
           {showImage && (
             <img src={logoUrl} alt="" className="sr-only" onError={() => setImgError(true)} />
           )}

@@ -46,13 +46,13 @@ export function NotificationBell() {
         onClick={toggle}
         aria-label="Notifications"
         className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(0,240,255,0.25)', color: '#00F0FF' }}
+        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(34,211,238,0.25)', color: '#22D3EE' }}
       >
         <Bell className="w-4 h-4" />
         {unread > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
-            style={{ background: '#00F0FF', color: '#03010d', boxShadow: '0 0 8px #00F0FF' }}
+            style={{ background: '#22D3EE', color: '#03010d', boxShadow: '0 0 8px #22D3EE' }}
           >
             {unread > 9 ? '9+' : unread}
           </span>
@@ -64,14 +64,14 @@ export function NotificationBell() {
           className="absolute top-12 right-0 w-72 max-h-[60vh] overflow-y-auto rounded-2xl"
           style={{
             background: 'rgba(5,8,10,0.96)',
-            border: '1px solid rgba(0,240,255,0.25)',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(0,240,255,0.12)',
+            border: '1px solid rgba(34,211,238,0.25)',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(34,211,238,0.12)',
             backdropFilter: 'blur(16px)',
             animation: 'glassDropdownIn 0.22s cubic-bezier(0.16,1,0.3,1) both',
           }}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
-            <span className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider">Notifications</span>
+            <span className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider">Notifications</span>
             <button onClick={() => setOpen(false)} className="text-[#475569] hover:text-[#94a3b8]" data-no-click-sound="true">
               <X className="w-4 h-4" />
             </button>
