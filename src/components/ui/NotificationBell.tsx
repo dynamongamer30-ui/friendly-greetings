@@ -40,7 +40,7 @@ export function NotificationBell() {
   }
 
   return (
-    <div className="fixed top-4 left-4 z-[9990]">
+    <div className="fixed top-4 right-16 z-[9990]">
       <button
         type="button"
         onClick={toggle}
