@@ -29,54 +29,64 @@ export function Footer({ siteMeta }: FooterProps) {
   const name = siteMeta?.siteName || 'Dynamon Gamer'
 
   return (
-    <footer className="relative mt-20 border-t border-[rgba(255,255,255,0.06)]">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+    <footer
+      className="relative mt-20 border-t border-[rgba(0,240,255,0.18)]"
+      style={{
+        background: 'linear-gradient(180deg, transparent 0%, rgba(0,240,255,0.025) 100%)',
+        boxShadow: '0 -1px 24px rgba(0,240,255,0.08), inset 0 1px 0 rgba(0,240,255,0.18)',
+      }}
+    >
+      {/* Cyber grid lines */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.07]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(0,240,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.5) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
+        }}
+      />
+      {/* Soft cyan top glow */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.6) 50%, transparent 100%)',
+          boxShadow: '0 0 18px rgba(0,240,255,0.45)',
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-black overflow-hidden" style={{clipPath: 'circle(50%)'}}>
+            <div className="w-9 h-9 rounded-full bg-black overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
               {siteMeta?.logoUrl
                 ? <img src={siteMeta.logoUrl} className="w-full h-full object-cover" />
-                : <div className="w-full h-full flex items-center justify-center bg-[rgba(0,240,255,0.1)]"><Gamepad2 className="w-5 h-5 text-[#00F0FF]" /></div>
-              }
+                : <div className="w-full h-full flex items-center justify-center bg-[rgba(0,240,255,0.1)]"><Gamepad2 className="w-5 h-5 text-[#00F0FF]" /></div>}
             </div>
             <span className="text-sm font-bold text-[#E2E8F0]">{name}</span>
           </div>
 
-          {/* Navigation */}
           <nav className="flex items-center gap-6">
-            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">
-              Home
-            </Link>
-            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">
-              Tutorial
-            </Link>
-            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">
-              DMCA
-            </Link>
+            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">Home</Link>
+            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">Tutorial</Link>
+            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#00F0FF] transition-colors">DMCA</Link>
           </nav>
 
-          {/* Social */}
           <div className="flex items-center gap-2">
             {siteMeta?.youtubeUrl && (
-              <a href={siteMeta.youtubeUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-yt">
-                <YoutubeIcon className="w-4 h-4" />
-              </a>
+              <a href={siteMeta.youtubeUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-yt"><YoutubeIcon className="w-4 h-4" /></a>
             )}
             {siteMeta?.whatsappUrl && (
-              <a href={siteMeta.whatsappUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-wa">
-                <MessageCircle className="w-4 h-4" />
-              </a>
+              <a href={siteMeta.whatsappUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-wa"><MessageCircle className="w-4 h-4" /></a>
             )}
             {siteMeta?.telegramUrl && (
-              <a href={siteMeta.telegramUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-tg">
-                <Send className="w-4 h-4" />
-              </a>
+              <a href={siteMeta.telegramUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-tg"><Send className="w-4 h-4" /></a>
             )}
             {siteMeta?.instagramUrl && (
-              <a href={siteMeta.instagramUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-ig">
-                <InstagramIcon className="w-4 h-4" />
-              </a>
+              <a href={siteMeta.instagramUrl} target="_blank" rel="noopener noreferrer" className="social-icon soc-ig"><InstagramIcon className="w-4 h-4" /></a>
             )}
           </div>
         </div>
