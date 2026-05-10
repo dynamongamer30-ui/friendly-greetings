@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Fonts loaded via <link> in index.html for faster paint: Space Grotesk + DM Sans */
 
 @tailwind base;
 @tailwind components;
@@ -48,11 +48,24 @@
     --sidebar-border: 0 0% 100% / 0.09;
     --sidebar-ring: 184 100% 50%;
 
-    --font-sans: 'Plus Jakarta Sans', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-display: 'Syne', 'Plus Jakarta Sans', sans-serif;
-    --font-body: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-    --font-ui: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-display: 'Space Grotesk', 'DM Sans', sans-serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-ui: 'Space Grotesk', 'DM Sans', sans-serif;
+
+    /* ── Cosmic Aurora palette ── */
+    --bg-base: #0A0A1A;
+    --bg-elev: #141432;
+    --surface: rgba(20, 20, 50, 0.55);
+    --aurora-cyan: #22D3EE;
+    --aurora-violet: #A78BFA;
+    --text-primary: #E8ECFF;
+    --text-muted: #8B92B8;
+    --border-soft: rgba(167, 139, 250, 0.14);
+    --border-strong: rgba(34, 211, 238, 0.32);
+    --gradient-aurora: linear-gradient(135deg, #22D3EE 0%, #A78BFA 100%);
+    --shadow-glow: 0 0 40px -8px rgba(34, 211, 238, 0.35);
 
     --shadow-2xs: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.5);
@@ -71,13 +84,18 @@
   }
 
   body {
-    background-color: #05080a;
-    color: #e2e8f0;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
     overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+    letter-spacing: -0.02em;
   }
 
   /* Custom scrollbar */
@@ -101,7 +119,21 @@
   code,
   pre,
   .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* Animated aurora text gradient */
+  .aurora-text {
+    background: linear-gradient(110deg, #22D3EE 0%, #A78BFA 35%, #E8ECFF 50%, #A78BFA 65%, #22D3EE 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: aurora-shimmer 8s linear infinite;
+  }
+  @keyframes aurora-shimmer {
+    to { background-position: 200% center; }
   }
 }
 
