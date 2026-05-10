@@ -1,0 +1,16 @@
+{
+  "name": "Dynamon Gamer Mods",
+  "short_name": "DG Mods",
+  "description": "Dynamons World Mod APK Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05080A",
+  "theme_color": "#00F0FF",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

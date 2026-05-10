@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dynamon Gamer | VIP Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- #43: Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <style>
+        :root {
+            --bg: #05080a;
+            --card: rgba(10, 18, 26, 0.75);
+            --border: rgba(0, 240, 255, 0.1);
+            --border-hover: rgba(0, 240, 255, 0.25);
+            --accent: #00f0ff;
+            --accent-dim: rgba(0, 240, 255, 0.1);
+            --text: #e2e8f0;
+            --muted: #4a6278;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f97316;
+            --glass: blur(24px) saturate(160%);
+        }
+        /* #37: Disable text selection globally */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; padding: 20px; }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.2; pointer-events: none; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
+        .header p { color: var(--muted); font-size: 0.85rem; }
+        .generator-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px 24px; width: 100%; max-width: 340px; text-align: center; backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,240,255,0.05); position: relative; overflow: hidden; }
+        .key-display { background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.2); border-radius: 16px; padding: 20px 10px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: var(--accent); transition: all 0.3s; box-shadow: inset 0 0 20px rgba(0,240,255,0.04); }
+        .btn-main { width: 100%; background: var(--accent); color: #050810; border: none; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 20px rgba(0,240,255,0.3); }
+        .btn-main:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-main:disabled { background: rgba(0,240,255,0.08); color: rgba(0,240,255,0.3); cursor: not-allowed; transform: none; box-shadow: none; border: 1px solid rgba(0,240,255,0.1); }
+        .btn-open-app { background: linear-gradient(90deg, #7b2fff, #00f0ff); color: #050810; margin-top: 12px; display: none; box-shadow: 0 0 24px rgba(0,240,255,0.25); font-weight: 800; }
+        .loader { display: none; color: var(--muted); font-size: 0.85rem; font-weight: 600; margin: 10px 0; }
+        .fa-spin { color: var(--accent); margin-right: 8px; }
+        #toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(5,12,20,0.97); color: var(--text); border: 1px solid rgba(0,240,255,0.2); padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(0,240,255,0.08); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; display: flex; align-items: center; gap: 6px; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        .hidden { display: none !important; }
+        /* #41: Countdown timer */
+        .countdown { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--orange); margin-top: 8px; padding: 6px 12px; border: 1px solid rgba(249,115,22,0.3); border-radius: 10px; background: rgba(249,115,22,0.08); display: none; }
+        .countdown.expired { color: var(--red); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+        /* #43: Turnstile container */
+        .cf-turnstile { margin: 14px auto; display: flex; justify-content: center; }
+
+        /* Q10: Loading skeleton */
+        .skeleton { background: linear-gradient(90deg, rgba(0,240,255,0.04) 25%, rgba(0,240,255,0.1) 50%, rgba(0,240,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-key { height: 72px; margin: 20px 0; }
+        .skeleton-btn { height: 52px; margin-top: 8px; }
+        .skeleton-text { height: 14px; width: 70%; margin: 6px auto; }
+        #skeletonLoader { padding: 10px 0; }
+        /* Status badges */
+        .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-pill.ok { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+        .status-pill.warn { background: rgba(249,115,22,0.1); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+        .status-pill.fail { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    </style>
+</head>
+<!-- #37: Disable right-click -->
+<body oncontextmenu="return false">
+
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="header">
+        <h1 style="background: linear-gradient(90deg, #00f0ff, #7b2fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Dynamon Gamer</h1>
+        <p>VIP Access Generator</p>
+    </div>
+
+    <div class="generator-card" id="mainCard">
+
+        <div id="uiContainer" class="hidden">
+            <h2 style="font-size:1.1rem; margin-bottom:5px;">Generate 24H Key</h2>
+            <p style="color:var(--muted); font-size:0.75rem; margin-bottom:10px;">Valid for 1 device. Expires 10 mins after generation if unused.</p>
+
+            <div class="key-display" id="keyBox">????-XXXXXX</div>
+
+            <!-- #41: Visible countdown timer -->
+            <div class="countdown" id="keyCountdown"><i class="fas fa-hourglass-half"></i> <span id="countdownText">10:00</span></div>
+
+            <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Generating secure key...</div>
+
+            <!-- #43: Cloudflare Turnstile CAPTCHA — button stays disabled until solved -->
+            <div class="cf-turnstile" id="turnstileBox" data-sitekey="0x4AAAAAACvwLjfvQPoyvVFE" data-callback="onTurnstilePass" data-theme="dark"></div>
+
+            <button class="btn-main" id="btnGenerate" onclick="_startGen()" disabled>
+                <i class="fas fa-fingerprint"></i> GENERATE NOW
+            </button>
+
+            <button class="btn-main btn-open-app" id="btnOpenApp" onclick="copyAndOpenApp()">
+                <i class="fas fa-rocket"></i> COPY & OPEN APP
+            </button>
+
+            <!-- Rate limit status -->
+            <div id="ratePill" class="status-pill warn hidden"><i class="fas fa-shield-alt"></i> <span id="rateText"></span></div>
+        </div>
+
+        <div id="secLoader">
+            <div id="skeletonLoader">
+                <div class="skeleton skeleton-text" style="width:50%;"></div>
+                <div class="skeleton skeleton-text" style="width:80%;margin-top:4px;"></div>
+                <div class="skeleton skeleton-key"></div>
+                <div class="skeleton skeleton-btn"></div>
+                <div class="skeleton skeleton-btn" style="margin-top:10px;opacity:0.5;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast"><i class="fas fa-check-circle" style="color:var(--green);"></i> <span>Copied & Opening App!</span></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // FIREBASE INIT
+        // ═══════════════════════════════════════════════════════════
+        const firebaseConfig = window.__FIREBASE_CONFIG || {
+            apiKey:            "AIzaSyD0o0Bsr8dB6goTVshvcLZqwUCraf9SDxs",
+            authDomain:        "admin-panel-d762b.firebaseapp.com",
+            databaseURL:       "https://admin-panel-d762b-default-rtdb.firebaseio.com",
+            projectId:         "admin-panel-d762b",
+            storageBucket:     "admin-panel-d762b.firebasestorage.app",
+            messagingSenderId: "978340087147",
+            appId:             "1:978340087147:web:030f4ded37f2e22dafb82e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ═══════════════════════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════════════════════
+        let generatedKey  = "";
+        let accessGranted = false;
+        let turnstileOk   = false;
+        let userIP        = "unknown";
+        let fingerprint   = "";
+        let refToken      = "";
+        let countdownId   = null;
+        let autoHideId    = null;
+
+        // ═══════════════════════════════════════════════════════════
+        // #35: BROWSER FINGERPRINT
+        // ═══════════════════════════════════════════════════════════
+        function getFingerprint() {
+            const raw = [
+                screen.width, screen.height, screen.colorDepth,
+                Intl.DateTimeFormat().resolvedOptions().timeZone,
+                navigator.userAgent, navigator.language,
+                navigator.hardwareConcurrency || 0
+            ].join('|');
+            // Simple hash
+            let h = 0;
+            for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h) + raw.charCodeAt(i); h |= 0; }
+            return 'fp_' + Math.abs(h).toString(36);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #43: TURNSTILE CALLBACK
+        // ═══════════════════════════════════════════════════════════
+        function onTurnstilePass(token) {
+            turnstileOk = true;
+            if (accessGranted && !sessionStorage.getItem('dg_key_generated')) {
+                document.getElementById('btnGenerate').disabled = false;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #44: HONEYPOT — fake function visible in source
+        // ═══════════════════════════════════════════════════════════
+        async function generateKey() {
+            // ⚠ Honeypot — anyone calling this via console gets flagged
+            try {
+                const ip = userIP || 'unknown';
+                await db.ref('/HoneypotLog/' + ip.replace(/\./g,'_') + '/' + Date.now()).set({
+                    ua: navigator.userAgent,
+                    time: new Date().toISOString(),
+                    referrer: document.referrer
+                });
+            } catch(e) {}
+            showBlocked("Access Denied", "Unauthorized access attempt logged.");
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // TOAST HELPER
+        // ═══════════════════════════════════════════════════════════
+        function showToast(msg, isError) {
+            const t = document.getElementById('toast');
+            t.innerHTML = '';
+            const icon = document.createElement('i');
+            icon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            icon.style.color = isError ? 'var(--red)' : 'var(--green)';
+            t.appendChild(icon);
+            t.appendChild(document.createTextNode(' ' + msg));
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #36: DEVTOOLS DETECTION
+        // ═══════════════════════════════════════════════════════════
+        function checkDevTools() {
+            const threshold = 160;
+            const devOpen = (window.outerWidth - window.innerWidth > threshold) ||
+                            (window.outerHeight - window.innerHeight > threshold);
+            if (devOpen && generatedKey) {
+                document.getElementById('keyBox').innerText = '????-XXXXXX';
+                document.getElementById('keyBox').style.color = 'var(--accent)';
+                accessGranted = false;
+                generatedKey = '';
+                document.getElementById('btnOpenApp').style.display = 'none';
+                const cd = document.getElementById('keyCountdown');
+                cd.style.display = 'none';
+                if (countdownId) clearInterval(countdownId);
+                if (autoHideId) clearTimeout(autoHideId);
+            }
+        }
+        setInterval(checkDevTools, 1500);
+
+        // ═══════════════════════════════════════════════════════════
+        // MAIN INIT
+        // ═══════════════════════════════════════════════════════════
+        window.onload = async () => {
+            initParticles();
+            fingerprint = getFingerprint();
+
+            try {
+                // Maintenance check
+                const maintSnap = await db.ref('/Config/Maintenance').once('value');
+                if (maintSnap.val() === true) {
+                    showBlocked("System Down", "The generator is currently under maintenance.");
+                    return;
+                }
+
+                // #42: Client-side referer check (basic layer — real check in edge function)
+                const allowedReferrers = ['linkvertise.com', 'link-to.net', 'link-hub.net', 'loot-link.com', 'lootdest.com'];
+                const ref = document.referrer.toLowerCase();
+                const hasReferer = ref && allowedReferrers.some(d => ref.includes(d));
+
+                // #31: Token from URL
+                const params = new URLSearchParams(window.location.search);
+                refToken = params.get('ref') || '';
+
+                if (refToken) {
+                    // #31-33: Validate token in Firebase
+                    const tokenSnap = await db.ref('/AccessTokens/' + refToken).once('value');
+                    const tokenData = tokenSnap.val();
+
+                    if (!tokenData) {
+                        showBlocked("Invalid Token", "This access link has expired or was already used.");
+                        await logAttempt('token_invalid');
+                        return;
+                    }
+
+                    // #33: Check 10-minute expiry
+                    if (tokenData.createdAt && (Date.now() - tokenData.createdAt > 600000)) {
+                        await db.ref('/AccessTokens/' + refToken).remove();
+                        showBlocked("Token Expired", "This link expired. Please use the shortlink again.");
+                        await logAttempt('token_expired');
+                        return;
+                    }
+
+                    // #32: Burn token — delete after use
+                    await db.ref('/AccessTokens/' + refToken).remove();
+                    accessGranted = true;
+
+                } else if (hasReferer) {
+                    // Allowed via shortlink referer
+                    accessGranted = true;
+                } else {
+                    showBlocked("Access Denied", "You must use the official shortlink to access the generator.");
+                    await logAttempt('no_token_no_referer');
+                    return;
+                }
+
+                // #34: IP-based rate limiting
+                try {
+                    const ipResp = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipResp.json();
+                    userIP = ipData.ip;
+                } catch(e) { userIP = 'unknown_' + fingerprint; }
+
+                // R2: Check if rate limiting is enabled in Firebase Config
+                const rateCfgSnap = await db.ref('/Config/RateLimit').once('value');
+                const rateCfg = rateCfgSnap.val();
+                const rateLimitEnabled = (rateCfg && rateCfg.enabled === false) ? false : true;
+
+                const ipKey = userIP.replace(/[\.\:]/g, '_');
+                // R6: combined fingerprint+IP key
+                const combinedKey = ipKey + '__' + fingerprint;
+                const rateSnap = await db.ref('/RateLimits/' + combinedKey).once('value');
+                const rateData = rateSnap.val() || { count: 0, timestamps: [] };
+                // R1: 2-hour window
+                const TWO_HOURS = 2 * 60 * 60 * 1000;
+                const now = Date.now();
+
+                // R5: Check IP whitelist
+                const whitelistSnap = await db.ref('/Config/IPWhitelist').once('value');
+                const whitelist = whitelistSnap.val() || [];
+                const isWhitelisted = Array.isArray(whitelist)
+                    ? whitelist.includes(userIP)
+                    : Object.values(whitelist).includes(userIP);
+
+                // Filter to last 2h
+                let ts = Array.isArray(rateData.timestamps) ? rateData.timestamps.filter(t => now - t < TWO_HOURS) : [];
+                if (rateLimitEnabled && !isWhitelisted && ts.length >= 5) {
+                    const oldest = ts[0];
+                    const resetIn = Math.ceil((TWO_HOURS - (now - oldest)) / 60000);
+                    showBlocked("Rate Limited", "You've reached the maximum generations. Try again in " + resetIn + " minutes.");
+                    await logAttempt('rate_limited');
+                    return;
+                }
+
+                // Show remaining count
+                const remaining = 5 - ts.length;
+                const pill = document.getElementById('ratePill');
+                const pillText = document.getElementById('rateText');
+                pill.classList.remove('hidden');
+                pillText.textContent = remaining + '/5 remaining today';
+                pill.className = 'status-pill ' + (remaining <= 2 ? 'warn' : 'ok');
+
+                // #40: One generation per shortlink visit
+                if (sessionStorage.getItem('dg_key_generated')) {
+                    document.getElementById('secLoader').classList.add('hidden');
+                    document.getElementById('uiContainer').classList.remove('hidden');
+                    document.getElementById('btnGenerate').disabled = true;
+                    document.getElementById('btnGenerate').innerHTML = '<i class="fas fa-check"></i> Already generated this session';
+                    pill.classList.remove('hidden');
+                    return;
+                }
+
+                // Local cooldown (3/hour)
+                const genHistoryStr = localStorage.getItem('dg_gen_history');
+                let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
+                genHistory = genHistory.filter(t => now - t < 60 * 60 * 1000);
+                localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
+
+                document.getElementById('secLoader').classList.add('hidden');
+                document.getElementById('uiContainer').classList.remove('hidden');
+
+                if (genHistory.length >= 3) {
+                    const elapsed = now - genHistory[0];
+                    lockGenerator(60 * 60 * 1000 - elapsed);
+                    return;
+                }
+
+                // Enable button only if Turnstile passed
+                if (turnstileOk) {
+                    document.getElementById('btnGenerate').disabled = false;
+                }
+
+            } catch (err) {
+                showBlocked("Connection Error", "Failed to verify access. Try again later.");
+                console.error('Init error:', err);
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // #38: REAL GENERATION (obfuscated entry point name)
+        // ═══════════════════════════════════════════════════════════
+        function _startGen() {
+            if (!accessGranted || !turnstileOk) return;
+            if (sessionStorage.getItem('dg_key_generated')) return;
+            startGeneration();
+        }
+
+        function showBlocked(title, msg) {
+            const card = document.getElementById('mainCard');
+            card.innerHTML = '<i class="fas fa-lock" style="color: var(--red); font-size: 3rem; margin-bottom: 10px;"></i>' +
+                '<h2 style="color: var(--red); font-size: 1.2rem; margin-bottom: 8px;">' + title + '</h2>' +
+                '<p style="color: var(--muted); font-size: 0.85rem;">' + msg + '</p>';
+        }
+
+        function lockGenerator(remainingMs) {
+            const mins = Math.ceil(remainingMs / (1000 * 60));
+            const btn = document.getElementById('btnGenerate');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-clock"></i> COME BACK IN ' + mins + ' MIN';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // KEY GENERATION
+        // ═══════════════════════════════════════════════════════════
+        async function startGeneration() {
+            const btnGen = document.getElementById('btnGenerate');
+            const keyBox = document.getElementById('keyBox');
+            const loader = document.getElementById('loader');
+
+            btnGen.classList.add('hidden');
+            loader.style.display = 'block';
+
+            let scrambler = setInterval(() => {
+                keyBox.innerText = "DG-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            }, 50);
+
+            setTimeout(async () => {
+                clearInterval(scrambler);
+
+                const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
+                generatedKey = "DG-" + rnd;
+
+                try {
+                    const nowSec = Math.floor(Date.now() / 1000);
+
+                    // #35: Store key with fingerprint binding
+                    await db.ref('/ValidKeys/' + generatedKey).set({
+                        status:      "active",
+                        expiry:      nowSec + (24 * 3600),
+                        duration:    24,
+                        device:      "",
+                        date:        new Date().toISOString(),
+                        fingerprint: fingerprint,
+                        sourceIP:    userIP,
+                        source:      "web"
+                    });
+
+                    // R1+R6: Update combined rate counter (2H window)
+                    const ipKey2 = userIP.replace(/[\.\:]/g, '_');
+                    const combinedKey2 = ipKey2 + '__' + fingerprint;
+                    const rateSnap2 = await db.ref('/RateLimits/' + combinedKey2).once('value');
+                    const rateData2 = rateSnap2.val() || { count: 0, timestamps: [] };
+                    let ts2 = Array.isArray(rateData2.timestamps) ? rateData2.timestamps : [];
+                    ts2.push(Date.now());
+                    ts2 = ts2.filter(t => Date.now() - t < 2 * 60 * 60 * 1000);
+                    await db.ref('/RateLimits/' + combinedKey2).set({ count: ts2.length, timestamps: ts2, ip: userIP, fingerprint: fingerprint, lastSeen: new Date().toISOString() });
+
+                    // Update local cooldown
+                    const genHistoryStr = localStorage.getItem('dg_gen_history');
+                    let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
+                    genHistory = genHistory.filter(t => Date.now() - t < 60 * 60 * 1000);
+                    genHistory.push(Date.now());
+                    localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
+
+                    // #40: Mark session — one gen per visit
+                    sessionStorage.setItem('dg_key_generated', 'true');
+
+                    // #45: Log generation
+                    await logAttempt('success');
+
+                    // #46: Suspicious activity check
+                    await checkSuspicious();
+
+                    // Show key
+                    keyBox.innerText = generatedKey;
+                    keyBox.style.color = "var(--green)";
+                    keyBox.style.borderColor = "rgba(74, 222, 128, 0.4)";
+                    keyBox.style.boxShadow = "0 0 20px rgba(74, 222, 128, 0.2)";
+                    loader.style.display = 'none';
+                    document.getElementById('btnOpenApp').style.display = 'flex';
+
+                    // Update rate pill
+                    const pill = document.getElementById('ratePill');
+                    const remaining = 5 - ts2.length;
+                    document.getElementById('rateText').textContent = remaining + '/5 remaining today';
+                    pill.className = 'status-pill ' + (remaining <= 1 ? 'fail' : remaining <= 2 ? 'warn' : 'ok');
+
+                    // #41: Start visible 10-min countdown
+                    startCountdown(10 * 60);
+
+                    // #39: Auto-hide key after 30 seconds
+                    autoHideId = setTimeout(() => {
+                        keyBox.innerText = '•••••-••••••';
+                        keyBox.style.color = 'var(--muted)';
+                        keyBox.style.borderColor = 'rgba(0,240,255,0.2)';
+                        keyBox.style.boxShadow = 'none';
+                        document.getElementById('btnOpenApp').style.display = 'none';
+                        showToast('Key hidden for security — already copied');
+                    }, 30000);
+
+                } catch (err) {
+                    loader.style.display = 'none';
+                    keyBox.innerText = "ERROR";
+                    keyBox.style.color = "var(--red)";
+                    console.error("Gen error:", err);
+                    showToast('Failed to generate key. Try again.', true);
+                    await logAttempt('error_write');
+                }
+            }, 2500);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #41: VISIBLE COUNTDOWN (10 min auto-delete)
+        // ═══════════════════════════════════════════════════════════
+        function startCountdown(totalSec) {
+            const el = document.getElementById('keyCountdown');
+            const txt = document.getElementById('countdownText');
+            el.style.display = 'block';
+            el.classList.remove('expired');
+            let sec = totalSec;
+            function tick() {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                txt.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                if (sec <= 0) {
+                    clearInterval(countdownId);
+                    txt.textContent = 'EXPIRED';
+                    el.classList.add('expired');
+                    return;
+                }
+                sec--;
+            }
+            tick();
+            countdownId = setInterval(tick, 1000);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #45: GENERATION LOGGING
+        // ═══════════════════════════════════════════════════════════
+        async function logAttempt(result) {
+            try {
+                const logData = {
+                    timestamp:   Date.now(),
+                    date:        new Date().toISOString(),
+                    ip:          userIP,
+                    userAgent:   navigator.userAgent.substring(0, 200),
+                    referrer:    document.referrer.substring(0, 200),
+                    fingerprint: fingerprint,
+                    token:       refToken || 'none',
+                    result:      result
+                };
+                await db.ref('/GenerationLogs/' + Date.now() + '_' + Math.random().toString(36).substring(2,6)).set(logData);
+            } catch(e) { console.error('Log error:', e); }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // #46: SUSPICIOUS ACTIVITY ALERT (Telegram)
+        // ═══════════════════════════════════════════════════════════
+        async function checkSuspicious() {
+            try {
+                const ipKey = userIP.replace(/[\.\:]/g, '_');
+                const rateSnap = await db.ref('/RateLimits/' + ipKey).once('value');
+                const rateData = rateSnap.val();
+                if (!rateData || !rateData.timestamps) return;
+                const now = Date.now();
+                const TEN_MIN = 10 * 60 * 1000;
+                const recentCount = rateData.timestamps.filter(t => now - t < TEN_MIN).length;
+
+                if (recentCount > 2) {
+                    // Flag in Firebase for admin panel to see
+                    await db.ref('/SuspiciousActivity/' + ipKey + '/' + Date.now()).set({
+                        ip:          userIP,
+                        fingerprint: fingerprint,
+                        count:       recentCount,
+                        window:      '10min',
+                        time:        new Date().toISOString(),
+                        ua:          navigator.userAgent.substring(0, 150)
+                    });
+                }
+            } catch(e) { console.error('Suspicious check error:', e); }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // COPY & OPEN APP
+        // ═══════════════════════════════════════════════════════════
+        function copyAndOpenApp() {
+            if (!generatedKey) return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(generatedKey).then(() => showToast('Copied & Opening App!')).catch(() => fallbackCopy());
+            } else {
+                fallbackCopy();
+            }
+            setTimeout(() => { window.location.href = "dynamongamer://verify?key=" + generatedKey; }, 800);
+        }
+        function fallbackCopy() {
+            const el = document.createElement("textarea");
+            el.value = generatedKey; el.style.position = "fixed"; el.style.opacity = "0";
+            document.body.appendChild(el); el.focus(); el.select();
+            try { document.execCommand('copy'); showToast('Copied!'); } catch(e) { showToast('Copy failed', true); }
+            document.body.removeChild(el);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BACKGROUND PARTICLES
+        // ═══════════════════════════════════════════════════════════
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animId = null;
+        function initParticles() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 30; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, v: Math.random()*0.5+0.1, s: Math.random()*2+1 });
+            function loop() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = "#00f0ff"; ctx.globalAlpha = 0.12;
+                particles.forEach(p => { p.y -= p.v; if (p.y < 0) p.y = canvas.height; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill(); });
+                animId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && animId) { cancelAnimationFrame(animId); animId = null; }
+            else if (!document.hidden && !animId) initParticles();
+        });
+    </script>
+</body>
+</html>
