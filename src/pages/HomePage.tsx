@@ -7,7 +7,7 @@ import { SearchBar } from '@/components/home/SearchBar'
 import { ModGrid } from '@/components/home/ModGrid'
 import { Footer } from '@/components/home/Footer'
 import { BackToTop } from '@/components/home/BackToTop'
-import { VisitorCounter } from '@/components/ui/VisitorCounter'
+
 
 export default function HomePage() {
   const { data: mods, isLoading, isError } = useMods()
@@ -109,8 +109,6 @@ export default function HomePage() {
       {/* Back to top */}
       <BackToTop />
 
-      {/* Visitor counter - shown on home page */}
-      <VisitorCounter />
     </div>
   )
 }
