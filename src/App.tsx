@@ -124,6 +124,7 @@ function RootShell() {
 }
 
 const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage })
+const indexAliasRoute = createRoute({ getParentRoute: () => rootRoute, path: '/index', component: HomePage })
 const downloadRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/download',
@@ -136,7 +137,7 @@ const dmcaRoute = createRoute({ getParentRoute: () => rootRoute, path: '/dmca', 
 const adminRoute = createRoute({ getParentRoute: () => rootRoute, path: '/admin', component: AdminPage })
 const keysRoute = createRoute({ getParentRoute: () => rootRoute, path: '/keys', component: KeysPage })
 
-const routeTree = rootRoute.addChildren([homeRoute, downloadRoute, unlockRoute, tutorialRoute, dmcaRoute, adminRoute, keysRoute])
+const routeTree = rootRoute.addChildren([homeRoute, indexAliasRoute, downloadRoute, unlockRoute, tutorialRoute, dmcaRoute, adminRoute, keysRoute])
 
 const router = createRouter({ routeTree, defaultNotFoundComponent: NotFoundPage })
 const queryClient = new QueryClient()
