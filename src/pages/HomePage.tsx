@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import { useMods, useSiteMeta } from '@/hooks/useDb'
-import { Particles } from '@/components/home/Particles'
 import { AnnouncementBanner } from '@/components/home/AnnouncementBanner'
 import { HeroHeader } from '@/components/home/HeroHeader'
 import { SearchBar } from '@/components/home/SearchBar'
@@ -68,11 +67,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen relative">
-      <Particles />
-
-      {/* Glow + grid background */}
-      <div className="bg-glow-top" />
-      <div className="cyber-grid" />
+      {/* Background is global AuroraOrb in App.tsx */}
 
       {/* Announcement banner */}
       {showAnnouncement && (
