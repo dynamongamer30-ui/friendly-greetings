@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dynamon Gamer | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES — DYNAMON GAMER THEME
+        ============================================ */
+        :root {
+            --bg: #05080a;
+            --surface: #0a0f14;
+            --card: rgba(10, 18, 26, 0.85);
+            --nav: rgba(8, 14, 20, 0.95);
+            --border: rgba(0, 240, 255, 0.09);
+            --border-hover: rgba(0, 240, 255, 0.22);
+            --accent: #00f0ff;
+            --accent-dim: rgba(0, 240, 255, 0.12);
+            --text: #e2e8f0;
+            --muted: #4a6278;
+            --green: #22c55e;
+            --red: #ef4444;
+            --blue: #38bdf8;
+            --orange: #f97316;
+            --gold: #f59e0b;
+            --purple: #7b2fff;
+            --glass: blur(20px) saturate(160%);
+            --shadow-card: 0 8px 32px rgba(0,0,0,0.6);
+            --shadow-glow: 0 0 24px rgba(0,240,255,0.08);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        /* ============================================
+           RESETS & BASE
+        ============================================ */
+        *, *::before, *::after { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { margin: 0; padding: 0 0 120px 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        input, select, textarea { user-select: text; }
+
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.35; }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5,8,10,0.92); backdrop-filter: var(--glass);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand {
+            font-weight: 800; font-size: 1rem; letter-spacing: -0.3px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .brand-icon {
+            width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--border-hover); border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-icon i { color: var(--accent); font-size: 0.85rem; }
+        .brand-sub { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; display: block; }
+        .header-actions { display: flex; gap: 8px; }
+        .icon-btn {
+            width: 36px; height: 36px; border-radius: var(--radius-sm);
+            background: rgba(0,240,255,0.03); border: 1px solid var(--border);
+            color: var(--muted); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; font-size: 0.85rem;
+        }
+        .icon-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--border-hover); }
+        .icon-btn:active { transform: scale(0.94); }
+
+        /* ============================================
+           LAYOUT
+        ============================================ */
+        .container { max-width: 600px; margin: 0 auto; padding: 18px 16px; }
+        .hidden { display: none !important; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .fade-in { animation: fadeUp 0.35s ease forwards; }
+
+        /* ============================================
+           STATS ROW
+        ============================================ */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 18px 16px;
+            backdrop-filter: var(--glass); display: flex; flex-direction: column;
+            align-items: flex-start; gap: 4px; position: relative; overflow: hidden;
+            box-shadow: var(--shadow-glow);
+        }
+        .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, transparent, rgba(0,240,255,0.15), transparent); }
+        .stat-num { font-size: 2rem; font-weight: 800; line-height: 1; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+        .stat-num.green { color: var(--green); }
+        .stat-label { font-size: 0.6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+        /* ============================================
+           CONTROLS
+        ============================================ */
+        .controls { display: flex; gap: 10px; margin-bottom: 12px; }
+        .search-wrap { position: relative; flex: 1; }
+        .search-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.75rem; pointer-events: none; }
+        .input-std {
+            width: 100%; background: rgba(0,240,255,0.03); border: 1px solid var(--border);
+            padding: 11px 13px 11px 38px; color: var(--text); border-radius: var(--radius-md);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; transition: all 0.2s;
+        }
+        .input-std::placeholder { color: var(--muted); }
+        .input-std:focus { border-color: rgba(0,240,255,0.35); background: rgba(0,240,255,0.04); box-shadow: 0 0 0 3px rgba(0,240,255,0.06); }
+        .input-no-icon { padding-left: 13px; }
+        .select-std {
+            width: 100%; background: rgba(0,240,255,0.03); border: 1px solid var(--border);
+            padding: 11px 36px 11px 13px; color: var(--text); border-radius: var(--radius-md);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D'http%3A//www.w3.org/2000/svg' width%3D'12' height%3D'12'%3E%3Cpath fill%3D'%236b7280' d%3D'M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 13px center;
+        }
+        .select-std:focus { border-color: rgba(0,240,255,0.35); box-shadow: 0 0 0 3px rgba(0,240,255,0.06); }
+        .btn-main {
+            background: var(--accent); color: #050810; border: none;
+            padding: 0 18px; border-radius: var(--radius-md); font-weight: 800;
+            font-size: 0.8rem; cursor: pointer; display: flex; align-items: center;
+            gap: 7px; white-space: nowrap; transition: all 0.2s; letter-spacing: 0.3px;
+            box-shadow: 0 0 16px rgba(0,240,255,0.25);
+        }
+        .btn-main:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* ============================================
+           CHIPS (FILTER TABS)
+        ============================================ */
+        .chips { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+        .chips::-webkit-scrollbar { display: none; }
+        .chip {
+            padding: 7px 16px; border-radius: 20px; background: rgba(0,240,255,0.03);
+            border: 1px solid var(--border); font-size: 0.72rem; font-weight: 600;
+            color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .chip.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+        /* ============================================
+           BULK BAR
+        ============================================ */
+        .bulk-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,240,255,0.02); border: 1px solid var(--border);
+            padding: 9px 14px; border-radius: var(--radius-md); margin-bottom: 12px;
+        }
+        .chk-container { display: flex; align-items: center; gap: 9px; font-size: 0.72rem; color: var(--muted); font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+        .custom-chk {
+            width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+        }
+        .custom-chk.checked { background: var(--accent); border-color: var(--accent); }
+        .custom-chk i { font-size: 0.6rem; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.2s; }
+        .custom-chk.checked i { opacity: 1; transform: scale(1); color: #050810; }
+        .bulk-actions { display: flex; gap: 8px; }
+        .btn-sm {
+            padding: 7px 12px; border-radius: var(--radius-sm); font-size: 0.7rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; border: 1px solid transparent;
+        }
+        .btn-sm:active { transform: scale(0.95); }
+        .btn-sm-danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: var(--red); }
+        .btn-sm-danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+        .btn-sm-blue { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.25); color: var(--blue); }
+        .btn-sm-blue:hover { background: var(--blue); color: #000; border-color: var(--blue); }
+
+        /* ============================================
+           ITEM CARDS (KEYS & DEVICES)
+        ============================================ */
+        .item-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 16px 16px;
+            margin-bottom: 10px; backdrop-filter: var(--glass);
+            position: relative; overflow: hidden; transition: border-color 0.2s;
+        }
+        .item-card:hover { border-color: var(--border-hover); }
+        .item-card.selected { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }
+        .item-card.active-card::before {
+            content:''; position:absolute; top:0; left:0; width:3px; height:100%;
+            background: var(--green); box-shadow: 0 0 10px rgba(34,197,94,0.4);
+        }
+        .item-card.banned-card::before {
+            content:''; position:absolute; top:0; left:0; width:3px; height:100%;
+            background: var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.4);
+        }
+        .row-top { display: flex; align-items: center; gap: 10px; }
+        .key-click-area { flex: 1; cursor: pointer; padding-left: 4px; min-width: 0; }
+        .key-click-area:active { opacity: 0.7; }
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace; font-weight: 700;
+            color: var(--text); font-size: 0.9rem; word-break: break-all;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+        }
+        .tap-hint { font-size: 0.6rem; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+
+        /* BADGES */
+        .dur-badge {
+            font-size: 0.55rem; font-weight: 800; color: var(--blue);
+            background: rgba(56,189,248,0.1); padding: 2px 6px;
+            border-radius: 4px; border: 1px solid rgba(56,189,248,0.2); display: inline-block;
+        }
+        .status-badge { font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent; }
+        .status-linked { color: #34d399; background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.2); }
+        .status-expire { color: var(--orange); background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.2); }
+        .status-vip { color: var(--gold); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
+        .badge {
+            font-weight: 700; text-transform: uppercase; padding: 3px 9px;
+            border-radius: var(--radius-sm); font-size: 0.58rem; letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent;
+        }
+        .badge.active { background: rgba(34,197,94,0.1); color: var(--green); border-color: rgba(34,197,94,0.2); }
+        .badge.banned { background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2); }
+
+        /* DEVICE CARD SPECIFICS */
+        .device-row { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .device-icon {
+            width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+            background: rgba(255,255,255,0.04); display: flex; align-items: center;
+            justify-content: center; font-size: 1rem; color: var(--muted); border: 1px solid var(--border);
+        }
+        .active-card .device-icon { color: var(--green); border-color: rgba(34,197,94,0.25); box-shadow: 0 0 12px rgba(34,197,94,0.1); }
+        .banned-card .device-icon { color: var(--red); border-color: rgba(239,68,68,0.25); box-shadow: 0 0 12px rgba(239,68,68,0.1); }
+        .device-meta { min-width: 0; flex: 1; }
+        .info-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .info-pill {
+            background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); display: inline-flex; align-items: center;
+            gap: 5px; font-size: 0.65rem; color: var(--muted); font-family: 'JetBrains Mono', monospace;
+        }
+        .meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+        .card-actions { display: flex; gap: 6px; }
+        .card-icon-btn {
+            width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+            background: transparent; color: var(--muted); display: flex; align-items: center;
+            justify-content: center; cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+        }
+        .card-icon-btn:hover { color: var(--accent); border-color: var(--border-hover); }
+        .card-icon-btn.danger:hover { color: var(--red); border-color: rgba(239,68,68,0.4); }
+
+        /* SWITCH */
+        .switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; border-radius: 26px; transition: .3s; border: 1px solid var(--border); }
+        .slider:before { position: absolute; content:""; height: 18px; width: 18px; left: 3px; bottom: 3px; border-radius: 50%; transition: .3s; }
+        input:not(:checked) + .slider { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); }
+        input:not(:checked) + .slider:before { background: var(--green); box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+        input:checked + .slider { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); }
+        input:checked + .slider:before { transform: translateX(20px); background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+
+        /* ============================================
+           BOTTOM NAV
+        ============================================ */
+        .nav-fixed { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 99; pointer-events: none; }
+        .nav-inner {
+            background: var(--nav); border: 1px solid rgba(0,240,255,0.1);
+            padding: 0 8px; height: 64px; border-radius: 22px; width: 88%; max-width: 380px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7); backdrop-filter: var(--glass); pointer-events: auto;
+        }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 1.1rem; transition: all 0.25s; cursor: pointer; height: 100%; border-radius: 14px; gap: 3px; }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn.active i { filter: drop-shadow(0 0 8px rgba(0,240,255,0.7)); }
+        .nav-lbl { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+
+        /* ============================================
+           SETUP / LOGIN / LOADER
+        ============================================ */
+        .view-center { display: flex; align-items: center; justify-content: center; min-height: 70vh; }
+        .setup-box {
+            text-align: center; padding: 36px 24px; border: 1px solid var(--border);
+            border-radius: var(--radius-lg); background: var(--card); width: 100%;
+            backdrop-filter: var(--glass); box-shadow: var(--shadow-card); animation: fadeUp 0.4s ease;
+        }
+        .setup-icon {
+            width: 56px; height: 56px; background: var(--accent-dim); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+            border: 1px solid var(--border-hover); font-size: 1.4rem; color: var(--accent);
+            box-shadow: 0 0 20px rgba(0,240,255,0.1);
+        }
+        .setup-box h2 { margin: 0 0 8px; font-size: 1.3rem; font-weight: 800; }
+        .setup-box p { color: var(--muted); font-size: 0.8rem; margin-bottom: 22px; }
+        .btn-block {
+            width: 100%; padding: 14px; background: var(--accent); color: #050810; border: none;
+            border-radius: var(--radius-md); font-weight: 800; margin-top: 12px; cursor: pointer;
+            font-size: 0.85rem; transition: all 0.2s; letter-spacing: 0.3px;
+            box-shadow: 0 0 20px rgba(0,240,255,0.2);
+        }
+        .btn-block:active { transform: scale(0.98); opacity: 0.9; }
+        .loader-view { text-align: center; padding: 80px 0; }
+        .loader-view i { font-size: 2rem; color: var(--accent); filter: drop-shadow(0 0 8px rgba(0,240,255,0.5)); }
+        .loader-view p { color: var(--muted); margin-top: 18px; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
+
+        /* ============================================
+           MODALS
+        ============================================ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); transition: opacity 0.25s; opacity: 0; pointer-events: none;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: #080f14; width: 90%; max-width: 340px; padding: 26px;
+            border-radius: var(--radius-lg); border: 1px solid rgba(0,240,255,0.12);
+            box-shadow: 0 0 60px rgba(0,0,0,0.9); transform: scale(0.92) translateY(10px);
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+        .modal-content h3 { margin: 0 0 18px; font-size: 1.1rem; font-weight: 800; }
+        .inp-group { margin-bottom: 16px; text-align: left; }
+        .inp-label { display: block; color: var(--muted); font-size: 0.65rem; font-weight: 700; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 1px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-cancel { background: transparent !important; border: 1px solid var(--border); color: var(--muted); }
+
+        /* ============================================
+           TOAST
+        ============================================ */
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+            background: rgba(5,12,20,0.97); border: 1px solid rgba(0,240,255,0.2);
+            color: var(--text); padding: 11px 22px; border-radius: 50px;
+            z-index: 300; transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            display: flex; align-items: center; gap: 9px; font-weight: 600;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7); font-size: 0.82rem; white-space: nowrap;
+            backdrop-filter: blur(12px);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        #toast i { color: var(--green); }
+
+        /* ============================================
+           CONFIG SECTION
+        ============================================ */
+        .section-title { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .config-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 20px; margin-bottom: 14px; backdrop-filter: var(--glass);
+        }
+        .config-card-title { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; }
+        .about-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 24px; text-align: center; margin-bottom: 14px; position: relative; overflow: hidden;
+        }
+        .about-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+        .danger-card { border-color: rgba(239,68,68,0.2) !important; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.8rem; }
+        .empty-state i { font-size: 1.5rem; margin-bottom: 10px; display: block; opacity: 0.4; }
+
+        /* ============================================
+           SOCIAL LINKS  (used by DEX via id anchors)
+        ============================================ */
+        .social-links { display: none; } /* Hidden — only used as data source by the DEX file */
+
+        /* ============================================
+           SCROLLBAR
+        ============================================ */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.15); border-radius: 4px; }
+        /* ============================================
+           THEME TOGGLE (Phase 3)
+        ============================================ */
+        body.light-mode {
+            --bg: #f5f5f7; --surface: #ffffff; --card: rgba(255,255,255,0.85);
+            --nav: rgba(255,255,255,0.92); --border: rgba(0,0,0,0.08);
+            --border-hover: rgba(0,0,0,0.16); --accent: #111; --text: #1a1a1a;
+            --muted: #6b7280; --green: #16a34a; --red: #dc2626; --blue: #2563eb;
+            --orange: #ea580c; --gold: #ca8a04;
+        }
+        body.light-mode #bgCanvas { opacity: 0.08; }
+        body.light-mode .brand-icon { background: #111; }
+        body.light-mode .brand-icon i { color: #fff; }
+        body.light-mode .modal-content { background: #fff; border-color: rgba(0,0,0,0.1); }
+        body.light-mode .input-std, body.light-mode .select-std { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        body.light-mode #toast { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.1); color: #111; }
+        body.light-mode .stat-card, body.light-mode .item-card, body.light-mode .config-card, body.light-mode .about-card { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+        body.light-mode .btn-main { background: #111; color: #fff; }
+        body.light-mode header { background: rgba(255,255,255,0.85); }
+        body.light-mode .nav-fixed { background: rgba(255,255,255,0.92); }
+        body.light-mode .chip.active { background: #111; color: #fff; border-color: #111; }
+
+
+        /* S2: Source badge */
+        .src-badge { font-size:0.5rem; font-weight:800; padding:2px 6px; border-radius:4px; border:1px solid transparent; vertical-align:middle; }
+        .src-web { background:rgba(56,189,248,0.12); color:var(--blue); border-color:rgba(56,189,248,0.25); }
+        .src-api { background:rgba(123,47,255,0.12); color:var(--purple); border-color:rgba(123,47,255,0.25); }
+        /* Q1: Live countdown per key */
+        .key-countdown { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--orange); }
+        .key-countdown.expiring { color:var(--red); font-weight:800; }
+        /* Q7: Expiring badge */
+        .badge-expiring { background:rgba(249,115,22,0.15); color:var(--orange); border-color:rgba(249,115,22,0.35); animation: pulse-warn 1.5s ease infinite; }
+        @keyframes pulse-warn { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+        /* ============================================
+           KEY DETAIL DRAWER (Key Mgmt)
+        ============================================ */
+        .key-drawer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 210; background: var(--surface); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); max-height: 70vh; overflow-y: auto; }
+        .key-drawer.open { transform: translateY(0); }
+        .key-drawer-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+        .key-drawer h3 { font-size: 1rem; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+        .detail-label { color: var(--muted); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+        .drawer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+        .drawer-actions .btn-block { margin: 0; font-size: 0.75rem; padding: 11px; }
+
+        /* ============================================
+           LOG PANEL (Debug Logger)
+        ============================================ */
+        .log-panel { max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; margin-top: 10px; }
+        .log-entry { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; gap: 8px; }
+        .log-time { color: var(--muted); white-space: nowrap; }
+        .log-msg { color: var(--text); word-break: break-all; }
+        .log-entry.error .log-msg { color: var(--red); }
+        .log-entry.warn .log-msg { color: var(--orange); }
+        .log-entry.success .log-msg { color: var(--green); }
+
+        /* ============================================
+           EXTRA STAT CARDS (Phase 2)
+        ============================================ */
+        .stats-row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .mini-stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px; text-align: center; backdrop-filter: var(--glass); }
+        .mini-stat .mini-num { font-size: 1.1rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+        .mini-stat .mini-label { font-size: 0.5rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        /* Safe area insets */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            body { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+            .nav-fixed { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="social-links">
+        <a id="insta"    href="https://instagram.com/dynamongamer07"             target="_blank"></a>
+        <a id="tele"     href="https://t.me/dynamonsworld07"                      target="_blank"></a>
+        <a id="yt"       href="https://youtube.com/@dynamongamer07"               target="_blank"></a>
+        <a id="wa"       href="https://whatsapp.com/channel/0029VbBdAcZ05MUmgk8cQP05" target="_blank"></a>
+        <a id="tutorial" href="https://youtube.com/@dynamongamer07"               target="_blank"></a>
+    </div>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+            <div>
+                <span id="brandName">Dynamon Gamer</span>
+                <span class="brand-sub">Admin Panel</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="icon-btn" title="Toggle Theme" onclick="toggleTheme()"><i class="fas fa-adjust" id="themeIcon"></i></div>
+            <div class="icon-btn" title="Debug Log" onclick="toggleLogPanel()"><i class="fas fa-terminal"></i></div>
+            <div class="icon-btn" title="Export CSV" onclick="exportCSV()"><i class="fas fa-download"></i></div>
+            <div class="icon-btn" title="Refresh" onclick="appInit(true)"><i class="fas fa-sync-alt"></i></div>
+            <div class="icon-btn" id="logoutBtn" style="color:var(--red); border-color:rgba(239,68,68,0.25);" title="Logout" onclick="confirmLogout()"><i class="fas fa-power-off"></i></div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div id="viewLoader" class="loader-view">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <p>Establishing Uplink...</p>
+        </div>
+
+        <div id="viewLogin" class="hidden">
+            <div class="setup-box" style="margin-top: 40px;">
+                <div class="setup-icon"><i class="fas fa-fingerprint"></i></div>
+                <h2>Secure Access</h2>
+                <p>Authenticated personnel only</p>
+                <div class="inp-group">
+                    <label class="inp-label"><i class="fas fa-lock"></i> &nbsp;Password</label>
+                    <input type="password" class="input-std input-no-icon" id="loginPass" placeholder="Enter password" autocomplete="current-password" data-admin-email="yugvadecha30@gmail.com">
+                </div>
+                <button class="btn-block" onclick="doLogin()">
+                    <i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE
+                </button>
+            </div>
+        </div>
+
+        <div id="viewSetup" class="hidden">
+            <div class="setup-box" style="margin-top: 40px;">
+                <div class="setup-icon"><i class="fas fa-database"></i></div>
+                <h2>Database Setup</h2>
+                <p>Enter your Firebase Realtime Database URL</p>
+                <div class="inp-group">
+                    <label class="inp-label">Firebase URL</label>
+                    <input type="text" class="input-std input-no-icon" id="inputDbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com">
+                </div>
+                <button class="btn-block" onclick="saveUrlAndConnect()">
+                    <i class="fas fa-plug"></i> &nbsp;ESTABLISH CONNECTION
+                </button>
+            </div>
+        </div>
+
+        <div id="viewDashboard" class="hidden fade-in">
+
+            <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr;">
+                <div class="stat-card">
+                    <span class="stat-num" id="statKeys">0</span>
+                    <span class="stat-label">Valid Keys</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num green" id="statDevs">0</span>
+                    <span class="stat-label">Devices</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" style="color:var(--gold);" id="statUsedToday">0</span>
+                    <span class="stat-label">Keys Used Today</span>
+                </div>
+            </div>
+
+            <div class="stats-row-4">
+                <div class="mini-stat"><div class="mini-num" style="color:var(--green);" id="statActive">0</div><div class="mini-label">Active</div></div>
+                <div class="mini-stat"><div class="mini-num" style="color:var(--red);" id="statExpired">0</div><div class="mini-label">Expired</div></div>
+                <div class="mini-stat"><div class="mini-num" style="color:var(--blue);" id="statLinked">0</div><div class="mini-label">Linked</div></div>
+                <div class="mini-stat"><div class="mini-num" style="color:var(--orange);" id="statBanned">0</div><div class="mini-label">Banned</div></div>
+            </div>
+
+            <div id="tabKeys">
+                <div class="controls">
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="input-std" id="searchKeys" placeholder="Search keys..." onkeyup="debounceRender(renderKeys)">
+                    </div>
+                    <button class="btn-main" onclick="openModal('modalKey')">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                </div>
+                <div class="bulk-bar">
+                    <div class="chk-container" onclick="toggleSelectAllKeys()">
+                        <div class="custom-chk" id="chkAllKeys"><i class="fas fa-check"></i></div>
+                        <span>Select All</span>
+                    </div>
+                    <button class="btn-sm" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);margin-left:auto;margin-right:8px;" onclick="selectExpiredKeys()"><i class="fas fa-clock" style="margin-right:4px;font-size:0.65rem;"></i>EXPIRED</button>
+                    <div class="bulk-actions hidden" id="bulkActionsKeys">
+                        <button class="btn-sm btn-sm-blue" onclick="promptExtendKeys()">EXTEND</button>
+                        <button class="btn-sm" style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.25);color:var(--orange);" onclick="promptRotateKeys()">ROTATE</button>
+                        <button class="btn-sm" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:var(--red);" onclick="promptRevokeKeys()">REVOKE</button>
+                        <button class="btn-sm btn-sm-danger" onclick="promptDeleteKeys()">DELETE</button>
+                    </div>
+                </div>
+                <div id="listKeys"></div>
+            </div>
+
+            <div id="tabDevices" class="hidden">
+                <div class="controls">
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="input-std" id="searchDevs" placeholder="Search device ID..." onkeyup="debounceRender(renderDevices)">
+                    </div>
+                </div>
+                <div class="chips">
+                    <div class="chip active" onclick="setDevFilter('all', this)">All</div>
+                    <div class="chip" onclick="setDevFilter('allowed', this)">Allowed</div>
+                    <div class="chip" onclick="setDevFilter('banned', this)">Banned</div>
+                </div>
+                <div class="bulk-bar">
+                    <div class="chk-container" onclick="toggleSelectAllDevs()">
+                        <div class="custom-chk" id="chkAllDevs"><i class="fas fa-check"></i></div>
+                        <span>Select All</span>
+                    </div>
+                    <button class="btn-sm btn-sm-danger hidden" id="btnDeleteDevs" onclick="promptDeleteDevs()">DELETE</button>
+                </div>
+                <div id="listDevices"></div>
+            </div>
+
+            <div id="tabConfig" class="hidden">
+
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-mobile-alt"></i> App Settings</div>
+                    <div class="inp-group"><label class="inp-label">App Title</label><input type="text" class="input-std input-no-icon" id="confTitle"></div>
+                    <div class="inp-group"><label class="inp-label">Subtitle</label><input type="text" class="input-std input-no-icon" id="confSub"></div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-link"></i> Button Links</div>
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-key" style="margin-right:5px;color:var(--gold);"></i>Get Key — URL</label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkGetKey" placeholder="https://...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-user-shield" style="margin-right:5px;color:var(--blue);"></i>Admin — URL</label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkAdmin" placeholder="https://t.me/...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-info-circle" style="margin-right:5px;color:var(--green);"></i>Info Button — URL</label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkInfo" placeholder="https://...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-tag" style="margin-right:5px;color:var(--orange);"></i>Info Button — Text</label>
+                        <input type="text" class="input-std input-no-icon" id="confTextInfo" placeholder="e.g. More Info">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-play-circle" style="margin-right:5px;color:var(--red);"></i>Tutorial — URL</label>
+                        <input type="text" class="input-std input-no-icon" id="confTutorialUrl" placeholder="https://youtube.com/...">
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-share-alt"></i> Vector Icon Links</div>
+                    <div class="inp-group">
+                        <label class="inp-label" style="display:flex;align-items:center;gap:7px;">
+                            <i class="fab fa-instagram" style="color:#e1306c;font-size:0.85rem;"></i> Instagram
+                        </label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkInsta" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label" style="display:flex;align-items:center;gap:7px;">
+                            <i class="fab fa-telegram" style="color:#229ed9;font-size:0.85rem;"></i> Telegram
+                        </label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkTele" placeholder="https://t.me/...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label" style="display:flex;align-items:center;gap:7px;">
+                            <i class="fab fa-youtube" style="color:#ff0000;font-size:0.85rem;"></i> YouTube
+                        </label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkYt" placeholder="https://youtube.com/@...">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label" style="display:flex;align-items:center;gap:7px;">
+                            <i class="fab fa-whatsapp" style="color:#25d366;font-size:0.85rem;"></i> WhatsApp
+                        </label>
+                        <input type="text" class="input-std input-no-icon" id="confLinkWa" placeholder="https://whatsapp.com/...">
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-palette"></i> UI Labels</div>
+                    <div class="grid-2">
+                        <div class="inp-group"><label class="inp-label">Get Key Button</label><input type="text" class="input-std input-no-icon" id="confBtnKey"></div>
+                        <div class="inp-group"><label class="inp-label">Tutorial Button</label><input type="text" class="input-std input-no-icon" id="confBtnTutorial"></div>
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-plug"></i> API Connection</div>
+                    <div class="inp-group"><label class="inp-label">API Base URL</label><input type="text" class="input-std input-no-icon" id="confApiUrl" placeholder="https://api.example.com"></div>
+                    <div class="inp-group"><label class="inp-label">API Token</label><input type="text" class="input-std input-no-icon" id="confApiToken" placeholder="sk_live_..."></div>
+                    <button class="btn-block" onclick="saveConfig()">
+                        <i class="fas fa-save" style="margin-right:7px;"></i>SAVE CONFIGURATION
+                    </button>
+                </div>
+
+                <div class="about-card">
+                    <i class="fas fa-bolt" style="font-size:1.8rem; color:var(--accent); margin-bottom:12px; display:block;"></i>
+                    <h4 style="margin:0 0 4px; font-size:1rem;" id="panelTitle">Dynamon Gamer</h4>
+                    <div style="margin-top:14px; background:rgba(255,255,255,0.04); padding:10px 16px; border-radius:var(--radius-md); border:1px solid var(--border); display:inline-block; min-width:180px;">
+                        <span style="font-size:0.6rem; color:var(--muted); font-weight:700; letter-spacing:1px; text-transform:uppercase;">Developed By</span><br>
+                        <span style="font-size:1.1rem; font-weight:800; color:var(--accent); letter-spacing:-0.5px;" id="panelDev">Dynamon Gamer</span>
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--blue);"><i class="fas fa-arrow-circle-up"></i> App Update System</div>
+                    <div class="row-top" style="justify-content: space-between; margin-bottom: 15px;">
+                        <span style="font-size:0.8rem; color:var(--text); font-weight:700;">Force Update Enabled</span>
+                        <label class="switch">
+                            <input type="checkbox" id="confUpdateEnabled">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grid-2">
+                        <div class="inp-group"><label class="inp-label">Target Version Code</label><input type="number" class="input-std input-no-icon" id="confUpdCode"></div>
+                        <div class="inp-group"><label class="inp-label">Version Name</label><input type="text" class="input-std input-no-icon" id="confUpdName"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="inp-group"><label class="inp-label">Dialog Title</label><input type="text" class="input-std input-no-icon" id="confUpdTitle"></div>
+                        <div class="inp-group"><label class="inp-label">Dialog Subtitle</label><input type="text" class="input-std input-no-icon" id="confUpdSub"></div>
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label">What's New (Use • for bullets)</label>
+                        <textarea class="input-std input-no-icon" id="confUpdWhatsNew" rows="4" style="resize:vertical;" placeholder="• Upgrading Game Servers&#10;• Fixing Login Issues"></textarea>
+                    </div>
+                    <div class="grid-2">
+                        <div class="inp-group"><label class="inp-label">Update URL</label><input type="text" class="input-std input-no-icon" id="confUpdUrl" placeholder="https://..."></div>
+                        <div class="inp-group"><label class="inp-label">Button Text</label><input type="text" class="input-std input-no-icon" id="confUpdBtn"></div>
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--orange);"><i class="fas fa-tools"></i> Global Maintenance</div>
+                    <div class="row-top" style="justify-content: space-between;">
+                        <span style="font-size:0.8rem; color:var(--muted);">Lock all users out of the app instantly.</span>
+                        <label class="switch">
+                            <input type="checkbox" id="confMaintenance" onchange="toggleMaintenance()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ACCESS TOKENS (for shortlink system) -->
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--green);"><i class="fas fa-ticket-alt"></i> Shortlink Access Tokens</div>
+                    <p style="font-size:0.72rem; color:var(--muted); margin-bottom:12px;">Generate one-time tokens for shortlink URLs. Tokens expire in 10 minutes and auto-burn after use.</p>
+                    <div class="grid-2" style="margin-bottom:10px;">
+                        <div class="inp-group"><label class="inp-label">Quantity</label><input type="number" class="input-std input-no-icon" id="tokenQty" value="5" min="1" max="50"></div>
+                        <div class="inp-group"><label class="inp-label">Token Prefix</label><input type="text" class="input-std input-no-icon" id="tokenPrefix" value="ref" placeholder="ref"></div>
+                    </div>
+                    <button class="btn-block" style="background:var(--green);color:#000;margin-top:0;" onclick="generateAccessTokens()">
+                        <i class="fas fa-key" style="margin-right:7px;"></i>GENERATE TOKENS
+                    </button>
+                    <div id="tokenOutput" style="margin-top:10px;display:none;">
+                        <div class="inp-label" style="margin-bottom:5px;">Generated URLs (tap to copy)</div>
+                        <div id="tokenList" style="max-height:150px;overflow-y:auto;"></div>
+                    </div>
+                </div>
+
+
+                <!-- RATE LIMIT CONFIG (R2/R3/R4/R5) -->
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--orange);"><i class="fas fa-tachometer-alt"></i> Rate Limiting</div>
+                    <div class="row-top" style="justify-content:space-between;margin-bottom:14px;">
+                        <span style="font-size:0.8rem;font-weight:700;color:var(--text);">Rate Limit Enabled</span>
+                        <label class="switch">
+                            <input type="checkbox" id="confRateLimitEnabled" onchange="saveRateLimitConfig()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <!-- R3: Live counter -->
+                    <div style="margin-bottom:14px;padding:10px 14px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:0.72rem;color:var(--muted);">IPs Currently Rate-Limited</span>
+                        <span style="font-size:1.1rem;font-weight:800;color:var(--red);font-family:'JetBrains Mono',monospace;" id="statRateLimited">—</span>
+                    </div>
+                    <!-- R4: Manual unblock -->
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-unlock-alt" style="margin-right:4px;"></i>Unblock Single IP</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" class="input-std input-no-icon" id="unblockIpInput" placeholder="e.g. 1.2.3.4" style="flex:1;">
+                            <button class="btn-main" onclick="unblockIP()" style="padding:0 14px;"><i class="fas fa-unlock"></i></button>
+                        </div>
+                    </div>
+                    <!-- R5: IP Whitelist -->
+                    <div class="inp-group">
+                        <label class="inp-label"><i class="fas fa-list-alt" style="margin-right:4px;"></i>IP Whitelist (one per line)</label>
+                        <textarea class="input-std input-no-icon" id="ipWhitelistInput" rows="4" style="resize:vertical;padding-left:13px;" placeholder="1.2.3.4&#10;5.6.7.8"></textarea>
+                    </div>
+                    <button class="btn-block" style="margin-top:0;" onclick="saveWhitelist()"><i class="fas fa-save" style="margin-right:7px;"></i>SAVE WHITELIST</button>
+                </div>
+
+                <!-- TELEGRAM ALERT CONFIG -->
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--blue);"><i class="fab fa-telegram"></i> Telegram Alerts</div>
+                    <p style="font-size:0.72rem; color:var(--muted); margin-bottom:12px;">Get notified when suspicious activity is detected (>2 keys in 10 min from same IP).</p>
+                    <div class="inp-group"><label class="inp-label">Bot Token</label><input type="text" class="input-std input-no-icon" id="confTgBotToken" placeholder="123456:ABCdef..."></div>
+                    <div class="inp-group"><label class="inp-label">Chat ID</label><input type="text" class="input-std input-no-icon" id="confTgChatId" placeholder="-1001234567890"></div>
+                    <div class="grid-2">
+                        <button class="btn-block" style="margin:0;" onclick="saveTelegramConfig()">SAVE</button>
+                        <button class="btn-block btn-cancel" style="margin:0;" onclick="testTelegramAlert()">TEST</button>
+                    </div>
+                </div>
+
+                <!-- SUSPICIOUS ACTIVITY VIEWER -->
+                <div class="config-card">
+                    <div class="config-card-title" style="color:var(--red);"><i class="fas fa-shield-alt"></i> Suspicious Activity</div>
+                    <div id="suspiciousList" style="max-height:200px;overflow-y:auto;font-size:0.72rem;color:var(--muted);">Loading...</div>
+                    <button class="btn-block btn-cancel" style="margin-top:8px;" onclick="loadSuspiciousActivity()">REFRESH</button>
+                </div>
+
+                <!-- GENERATION LOGS VIEWER -->
+                <div class="config-card">
+                    <div class="config-card-title"><i class="fas fa-clipboard-list"></i> Generation Logs</div>
+                    <div id="genLogsList" style="max-height:200px;overflow-y:auto;font-size:0.72rem;color:var(--muted);">Loading...</div>
+                    <div class="grid-2" style="margin-top:8px;">
+                        <button class="btn-block btn-cancel" style="margin:0;" onclick="loadGenerationLogs()">REFRESH</button>
+                        <button class="btn-block" style="margin:0;background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="clearGenerationLogs()">CLEAR</button>
+                    </div>
+                </div>
+
+                <div class="config-card danger-card">
+                    <div class="config-card-title" style="color:var(--red);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</div>
+                    <p style="font-size:0.75rem; color:var(--muted); margin-bottom:14px;">This will disconnect the current database. Your data will not be deleted.</p>
+                    <button class="btn-block" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.3); margin-top:0;" onclick="confirmHardReset()">
+                        DISCONNECT DATABASE
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Tab -->
+    <div id="tabLogs" class="hidden" style="padding:0 16px;">
+        <div class="section-title"><i class="fas fa-clipboard-list"></i> Activity Log</div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;">Recent actions and errors. Logs are stored in-memory only.</p>
+        <div class="controls" style="margin-bottom:10px;">
+            <div class="search-wrap" style="flex:1;">
+                <i class="fas fa-search"></i>
+                <input type="text" class="input-std" id="searchLogs" placeholder="Filter logs..." onkeyup="renderLogs()">
+            </div>
+            <button class="btn-main" onclick="clearLogs()"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+        <div id="logList" style="max-height:60vh;overflow-y:auto;"></div>
+    </div>
+
+    <div id="modalAlert" class="modal-overlay">
+        <div class="modal-content" style="text-align:center;">
+            <div id="alertIcon" style="font-size:1.8rem; margin-bottom:12px; color:var(--accent);"></div>
+            <h3 id="alertTitle">Notice</h3>
+            <p id="alertMsg" style="color:var(--muted); font-size:0.85rem; margin-bottom:20px;"></p>
+            <div id="alertBtns" class="grid-2" style="display:none;">
+                <button class="btn-block" id="btnAlertYes" style="margin:0;">YES</button>
+                <button class="btn-block btn-cancel" id="btnAlertNo" style="margin:0;">NO</button>
+            </div>
+            <button class="btn-block" id="btnAlertOk" style="margin:0;">OK</button>
+        </div>
+    </div>
+
+    <div id="modalKey" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Generate Keys</h3>
+            <div class="inp-group">
+                <label class="inp-label">Prefix</label>
+                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="DG">
+            </div>
+            <div class="inp-group">
+                <label class="inp-label">Quantity</label>
+                <input type="number" class="input-std input-no-icon" id="keyQty" value="1" min="1" max="50">
+            </div>
+            <div class="inp-group">
+                <label class="inp-label">Duration</label>
+                <select id="keyDurationMode" class="select-std" onchange="toggleCustomDuration()">
+                    <option value="2">2 Hours</option>
+                    <option value="24" selected>24 Hours</option>
+                    <option value="720">720 Hours (30 Days)</option>
+                    <option value="life">Lifetime</option>
+                    <option value="custom">Custom...</option>
+                </select>
+            </div>
+            <div class="inp-group hidden" id="groupCustomDur">
+                <label class="inp-label">Custom Hours</label>
+                <input type="number" class="input-std input-no-icon" id="keyCustomVal" placeholder="Enter hours">
+            </div>
+            <div class="grid-2">
+                <button class="btn-block" style="margin:0;" onclick="generateKeys()">GENERATE</button>
+                <button class="btn-block btn-cancel" style="margin:0;" onclick="closeModal('modalKey')">CANCEL</button>
+            </div>
+            <!-- Q2/Q5: Generated keys list with copy all -->
+            <div id="genKeyOutput" style="display:none;margin-top:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Generated Keys</span>
+                    <button class="btn-sm btn-sm-blue" onclick="copyAllKeys()" style="font-size:0.65rem;padding:5px 10px;"><i class="fas fa-copy"></i> Copy All</button>
+                </div>
+                <div id="genKeyList" style="max-height:160px;overflow-y:auto;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius-md);padding:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEdit" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Edit Key</h3>
+            <input type="hidden" id="editOld">
+            <div class="inp-group">
+                <label class="inp-label">Key String</label>
+                <input type="text" class="input-std input-no-icon" id="editNew">
+            </div>
+            <div class="grid-2">
+                <button class="btn-block" style="margin:0;" onclick="saveKeyEdit()">SAVE</button>
+                <button class="btn-block btn-cancel" style="margin:0;" onclick="closeModal('modalEdit')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEditDevice" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Edit Device</h3>
+            <input type="hidden" id="editDeviceOld">
+            <input type="hidden" id="editDeviceType">
+            <div class="inp-group">
+                <label class="inp-label">Device ID</label>
+                <input type="text" class="input-std input-no-icon" id="editDeviceNew">
+            </div>
+            <div class="inp-group">
+                <label class="inp-label">Linked Key</label>
+                <input type="text" class="input-std input-no-icon" id="editDeviceKey">
+            </div>
+            <div class="inp-group">
+                <label class="inp-label">Expiry (Readable)</label>
+                <input type="text" class="input-std input-no-icon" id="editDeviceExpiry">
+            </div>
+            <div class="grid-2">
+                <button class="btn-block" style="margin:0;" onclick="saveDeviceEdit()">UPDATE</button>
+                <button class="btn-block btn-cancel" style="margin:0;" onclick="closeModal('modalEditDevice')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalExtend" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Extend Keys</h3>
+            <p style="color:var(--muted); font-size:0.8rem; margin-bottom:16px;">Add extra hours to the selected keys.</p>
+            <div class="inp-group">
+                <label class="inp-label">Hours to Add</label>
+                <input type="number" class="input-std input-no-icon" id="extendHoursVal" value="24">
+            </div>
+            <div class="grid-2">
+                <button class="btn-block" style="margin:0;" onclick="doExtendKeys()">EXTEND</button>
+                <button class="btn-block btn-cancel" style="margin:0;" onclick="closeModal('modalExtend')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><i class="fas fa-check-circle"></i><span>Done</span></div>
+
+    <div class="nav-fixed hidden">
+        <div class="nav-inner">
+            <div class="nav-btn active" id="navKey" onclick="switchTab('keys')">
+                <i class="fas fa-key"></i>
+                <span class="nav-lbl">Keys</span>
+            </div>
+            <div class="nav-btn" id="navDev" onclick="switchTab('devices')">
+                <i class="fas fa-mobile-alt"></i>
+                <span class="nav-lbl">Devices</span>
+            </div>
+            <div class="nav-btn" id="navConf" onclick="switchTab('config')">
+                <i class="fas fa-sliders-h"></i>
+                <span class="nav-lbl">Config</span>
+            </div>
+            <div class="nav-btn" id="navLog" onclick="switchTab('logs')">
+                <i class="fas fa-clipboard-list"></i>
+                <span class="nav-lbl">Logs</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Detail Drawer -->
+    <div class="key-drawer" id="keyDrawer">
+        <div class="key-drawer-handle"></div>
+        <h3><i class="fas fa-key" style="color:var(--green);"></i> <span id="drawerKeyName">—</span></h3>
+        <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value" id="drawerStatus">—</span></div>
+        <div class="detail-row"><span class="detail-label">Duration</span><span class="detail-value" id="drawerDuration">—</span></div>
+        <div class="detail-row"><span class="detail-label">Expiry</span><span class="detail-value" id="drawerExpiry">—</span></div>
+        <div class="detail-row"><span class="detail-label">Device</span><span class="detail-value" id="drawerDevice">—</span></div>
+        <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value" id="drawerCreated">—</span></div>
+        <div class="drawer-actions">
+            <button class="btn-block" style="background:var(--green);color:#000;" onclick="extendDrawerKey()"><i class="fas fa-clock"></i> Extend 24H</button>
+            <button class="btn-block" style="background:var(--blue);color:#000;" onclick="rotateDrawerKey()"><i class="fas fa-sync-alt"></i> Rotate</button>
+            <button class="btn-block" style="background:var(--orange);color:#000;" onclick="unbindDrawerKey()"><i class="fas fa-unlink"></i> Unbind</button>
+            <button class="btn-block" style="background:var(--red);color:#fff;" onclick="revokeDrawerKey()"><i class="fas fa-ban"></i> Revoke</button>
+        </div>
+        <button class="btn-block btn-cancel" style="margin-top:8px;" onclick="closeDrawer()">CLOSE</button>
+    </div>
+
+    <!-- Debug Log Panel (hidden by default) -->
+    <div id="logPanelWrap" class="hidden" style="position:fixed;bottom:70px;left:10px;right:10px;z-index:250;">
+        <div class="log-panel" id="logPanel"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        // =============================================
+        // FIREBASE INITIALIZER
+        // =============================================
+        // =============================================
+        // 0. DEBUG LOGGER + UTILITIES (Phase 2+3)
+        // =============================================
+        const _logs = [];
+        function log(msg, level = 'info') {
+            const entry = { time: new Date(), msg, level };
+            _logs.unshift(entry);
+            if (_logs.length > 500) _logs.pop();
+            console[level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log']('[DG]', msg);
+            // Update floating log panel if open
+            const panel = document.getElementById('logPanel');
+            if (panel && !document.getElementById('logPanelWrap').classList.contains('hidden')) {
+                const el = document.createElement('div');
+                el.className = 'log-entry ' + level;
+                el.innerHTML = '<span class="log-time">' + entry.time.toLocaleTimeString() + '</span><span class="log-msg">' + esc(msg) + '</span>';
+                panel.prepend(el);
+            }
+        }
+        function renderLogs() {
+            const list = document.getElementById('logList');
+            if (!list) return;
+            const q = (document.getElementById('searchLogs')?.value || '').toLowerCase();
+            list.innerHTML = _logs
+                .filter(l => !q || l.msg.toLowerCase().includes(q))
+                .map(l => '<div class="log-entry ' + l.level + '"><span class="log-time">' + l.time.toLocaleTimeString() + '</span><span class="log-msg">' + esc(l.msg) + '</span></div>')
+                .join('') || '<div class="empty-state"><i class="fas fa-clipboard-list"></i>No logs yet.</div>';
+        }
+        function clearLogs() { _logs.length = 0; renderLogs(); showToast('Logs cleared'); }
+        function toggleLogPanel() { document.getElementById('logPanelWrap').classList.toggle('hidden'); }
+
+        // XSS escaper (Phase 3)
+        function esc(s) {
+            if (s == null) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // Theme toggle (Phase 3)
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('dg_theme', isLight ? 'light' : 'dark');
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.className = isLight ? 'fas fa-moon' : 'fas fa-adjust';
+            log('Theme: ' + (isLight ? 'light' : 'dark'));
+        }
+        // Restore theme on load
+        if (localStorage.getItem('dg_theme') === 'light') {
+            document.body.classList.add('light-mode');
+            setTimeout(() => { const i = document.getElementById('themeIcon'); if (i) i.className = 'fas fa-moon'; }, 100);
+        }
+
+        // CSV Export (Phase 3)
+        function exportCSV() {
+            if (!dbData?.ValidKeys) return showToast('No data to export', true);
+            let csv = 'Key,Status,Duration,Expiry,Device,Created\n';
+            Object.entries(dbData.ValidKeys).forEach(([k, v]) => {
+                const val = typeof v === 'object' ? v : {};
+                const exp = val.expiry > 0 ? new Date(val.expiry * 1000).toISOString() : 'N/A';
+                csv += [k, val.status||'active', (val.duration||24)+'H', exp, val.device||'', val.date||''].join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'keys_export_' + Date.now() + '.csv'; a.click();
+            URL.revokeObjectURL(url);
+            log('Exported ' + Object.keys(dbData.ValidKeys).length + ' keys to CSV');
+            showToast('CSV exported');
+        }
+
+        // Key drawer state
+        let drawerKey = null;
+
+        function openKeyDrawer(key) {
+            drawerKey = key;
+            const val = dbData.ValidKeys[key];
+            if (!val) return;
+            const v = typeof val === 'object' ? val : {};
+            document.getElementById('drawerKeyName').textContent = key;
+            document.getElementById('drawerStatus').textContent = v.status || 'active';
+            document.getElementById('drawerDuration').textContent = (v.duration || 24) + ' hours';
+            document.getElementById('drawerDevice').textContent = v.device || 'Unbound';
+            document.getElementById('drawerCreated').textContent = v.date ? new Date(v.date).toLocaleString() : 'Unknown';
+            // Expiry
+            if (v.expiry > 0) {
+                const remaining = v.expiry - Math.floor(Date.now() / 1000);
+                document.getElementById('drawerExpiry').textContent = remaining > 0
+                    ? Math.floor(remaining / 3600) + 'h ' + Math.floor((remaining % 3600) / 60) + 'm remaining'
+                    : 'EXPIRED';
+                document.getElementById('drawerExpiry').style.color = remaining > 0 ? 'var(--green)' : 'var(--red)';
+            } else {
+                document.getElementById('drawerExpiry').textContent = v.duration >= 87600 ? 'Lifetime' : 'Not started';
+                document.getElementById('drawerExpiry').style.color = 'var(--blue)';
+            }
+            document.getElementById('keyDrawer').classList.add('open');
+            log('Opened key details: ' + key);
+        }
+        function closeDrawer() { document.getElementById('keyDrawer').classList.remove('open'); drawerKey = null; }
+
+        function extendDrawerKey() {
+            if (!drawerKey || !dbData.ValidKeys[drawerKey]) return;
+            let val = dbData.ValidKeys[drawerKey];
+            if (typeof val !== 'object') val = { date: val, duration: 24, hours: 24 };
+            val.duration = (val.duration || 24) + 24;
+            if (!val.hours) val.hours = val.duration;
+            else val.hours += 24;
+            if (val.expiry > 0) val.expiry += 24 * 3600;
+            dbData.ValidKeys[drawerKey] = val;
+            syncDB();
+            log('Extended key +24H: ' + drawerKey);
+            openKeyDrawer(drawerKey); // Refresh drawer
+        }
+
+        // KEY ROTATION: generates new key string, copies data, deletes old
+        function rotateKey(oldKey) {
+            if (!dbData.ValidKeys[oldKey]) return;
+            const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const prefix = oldKey.includes('-') ? oldKey.split('-')[0] : 'DG';
+            const newKey = prefix + '-' + rnd;
+            dbData.ValidKeys[newKey] = { ...dbData.ValidKeys[oldKey], date: new Date().toISOString() };
+            delete dbData.ValidKeys[oldKey];
+            // Update any linked devices
+            Object.keys(dbData.ActivatedUsers).forEach(d => {
+                if (dbData.ActivatedUsers[d]?.Key === oldKey) dbData.ActivatedUsers[d].Key = newKey;
+            });
+            Object.keys(dbData.BannedDevices).forEach(d => {
+                if (dbData.BannedDevices[d]?.Key === oldKey) dbData.BannedDevices[d].Key = newKey;
+            });
+            log('Rotated key: ' + oldKey + ' → ' + newKey, 'warn');
+            return newKey;
+        }
+        function rotateDrawerKey() {
+            if (!drawerKey) return;
+            showConfirm('Rotate Key', 'Generate a new key string and retire the old one? Linked devices will be updated.', () => {
+                const newK = rotateKey(drawerKey);
+                if (newK) { syncDB(); drawerKey = newK; openKeyDrawer(newK); showToast('Key rotated → ' + newK); }
+            });
+        }
+
+        // KEY REVOCATION: set status=revoked, clear device, move to revoked state
+        function revokeKey(key) {
+            if (!dbData.ValidKeys[key]) return;
+            const val = dbData.ValidKeys[key];
+            if (typeof val === 'object') {
+                val.status = 'revoked';
+                val.expiry = 0;
+                // Unlink device
+                if (val.device) {
+                    if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
+                    if (dbData.BannedDevices[val.device]) delete dbData.BannedDevices[val.device];
+                    val.device = '';
+                }
+            }
+            log('Revoked key: ' + key, 'error');
+        }
+        function revokeDrawerKey() {
+            if (!drawerKey) return;
+            showConfirm('Revoke Key', 'This will permanently disable the key and disconnect any device. Continue?', () => {
+                revokeKey(drawerKey);
+                syncDB();
+                openKeyDrawer(drawerKey);
+                showToast('Key revoked');
+            });
+        }
+        function unbindDrawerKey() {
+            if (!drawerKey) return;
+            unbindKey(drawerKey);
+            setTimeout(() => openKeyDrawer(drawerKey), 500);
+        }
+
+        // BULK ROTATE: rotate all selected keys
+        function promptRotateKeys() {
+            if (selectedKeys.length === 0) return showToast('Select keys first', true);
+            showConfirm('Rotate Keys', 'Rotate ' + selectedKeys.length + ' key(s)? New key strings will be generated.', () => {
+                selectedKeys.forEach(k => rotateKey(k));
+                selectedKeys = [];
+                syncDB();
+                showToast('Keys rotated');
+            });
+        }
+
+        // BULK REVOKE: revoke all selected keys
+        function promptRevokeKeys() {
+            if (selectedKeys.length === 0) return showToast('Select keys first', true);
+            showConfirm('Revoke Keys', 'Permanently revoke ' + selectedKeys.length + ' key(s)? Linked devices will be disconnected.', () => {
+                selectedKeys.forEach(k => revokeKey(k));
+                selectedKeys = [];
+                syncDB();
+                showToast('Keys revoked');
+            });
+        }
+
+        // Debounced search (Phase 2)
+        let _searchTimer = null;
+        function debounceRender(fn) {
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(fn, 200);
+        }
+
+        // Pause particles when tab hidden (Phase 2)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && animationId) { cancelAnimationFrame(animationId); animationId = null; }
+            else if (!document.hidden && !animationId) initParticles();
+        });
+
+        // ── Firebase config ── loaded from window.__FIREBASE_CONFIG or defaults
+        // To secure: set window.__FIREBASE_CONFIG from a server-rendered <script> or env proxy
+        const firebaseConfig = window.__FIREBASE_CONFIG || {
+            apiKey:            "AIzaSyD0o0Bsr8dB6goTVshvcLZqwUCraf9SDxs",
+            authDomain:        "admin-panel-d762b.firebaseapp.com",
+            databaseURL:       "https://admin-panel-d762b-default-rtdb.firebaseio.com",
+            projectId:         "admin-panel-d762b",
+            storageBucket:     "admin-panel-d762b.firebasestorage.app",
+            messagingSenderId: "978340087147",
+            appId:             "1:978340087147:web:030f4ded37f2e22dafb82e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // 🚀 CRITICAL FIX HERE: .once('value') stops the buffering bug
+        window._fbGet  = (path) => db.ref(path).once('value');
+        window._fbSet  = (path, value) => db.ref(path).set(value);
+        window._fbUpdt = (path, value) => db.ref(path).update(value);
+        window._fbSignIn = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
+        window._fbSignOut = () => auth.signOut();
+
+        // Wait for Firebase to check if we are logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Session managed by Firebase Auth — no localStorage token needed
+                appInit(); // Load dashboard
+            } else {
+                hide('viewLoader'); 
+                show('viewLogin'); // Show login screen
+            }
+        });
+
+        // =============================================
+        // 1. CONFIG & STATE
+        // =============================================
+        // FIREBASE_API_KEY removed — use firebaseConfig.apiKey instead
+        const DEFAULT_DB_PATH   = "/";            // Root path in RTDB
+        const DB_ROOT           = "https://admin-panel-d762b-default-rtdb.firebaseio.com";
+
+        // For REST fallback (used by the DEX file too at FIREBASE_DB_URL)
+        let dbUrl = DB_ROOT;
+
+        let dbData       = null;
+        let devFilter    = 'all';
+        let selectedKeys = [];
+        let selectedDevs = [];
+
+        // Encrypted credits
+        const _s1 = "RHluYW1vbiBHYW1lcg==";   // Dynamon Gamer
+        const _s2 = "RHluYW1vbiBHYW1lcg==";      // Dynamon Gamer
+
+        const DEFAULT_DATA = {
+            Config: {
+                Title: "Dynamon Gamer", Subtitle: "Device Verification",
+                Update: {
+                    Enabled: false, VersionCode: 11258, VersionName: "1.12.58",
+                    Title: "Update Available", Subtitle: "v4.5 • Critical Patch",
+                    WhatsNew: "• Upgrading Game Servers\n• Fixing Login Issues\n• New UI Added\n• Vpn Proxy Removed\n• Dialog By Dynamon Gamer",
+                    UpdateUrl: "", BtnText: "UPDATE"
+                },
+                TutorialUrl: "",
+                Links: {
+                    GetKey: "", Admin: "", Info: "", InfoText: "More Info",
+                    Instagram: "https://instagram.com/dynamongamer07",
+                    Telegram:  "https://t.me/dynamonsworld07",
+                    Youtube:   "https://youtube.com/@dynamongamer07",
+                    Whatsapp:  "https://whatsapp.com/channel/0029VbBdAcZ05MUmgk8cQP05"
+                },
+                Api: { BaseUrl: "", Token: "" },
+                Texts: { BtnKey: "Get Key", BtnTutorial: "Watch Tutorial" }
+            },
+            BannedDevices: {}, ActivatedUsers: {}, ValidKeys: {}
+        };
+
+        // Canvas particles
+        const canvas = document.getElementById('bgCanvas');
+        const ctx    = canvas.getContext('2d');
+        let particles = [], animationId;
+
+        // =============================================
+        // 2. LOGIN & SESSION
+        // =============================================
+        function initDecryption() {
+            try {
+                document.getElementById('panelTitle').innerText = atob(_s1);
+                document.getElementById('panelDev').innerText   = atob(_s2);
+            } catch(e) {}
+        }
+
+        async function doLogin() {
+            // Admin email loaded from config attribute (no longer hardcoded in JS)
+            const email = document.getElementById('loginPass').getAttribute('data-admin-email') || ""; 
+            
+            const pass  = document.getElementById('loginPass').value;
+            const btn   = document.querySelector('#viewLogin .btn-block');
+            if (!pass) return showToast("Password required");
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+
+            try {
+                await window._fbSignIn(email, pass);
+                // Auth listener will automatically handle the rest!
+                showToast("Access granted");
+                log("Login successful", 'success');
+            } catch (error) {
+                // Sanitized error — never expose raw Firebase messages to UI
+                console.error("Login error:", error.code, error.message);
+                const userMsg = (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential")
+                    ? "Incorrect password"
+                    : (error.code === "auth/too-many-requests")
+                    ? "Too many attempts — try again later"
+                    : "Authentication failed";
+                showToast(userMsg, true);
+                log("Login failed: " + error.code, 'error');
+                btn.innerHTML = '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
+            }
+        }
+
+        function confirmLogout() {
+            showConfirm("Log Out", "Terminate the current session?", () => {
+                window._fbSignOut().then(() => {
+                    location.reload();
+                });
+            });
+        }
+
+        function getAuthParams() {
+            // Token now handled by Firebase SDK auth state — no localStorage needed
+            return '';
+        }
+
+        // =============================================
+        // 3. APP INIT
+        // =============================================
+        async function appInit(isManual = false) {
+            initDecryption();
+            initParticles();
+
+            show('viewLoader'); hide('viewLogin'); hide('viewSetup'); hide('viewDashboard');
+            document.querySelector('.nav-fixed').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+
+            try {
+                const snap = await window._fbGet('/');
+                let data   = snap.val();
+
+                if (!data) {
+                    await window._fbSet('/', DEFAULT_DATA);
+                    data = DEFAULT_DATA;
+                }
+
+                dbData = data;
+                ensureDataStructure();
+                renderAll();
+                checkAndCleanExpiredKeys();
+                if (window.expireInterval) clearInterval(window.expireInterval);
+                window.expireInterval = setInterval(checkAndCleanExpiredKeys, 60000);
+
+                hide('viewLoader'); show('viewDashboard');
+                document.querySelector('.nav-fixed').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                if (isManual) { showToast("Data refreshed"); log("Manual refresh completed"); }
+                // Load rate limit state & whitelist
+                loadRateLimitConfig();
+                loadRateLimitedCount();
+                loadWhitelist();
+                log("App initialized — " + Object.keys(dbData.ValidKeys).length + " keys, " + (Object.keys(dbData.ActivatedUsers).length + Object.keys(dbData.BannedDevices).length) + " devices");
+
+            } catch(err) {
+                hide('viewLoader');
+                showToast("Database connection error — check Firebase rules", true);
+                log("Init failed: " + (err.message || err), 'error');
+                show('viewSetup');
+            }
+        }
+
+        function saveUrlAndConnect() {
+            let inp = document.getElementById('inputDbUrl').value.trim();
+            if (!inp) return showToast("Invalid URL");
+            // Validate URL format
+            if (!inp.startsWith('https://') || !inp.includes('firebaseio.com')) {
+                return showToast("URL must be a valid Firebase RTDB URL (https://...firebaseio.com)", true);
+            }
+            // Update the DB reference to use the custom URL
+            dbUrl = inp;
+            const customApp = firebase.initializeApp({
+                ...firebaseConfig,
+                databaseURL: inp
+            }, 'custom_' + Date.now());
+            const customDb = customApp.database();
+            window._fbGet  = (path) => customDb.ref(path).once('value');
+            window._fbSet  = (path, value) => customDb.ref(path).set(value);
+            window._fbUpdt = (path, value) => customDb.ref(path).update(value);
+            showToast("Connected to custom database");
+            appInit();
+        }
+
+        function ensureDataStructure() {
+            if (!dbData.ValidKeys)       dbData.ValidKeys       = {};
+            if (!dbData.ActivatedUsers)  dbData.ActivatedUsers  = {};
+            if (!dbData.BannedDevices)   dbData.BannedDevices   = {};
+            if (!dbData.Config)          dbData.Config          = { ...DEFAULT_DATA.Config };
+            if (!dbData.Config.Api)      dbData.Config.Api      = { BaseUrl: "", Token: "" };
+            if (!dbData.Config.Texts)    dbData.Config.Texts    = { ...DEFAULT_DATA.Config.Texts };
+            if (!dbData.Config.Texts.BtnTutorial) dbData.Config.Texts.BtnTutorial = "Watch Tutorial";
+            if (!dbData.Config.TutorialUrl) dbData.Config.TutorialUrl = "";
+            if (!dbData.Config.Update) dbData.Config.Update = { ...DEFAULT_DATA.Config.Update };
+            if (dbData.Config.Maintenance === undefined) dbData.Config.Maintenance = false;
+            if (!dbData.Config.Links)    dbData.Config.Links    = { ...DEFAULT_DATA.Config.Links };
+            const L = dbData.Config.Links;
+            if (!L.GetKey)    L.GetKey    = "";
+            if (!L.Admin)     L.Admin     = "";
+            if (!L.Info)      L.Info      = "";
+            if (!L.InfoText)  L.InfoText  = "More Info";
+            if (!L.Instagram) L.Instagram = DEFAULT_DATA.Config.Links.Instagram;
+            if (!L.Telegram)  L.Telegram  = DEFAULT_DATA.Config.Links.Telegram;
+            if (!L.Youtube)   L.Youtube   = DEFAULT_DATA.Config.Links.Youtube;
+            if (!L.Whatsapp)  L.Whatsapp  = DEFAULT_DATA.Config.Links.Whatsapp;
+        }
+
+        async function syncDB() {
+            try {
+                await window._fbSet('/', dbData);
+                showToast("Saved");
+                renderAll();
+                log('Database synced successfully', 'success');
+            } catch(e) {
+                showToast("Save failed — " + (e.code || 'unknown error'), true);
+                log('DB sync failed: ' + (e.message || e), 'error');
+            }
+        }
+
+        function confirmHardReset() {
+            showConfirm("Disconnect", "This will log you out and clear local session data. Continue?", () => {
+                // Session cleanup handled by Firebase signOut
+                location.reload();
+            });
+        }
+
+        // =============================================
+        // 4. AUTO CLEANER
+        // =============================================
+        function checkAndCleanExpiredKeys() {
+            if (!dbData?.ValidKeys) return;
+            const nowMs         = Date.now();
+            const nowSec        = Math.floor(nowMs / 1000);
+            const TEN_MIN       = 10 * 60 * 1000;
+            const keysInUse     = new Set();
+            let deletedCount    = 0;
+            let hasChanges      = false;
+
+            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
+            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
+
+            Object.keys(dbData.ValidKeys).forEach(key => {
+                const val = dbData.ValidKeys[key];
+
+                // AUTO-DELETE: remove keys whose expiry timestamp has passed (midnight rule)
+                if (typeof val === 'object' && val.expiry > 0 && val.expiry < nowSec) {
+                    // Also unlink any bound device
+                    if (val.device) {
+                        if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
+                        if (dbData.BannedDevices[val.device])  delete dbData.BannedDevices[val.device];
+                    }
+                    delete dbData.ValidKeys[key];
+                    hasChanges = true;
+                    deletedCount++;
+                    return;
+                }
+
+                // Existing logic: delete unused unlinked keys older than 10 minutes
+                if (key.toUpperCase().startsWith("VIP")) return;
+                if (keysInUse.has(key)) return;
+
+                let creationTime = 0;
+                if (typeof val === 'object' && val.date) {
+                    // Support both ISO string and epoch-ms formats
+                    const d = typeof val.date === 'number' ? val.date : new Date(val.date).getTime();
+                    creationTime = d > 0 ? d : 0;
+                } else if (typeof val === 'string' || typeof val === 'number') {
+                    creationTime = new Date(val).getTime() || 0;
+                }
+
+                if (creationTime > 0 && (nowMs - creationTime > TEN_MIN)) {
+                    delete dbData.ValidKeys[key];
+                    hasChanges = true;
+                    deletedCount++;
+                }
+            });
+
+            if (hasChanges) { syncDB(); showToast(`Cleaned ${deletedCount} unused key${deletedCount > 1 ? 's' : ''}`); log('Auto-cleaned ' + deletedCount + ' expired key(s)', 'warn'); }
+        }
+
+        // Select all expired/revoked keys so the bulk DELETE button can remove them at once
+        function selectExpiredKeys() {
+            const nowSec = Math.floor(Date.now() / 1000);
+            selectedKeys = Object.keys(dbData.ValidKeys).filter(key => {
+                const val = dbData.ValidKeys[key];
+                if (typeof val !== 'object') return false;
+                return (val.expiry > 0 && val.expiry < nowSec) || val.status === 'revoked';
+            });
+            if (selectedKeys.length === 0) return showToast('No expired keys found', true);
+            showToast(selectedKeys.length + ' expired key(s) selected');
+            renderKeys();
+        }
+
+        // =============================================
+        // 5. RENDERERS
+        // =============================================
+        function renderAll() {
+            renderKeys();
+            renderDevices();
+            const allK = Object.keys(dbData.ValidKeys);
+            document.getElementById('statKeys').innerText = allK.length;
+            document.getElementById('statDevs').innerText = Object.keys(dbData.ActivatedUsers).length + Object.keys(dbData.BannedDevices).length;
+            // Q3: Keys used today (linked to a device AND created today)
+            const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+            let usedToday = 0;
+            allK.forEach(k => {
+                const v = dbData.ValidKeys[k];
+                if (typeof v === 'object' && v.device && v.date && new Date(v.date) >= todayStart) usedToday++;
+            });
+            document.getElementById('statUsedToday').textContent = usedToday;
+
+            // Mini stats
+            const nowSec = Math.floor(Date.now() / 1000);
+            let activeC = 0, expiredC = 0, linkedC = 0;
+            const lk = new Set();
+            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) lk.add(d.Key); });
+            allK.forEach(k => {
+                const v = dbData.ValidKeys[k];
+                if (typeof v === 'object' && v.status === 'revoked') { expiredC++; return; }
+                if (typeof v === 'object' && v.expiry > 0 && v.expiry < nowSec) { expiredC++; return; }
+                if (lk.has(k)) linkedC++;
+                activeC++;
+            });
+            document.getElementById('statActive').textContent = activeC;
+            document.getElementById('statExpired').textContent = expiredC;
+            document.getElementById('statLinked').textContent = linkedC;
+            document.getElementById('statBanned').textContent = Object.keys(dbData.BannedDevices).length;
+
+            const cfg = dbData.Config;
+            const L   = cfg.Links || {};
+            document.getElementById('confTitle').value        = cfg.Title          || "";
+            document.getElementById('confSub').value          = cfg.Subtitle       || "";
+            document.getElementById('confTutorialUrl').value  = cfg.TutorialUrl    || "";
+            // Button Links
+            document.getElementById('confLinkGetKey').value   = L.GetKey    || "";
+            document.getElementById('confLinkAdmin').value    = L.Admin     || "";
+            document.getElementById('confLinkInfo').value     = L.Info      || "";
+            document.getElementById('confTextInfo').value     = L.InfoText  || "";
+            // Social Links
+            document.getElementById('confLinkInsta').value    = L.Instagram || "";
+            document.getElementById('confLinkTele').value     = L.Telegram  || "";
+            document.getElementById('confLinkYt').value       = L.Youtube   || "";
+            document.getElementById('confLinkWa').value       = L.Whatsapp  || "";
+            // UI Labels
+            document.getElementById('confBtnKey').value       = cfg.Texts.BtnKey      || "";
+            document.getElementById('confBtnTutorial').value  = cfg.Texts.BtnTutorial || "";
+            // API
+            document.getElementById('confApiUrl').value       = cfg.Api.BaseUrl    || "";
+            document.getElementById('confApiToken').value     = cfg.Api.Token      || "";
+            
+            const U = cfg.Update || {};
+            document.getElementById('confUpdateEnabled').checked = U.Enabled || false;
+            document.getElementById('confUpdCode').value         = U.VersionCode || "";
+            document.getElementById('confUpdName').value         = U.VersionName || "";
+            document.getElementById('confUpdTitle').value        = U.Title || "";
+            document.getElementById('confUpdSub').value          = U.Subtitle || "";
+            document.getElementById('confUpdWhatsNew').value     = U.WhatsNew || "";
+            document.getElementById('confUpdUrl').value          = U.UpdateUrl || "";
+            document.getElementById('confUpdBtn').value          = U.BtnText || "";
+            
+            document.getElementById('confMaintenance').checked = cfg.Maintenance    || false;
+            // Update hidden social anchor tags so Android regex picks up live values
+            _updateSocialAnchors(L);
+
+            // Load Telegram config
+            const tg = cfg.TelegramAlert || {};
+            document.getElementById('confTgBotToken').value = tg.botToken || '';
+            document.getElementById('confTgChatId').value   = tg.chatId   || '';
+
+            // Lazy-load monitoring panels
+            loadSuspiciousActivity();
+            loadGenerationLogs();
+        }
+
+        function renderKeys() {
+            const list   = document.getElementById('listKeys');
+            const search = document.getElementById('searchKeys').value.toLowerCase();
+            list.innerHTML = "";
+
+            const allKeys      = Object.keys(dbData.ValidKeys).reverse();
+            const isAllSelected = allKeys.length > 0 && selectedKeys.length === allKeys.length;
+            document.getElementById('chkAllKeys').classList.toggle('checked', isAllSelected);
+
+            const actions = document.getElementById('bulkActionsKeys');
+            if (selectedKeys.length > 0) {
+                actions.classList.remove('hidden');
+                actions.querySelector('.btn-sm-danger').innerText = `DELETE (${selectedKeys.length})`;
+            } else {
+                actions.classList.add('hidden');
+            }
+
+            const linkedKeys = new Set();
+            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
+            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
+
+            if (allKeys.length === 0) {
+                list.innerHTML = `<div class="empty-state"><i class="fas fa-key"></i>No keys yet. Generate your first key.</div>`;
+                return;
+            }
+
+            allKeys.forEach(key => {
+                if (search && !key.toLowerCase().includes(search)) return;
+
+                const isSelected = selectedKeys.includes(key);
+                const val        = dbData.ValidKeys[key];
+                let durText = "24H";
+                let remainSec = 0;
+                if (typeof val === 'object') {
+                    if (val.expiry > 0) {
+                        remainSec = val.expiry - Math.floor(Date.now() / 1000);
+                        durText = remainSec > 0 ? Math.floor(remainSec / 3600) + "H" : "EXPIRED";
+                    } else {
+                        durText = val.status === 'revoked' ? "REVOKED" : (val.duration ? "UNUSED (" + val.duration + "H)" : "UNUSED");
+                    }
+                }
+
+                const isLinked   = linkedKeys.has(key);
+                const isVip      = key.toUpperCase().startsWith("VIP");
+                const isRevoked  = typeof val === 'object' && val.status === 'revoked';
+                // Q7: expiring within 2 hours
+                const isExpiring = !isRevoked && remainSec > 0 && remainSec < 7200;
+                let   statusHtml = "";
+                if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
+                else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
+                else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
+                else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
+                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
+
+                // S2: source badge
+                const src = typeof val === 'object' ? (val.source || '') : '';
+                const srcBadge = src === 'web' ? `<span class="src-badge src-web">WEB</span>` : src === 'api' ? `<span class="src-badge src-api">API</span>` : '';
+
+                // Q1: live HH:MM:SS countdown
+                const cdId = 'cd_' + key.replace(/[^a-z0-9]/gi,'_');
+                let cdHtml = '';
+                if (remainSec > 0) {
+                    const h = Math.floor(remainSec/3600), mn = Math.floor((remainSec%3600)/60), s = remainSec%60;
+                    const cdClass = isExpiring ? 'key-countdown expiring' : 'key-countdown';
+                    cdHtml = `<span class="${cdClass}" id="${cdId}" data-expiry="${(typeof val==='object'?val.expiry:0)}"><i class="fas fa-clock" style="font-size:0.55rem;margin-right:2px;"></i>${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(s).padStart(2,'0')}</span> · `;
+                }
+
+                list.innerHTML += `
+                <div class="item-card active-card ${isSelected ? 'selected' : ''}">
+                    <div class="row-top">
+                        <div class="chk-container" onclick="toggleSelectKey('${key}')">
+                            <div class="custom-chk ${isSelected ? 'checked' : ''}"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="key-click-area" onclick="openKeyDrawer('${key}')" ondblclick="copy('${key}')">
+                            <div class="mono-text">${esc(key)} <span class="dur-badge">${durText}</span> ${statusHtml} ${srcBadge}</div>
+                            <div class="tap-hint">${cdHtml}<i class="fas fa-info-circle"></i> Tap details · DblTap copy</div>
+                        </div>
+                        <div class="card-actions">
+                            <div class="card-icon-btn" onclick="unbindKey('${key}')" title="Unbind Device"><i class="fas fa-unlink"></i></div>
+                            <div class="card-icon-btn" onclick="editKey('${key}')"><i class="fas fa-pen"></i></div>
+                            <div class="card-icon-btn danger" onclick="delKey('${key}')"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            // Q1: tick live countdowns
+            _startKeyCountdowns();
+        }
+
+        function renderDevices() {
+            const list   = document.getElementById('listDevices');
+            const search = document.getElementById('searchDevs').value.toLowerCase();
+            list.innerHTML = "";
+
+            const allDevs = [...new Set([...Object.keys(dbData.ActivatedUsers), ...Object.keys(dbData.BannedDevices)])];
+            const isAllSelected = allDevs.length > 0 && selectedDevs.length === allDevs.length;
+            document.getElementById('chkAllDevs').classList.toggle('checked', isAllSelected);
+
+            const delBtn = document.getElementById('btnDeleteDevs');
+            if (selectedDevs.length > 0) {
+                delBtn.classList.remove('hidden');
+                delBtn.innerText = `DELETE (${selectedDevs.length})`;
+            } else {
+                delBtn.classList.add('hidden');
+            }
+
+            const filtered = allDevs.filter(dev => {
+                if (!dev) return false;
+                if (search && !dev.toLowerCase().includes(search)) return false;
+                const isBanned = dbData.BannedDevices[dev] !== undefined;
+                if (devFilter === 'allowed' && isBanned)  return false;
+                if (devFilter === 'banned'  && !isBanned) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="empty-state"><i class="fas fa-mobile-alt"></i>No devices found.</div>`;
+                return;
+            }
+
+            filtered.forEach(dev => {
+                const isBanned   = dbData.BannedDevices[dev] !== undefined;
+                const isSelected = selectedDevs.includes(dev);
+                const devData    = isBanned ? dbData.BannedDevices[dev] : dbData.ActivatedUsers[dev];
+
+                let expiry = "N/A", keyUsed = "N/A";
+                if (typeof devData === 'object') {
+                    expiry  = devData.ExpiryReadable || "N/A";
+                    keyUsed = devData.Key            || "N/A";
+                } else {
+                    try { const d = new Date(devData); expiry = isNaN(d) ? devData : d.toLocaleDateString(); } catch(e) { expiry = devData; }
+                }
+
+                const statusClass = isBanned ? 'banned-card' : 'active-card';
+                const badgeClass  = isBanned ? 'banned' : 'active';
+                const statusText  = isBanned ? 'BANNED' : 'AUTHORIZED';
+                const icon        = isBanned ? 'fa-ban' : 'fa-mobile-alt';
+
+                list.innerHTML += `
+                <div class="item-card ${statusClass} ${isSelected ? 'selected' : ''}">
+                    <div class="row-top">
+                        <div class="chk-container" onclick="toggleSelectDev('${dev}')">
+                            <div class="custom-chk ${isSelected ? 'checked' : ''}"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="device-row">
+                            <div class="device-icon"><i class="fas ${icon}"></i></div>
+                            <div class="device-meta">
+                                <div class="mono-text" style="font-size:0.82rem; cursor:pointer;" onclick="copy('${dev}')">${dev}</div>
+                                <div class="tap-hint"><i class="fas fa-copy"></i> Tap to copy</div>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${isBanned ? 'checked' : ''} onchange="toggleBan('${dev}')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="info-pills">
+                        <div class="info-pill"><i class="fas fa-key"></i>${keyUsed}</div>
+                        <div class="info-pill"><i class="far fa-clock"></i>${expiry}</div>
+                    </div>
+                    <div class="meta-row">
+                        <span class="badge ${badgeClass}"><i class="fas ${icon}"></i> ${statusText}</span>
+                        <div class="card-actions">
+                            <div class="card-icon-btn" onclick="editDevice('${dev}', ${isBanned})"><i class="fas fa-pen"></i></div>
+                            <div class="card-icon-btn danger" onclick="delDevice('${dev}')"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // =============================================
+        // 6. BULK & DEEP DELETE HELPERS
+        // =============================================
+        function performDeepDeleteKey(key) {
+            if (dbData.ValidKeys[key]) delete dbData.ValidKeys[key];
+            Object.keys(dbData.ActivatedUsers).forEach(d => { if (dbData.ActivatedUsers[d]?.Key === key) delete dbData.ActivatedUsers[d]; });
+            Object.keys(dbData.BannedDevices).forEach(d  => { if (dbData.BannedDevices[d]?.Key  === key) delete dbData.BannedDevices[d]; });
+        }
+
+        function performDeepDeleteDevice(devId) {
+            const devData  = dbData.ActivatedUsers[devId] || dbData.BannedDevices[devId];
+            if (!devData) return;
+            const linkedKey = devData.Key;
+            if (dbData.ActivatedUsers[devId]) delete dbData.ActivatedUsers[devId];
+            if (dbData.BannedDevices[devId])  delete dbData.BannedDevices[devId];
+            if (linkedKey && dbData.ValidKeys[linkedKey]) delete dbData.ValidKeys[linkedKey];
+        }
+
+        function toggleSelectKey(key) {
+            selectedKeys = selectedKeys.includes(key) ? selectedKeys.filter(k => k !== key) : [...selectedKeys, key];
+            renderKeys();
+        }
+        function toggleSelectAllKeys() {
+            const all = Object.keys(dbData.ValidKeys);
+            selectedKeys = selectedKeys.length === all.length ? [] : [...all];
+            renderKeys();
+        }
+        function promptDeleteKeys() {
+            showConfirm("Delete Keys", `Permanently delete ${selectedKeys.length} key(s) and their linked devices?`, () => {
+                selectedKeys.forEach(k => performDeepDeleteKey(k));
+                selectedKeys = [];
+                syncDB();
+            });
+        }
+        function promptExtendKeys() { openModal('modalExtend'); }
+        function doExtendKeys() {
+            const h = parseInt(document.getElementById('extendHoursVal').value) || 0;
+            if (h <= 0) return;
+            selectedKeys.forEach(k => {
+                let val = dbData.ValidKeys[k];
+                if (typeof val !== 'object') val = { date: val, hours: 24, duration: 24 };
+                if (!val.hours) val.hours = val.duration || 24;
+                if (!val.duration) val.duration = val.hours;
+                if (val.hours < 80000) {
+                    val.hours    += h;
+                    val.duration += h;
+                    // Also extend the live expiry timestamp
+                    if (val.expiry && val.expiry > 0) {
+                        val.expiry += h * 3600;
+                    }
+                    dbData.ValidKeys[k] = val;
+                }
+            });
+            closeModal('modalExtend');
+            selectedKeys = [];
+            syncDB();
+        }
+        function toggleSelectDev(dev) {
+            selectedDevs = selectedDevs.includes(dev) ? selectedDevs.filter(d => d !== dev) : [...selectedDevs, dev];
+            renderDevices();
+        }
+        function toggleSelectAllDevs() {
+            const all = [...new Set([...Object.keys(dbData.ActivatedUsers), ...Object.keys(dbData.BannedDevices)])];
+            selectedDevs = selectedDevs.length === all.length ? [] : [...all];
+            renderDevices();
+        }
+        function promptDeleteDevs() {
+            showConfirm("Delete Devices", `Delete ${selectedDevs.length} device(s) and their linked keys?`, () => {
+                selectedDevs.forEach(d => performDeepDeleteDevice(d));
+                selectedDevs = [];
+                syncDB();
+            });
+        }
+
+        // =============================================
+        // 7. ACTIONS
+        // =============================================
+        function toggleCustomDuration() {
+            document.getElementById('groupCustomDur').classList.toggle('hidden', document.getElementById('keyDurationMode').value !== 'custom');
+        }
+
+        function generateKeys() {
+            const qty    = parseInt(document.getElementById('keyQty').value) || 1;
+            const prefix = document.getElementById('keyPrefix').value.toUpperCase().trim();
+            const mode   = document.getElementById('keyDurationMode').value;
+
+            let durHours = 24;
+            if (mode === 'life') durHours = 87600;
+            else if (mode === 'custom') durHours = parseInt(document.getElementById('keyCustomVal').value) || 24;
+            else durHours = parseInt(mode);
+
+            const now = Math.floor(Date.now() / 1000);
+            // Keys always expire at the next 12:00 AM (midnight) — one key per day
+            const _midnight = new Date(); _midnight.setHours(24, 0, 0, 0);
+            const midnightSec = Math.floor(_midnight.getTime() / 1000);
+            const newKeys = [];
+            for (let i = 0; i < qty; i++) {
+                const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
+                const k   = prefix ? `${prefix}-${rnd}` : rnd;
+                dbData.ValidKeys[k] = {
+                    status: "active",
+                    expiry: durHours >= 87600 ? 0 : midnightSec,
+                    duration: durHours,
+                    device: "",
+                    date: new Date().toISOString(),
+                    source: "api"
+                };
+                newKeys.push(k);
+            }
+
+            // Q5: Show scrollable list + Q2: copy all button
+            const outDiv = document.getElementById('genKeyOutput');
+            const listDiv = document.getElementById('genKeyList');
+            listDiv.innerHTML = newKeys.map(k =>
+                `<div style="padding:5px 0;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="copy('${k}')">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--green);">${esc(k)}</span>
+                    <i class="fas fa-copy" style="color:var(--muted);font-size:0.65rem;"></i>
+                </div>`
+            ).join('');
+            outDiv.style.display = 'block';
+            // Q2: auto-copy first key if single, just show list for bulk
+            if (newKeys.length === 1) copy(newKeys[0]);
+            log('Generated ' + newKeys.length + ' key(s) via admin', 'success');
+            adminLog('keys_generated', { qty: newKeys.length, prefix, durHours });
+            syncDB();
+        }
+
+        // Q2: Copy all generated keys
+        function copyAllKeys() {
+            const spans = document.querySelectorAll('#genKeyList span');
+            const keys = Array.from(spans).map(s => s.textContent).join('\n');
+            if (!keys) return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(keys).then(() => showToast('All ' + spans.length + ' keys copied!'));
+            } else {
+                fallbackCopy(keys);
+            }
+        }
+
+        function toggleMaintenance() {
+            const checkbox = document.getElementById('confMaintenance');
+            const enable = checkbox.checked;
+            if (enable) {
+                showConfirm("Enable Maintenance", "This will lock ALL users out of the app. Are you sure?", () => {
+                    dbData.Config.Maintenance = true;
+                    syncDB();
+                    showToast("Maintenance Mode ON");
+                    log("Maintenance mode ENABLED", 'warn');
+                });
+                // If user cancels, revert checkbox
+                setTimeout(() => { if (!dbData.Config.Maintenance) checkbox.checked = false; }, 500);
+            } else {
+                dbData.Config.Maintenance = false;
+                syncDB();
+                showToast("Maintenance Mode OFF");
+                log("Maintenance mode disabled");
+            }
+        }
+
+        function toggleBan(dev) {
+            const wasBanned = !!dbData.BannedDevices[dev];
+            if (wasBanned) {
+                dbData.ActivatedUsers[dev] = dbData.BannedDevices[dev];
+                delete dbData.BannedDevices[dev];
+            } else {
+                dbData.BannedDevices[dev] = dbData.ActivatedUsers[dev];
+                delete dbData.ActivatedUsers[dev];
+            }
+            adminLog('device_ban_toggled', { dev, banned: !wasBanned });
+            syncDB();
+        }
+
+        function delDevice(dev) {
+            showConfirm("Delete Device", "Delete this device and its linked key?", () => { performDeepDeleteDevice(dev); syncDB(); });
+        }
+
+        function saveConfig() {
+            const cfg = dbData.Config;
+            cfg.Title       = document.getElementById('confTitle').value;
+            cfg.Subtitle    = document.getElementById('confSub').value;
+            cfg.TutorialUrl = document.getElementById('confTutorialUrl').value;
+            if (!cfg.Links) cfg.Links = {};
+            cfg.Links.GetKey    = document.getElementById('confLinkGetKey').value;
+            cfg.Links.Admin     = document.getElementById('confLinkAdmin').value;
+            cfg.Links.Info      = document.getElementById('confLinkInfo').value;
+            cfg.Links.InfoText  = document.getElementById('confTextInfo').value;
+            cfg.Links.Instagram = document.getElementById('confLinkInsta').value;
+            cfg.Links.Telegram  = document.getElementById('confLinkTele').value;
+            cfg.Links.Youtube   = document.getElementById('confLinkYt').value;
+            cfg.Links.Whatsapp  = document.getElementById('confLinkWa').value;
+            if (!cfg.Texts) cfg.Texts = {};
+            cfg.Texts.BtnKey      = document.getElementById('confBtnKey').value;
+            cfg.Texts.BtnTutorial = document.getElementById('confBtnTutorial').value;
+            cfg.Api.BaseUrl = document.getElementById('confApiUrl').value;
+            cfg.Api.Token   = document.getElementById('confApiToken').value;
+
+            if (!cfg.Update) cfg.Update = {};
+            cfg.Update.Enabled     = document.getElementById('confUpdateEnabled').checked;
+            cfg.Update.VersionCode = parseInt(document.getElementById('confUpdCode').value) || 0;
+            cfg.Update.VersionName = document.getElementById('confUpdName').value;
+            cfg.Update.Title       = document.getElementById('confUpdTitle').value;
+            cfg.Update.Subtitle    = document.getElementById('confUpdSub').value;
+            cfg.Update.WhatsNew    = document.getElementById('confUpdWhatsNew').value;
+            cfg.Update.UpdateUrl   = document.getElementById('confUpdUrl').value;
+            cfg.Update.BtnText     = document.getElementById('confUpdBtn').value;
+
+            cfg.Maintenance = document.getElementById('confMaintenance').checked;
+            _updateSocialAnchors(cfg.Links);
+            syncDB();
+        }
+
+        // Updates the hidden <a> tags so Android regex picks up latest URLs
+        function _updateSocialAnchors(L) {
+            if (!L) return;
+            const map = { insta: L.Instagram, tele: L.Telegram, yt: L.Youtube, wa: L.Whatsapp, tutorial: L.TutorialUrl || '' };
+            Object.entries(map).forEach(([id, href]) => {
+                const el = document.getElementById(id);
+                if (el && href) el.setAttribute('href', href);
+            });
+        }
+
+        function saveKeyEdit() {
+            const oldK = document.getElementById('editOld').value;
+            const newK = document.getElementById('editNew').value.trim();
+            if (newK && newK !== oldK) {
+                dbData.ValidKeys[newK] = dbData.ValidKeys[oldK];
+                delete dbData.ValidKeys[oldK];
+                syncDB();
+            }
+            closeModal('modalEdit');
+        }
+
+        function saveDeviceEdit() {
+            const oldDev  = document.getElementById('editDeviceOld').value;
+            const newDev  = document.getElementById('editDeviceNew').value.trim();
+            const newKey  = document.getElementById('editDeviceKey').value.trim();
+            const newExp  = document.getElementById('editDeviceExpiry').value.trim();
+            const type    = document.getElementById('editDeviceType').value;
+            const target  = type === 'banned' ? dbData.BannedDevices : dbData.ActivatedUsers;
+            let   current = target[oldDev];
+            if (typeof current !== 'object') current = { ExpiryReadable: current, Key: "Unknown", ExpiryMs: 0 };
+            current.Key            = newKey;
+            current.ExpiryReadable = newExp;
+            if (newDev !== oldDev) { target[newDev] = current; delete target[oldDev]; }
+            else { target[oldDev] = current; }
+            syncDB();
+            closeModal('modalEditDevice');
+        }
+
+        function delKey(key) {
+            showConfirm("Delete Key", "Delete this key and its linked device?", () => { performDeepDeleteKey(key); syncDB(); adminLog('key_deleted', { key }); });
+        }
+
+        function unbindKey(key) {
+            showConfirm("Unbind Key", "Remove the linked device so this key can be used on a new phone?", () => {
+                const boundDevice = dbData.ValidKeys[key].device;
+                if (boundDevice) {
+                    // Remove device from ActivatedUsers AND BannedDevices
+                    if (dbData.ActivatedUsers[boundDevice]) delete dbData.ActivatedUsers[boundDevice];
+                    if (dbData.BannedDevices[boundDevice])  delete dbData.BannedDevices[boundDevice];
+                    // Clear the device from the key
+                    dbData.ValidKeys[key].device = "";
+                    syncDB();
+                    showToast("Device Unbound Successfully");
+                } else {
+                    showToast("Key is not bound to any device yet");
+                }
+            });
+        }
+
+        // =============================================
+        // 8. UI HELPERS
+        // =============================================
+        function show(id) { document.getElementById(id).classList.remove('hidden'); }
+        function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function showToast(msg, isError) {
+            const t = document.getElementById('toast');
+            const icon = t.querySelector('i');
+            t.querySelector('span').innerText = msg;
+            // Switch icon & color for errors vs success
+            if (isError) {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = 'var(--red)';
+                t.style.borderColor = 'rgba(239,68,68,0.4)';
+            } else {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = 'var(--green)';
+                t.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+        }
+
+        function showCustomAlert(msg) {
+            document.getElementById('alertIcon').innerHTML  = '<i class="fas fa-info-circle"></i>';
+            document.getElementById('alertTitle').innerText = "Notice";
+            document.getElementById('alertMsg').innerText   = msg;
+            document.getElementById('alertBtns').style.display = 'none';
+            document.getElementById('btnAlertOk').style.display = 'block';
+            const modal = document.getElementById('modalAlert');
+            modal.classList.add('open');
+            document.getElementById('btnAlertOk').onclick = () => modal.classList.remove('open');
+        }
+
+        function showConfirm(title, msg, yesCallback) {
+            document.getElementById('alertIcon').innerHTML  = '<i class="fas fa-question-circle"></i>';
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMsg').innerText   = msg;
+            document.getElementById('alertBtns').style.display = 'grid';
+            document.getElementById('btnAlertOk').style.display = 'none';
+            const modal   = document.getElementById('modalAlert');
+            const yesBtn  = document.getElementById('btnAlertYes');
+            const noBtn   = document.getElementById('btnAlertNo');
+            const newYes  = yesBtn.cloneNode(true);
+            const newNo   = noBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYes, yesBtn);
+            noBtn.parentNode.replaceChild(newNo, noBtn);
+            modal.classList.add('open');
+            newYes.onclick = () => { modal.classList.remove('open'); yesCallback(); };
+            newNo.onclick  = () => modal.classList.remove('open');
+        }
+
+        function copy(txt) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(txt).then(() => showToast("Copied")).catch(() => fallbackCopy(txt));
+            } else {
+                fallbackCopy(txt);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const el = document.createElement("textarea");
+            el.value = text; el.style.position = "fixed"; el.style.opacity = "0";
+            document.body.appendChild(el); el.focus(); el.select();
+            try { document.execCommand('copy') ? showToast("Copied") : showToast("Copy failed"); }
+            catch(e) { showToast("Copy failed"); }
+            document.body.removeChild(el);
+        }
+
+        function openModal(id)  { document.getElementById(id).classList.add('open'); log('Modal opened: ' + id); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        // Esc key closes all modals + drawer (Phase 2)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+                closeDrawer();
+            }
+        });
+        // Click outside modal content to close (Phase 2)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('open')) {
+                e.target.classList.remove('open');
+            }
+        });
+
+        function editKey(key) {
+            document.getElementById('editOld').value = key;
+            document.getElementById('editNew').value = key;
+            openModal('modalEdit');
+        }
+
+        function editDevice(dev, isBanned) {
+            document.getElementById('editDeviceOld').value  = dev;
+            document.getElementById('editDeviceNew').value  = dev;
+            document.getElementById('editDeviceType').value = isBanned ? 'banned' : 'allowed';
+            const data = isBanned ? dbData.BannedDevices[dev] : dbData.ActivatedUsers[dev];
+            if (typeof data === 'object') {
+                document.getElementById('editDeviceKey').value    = data.Key            || "";
+                document.getElementById('editDeviceExpiry').value = data.ExpiryReadable || "";
+            } else {
+                document.getElementById('editDeviceKey').value    = "";
+                document.getElementById('editDeviceExpiry').value = data;
+            }
+            openModal('modalEditDevice');
+        }
+
+        function setDevFilter(f, el) {
+            devFilter = f;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedDevs = [];
+            renderDevices();
+        }
+
+        function switchTab(tab) {
+            ['tabKeys','tabDevices','tabConfig','tabLogs'].forEach(t => { const el = document.getElementById(t); if (el) el.classList.add('hidden'); });
+            ['navKey','navDev','navConf','navLog'].forEach(n => { const el = document.getElementById(n); if (el) el.classList.remove('active'); });
+            if (tab === 'keys')    { show('tabKeys');    document.getElementById('navKey').classList.add('active'); }
+            else if (tab === 'devices') { show('tabDevices'); document.getElementById('navDev').classList.add('active'); }
+            else if (tab === 'logs') { show('tabLogs'); document.getElementById('navLog').classList.add('active'); renderLogs(); }
+            else                   { show('tabConfig');  document.getElementById('navConf').classList.add('active'); }
+        }
+
+        // =============================================
+        // 10. ACCESS TOKEN MANAGEMENT (#31-33)
+        // =============================================
+        async function generateAccessTokens() {
+            const qty = parseInt(document.getElementById('tokenQty').value) || 5;
+            const prefix = document.getElementById('tokenPrefix').value.trim() || 'ref';
+            const baseUrl = window.location.origin + '/generator.html';
+            const tokens = [];
+
+            for (let i = 0; i < qty; i++) {
+                const token = prefix + '_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+                await window._fbSet('/AccessTokens/' + token, {
+                    createdAt: Date.now(),
+                    createdBy: 'admin',
+                    used: false
+                });
+                tokens.push({ token, url: baseUrl + '?ref=' + token });
+            }
+
+            const list = document.getElementById('tokenList');
+            list.innerHTML = tokens.map(t =>
+                '<div style="padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="copy(\'' + t.url + '\')">' +
+                '<div style="font-family:JetBrains Mono,monospace;font-size:0.7rem;color:var(--green);word-break:break-all;">' + esc(t.url) + '</div>' +
+                '<div style="font-size:0.6rem;color:var(--muted);margin-top:2px;"><i class="fas fa-copy"></i> tap to copy · expires in 10 min</div></div>'
+            ).join('');
+            document.getElementById('tokenOutput').style.display = 'block';
+            log('Generated ' + qty + ' access tokens', 'success');
+            showToast(qty + ' tokens generated');
+        }
+
+        // =============================================
+        // 11. TELEGRAM ALERT CONFIG (#46)
+        // =============================================
+        async function saveTelegramConfig() {
+            const botToken = document.getElementById('confTgBotToken').value.trim();
+            const chatId = document.getElementById('confTgChatId').value.trim();
+            if (!botToken || !chatId) return showToast('Both fields required', true);
+            try {
+                await window._fbSet('/Config/TelegramAlert', { botToken, chatId });
+                showToast('Telegram alert saved');
+                log('Telegram alert config updated', 'success');
+            } catch(e) { showToast('Failed to save', true); }
+        }
+
+        async function testTelegramAlert() {
+            const botToken = document.getElementById('confTgBotToken').value.trim();
+            const chatId = document.getElementById('confTgChatId').value.trim();
+            if (!botToken || !chatId) return showToast('Fill in Bot Token and Chat ID first', true);
+            try {
+                const msg = '✅ Test Alert from SecureKeys Admin Panel\nTime: ' + new Date().toLocaleString();
+                const resp = await fetch('https://api.telegram.org/bot' + botToken + '/sendMessage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: msg })
+                });
+                const data = await resp.json();
+                if (data.ok) { showToast('Test message sent!'); log('Telegram test: success', 'success'); }
+                else { showToast('Telegram error: ' + (data.description || 'unknown'), true); log('Telegram test failed: ' + data.description, 'error'); }
+            } catch(e) { showToast('Network error', true); }
+        }
+
+        // =============================================
+        // 12. SUSPICIOUS ACTIVITY VIEWER (#46)
+        // =============================================
+        async function loadSuspiciousActivity() {
+            try {
+                const snap = await window._fbGet('/SuspiciousActivity');
+                const data = snap.val();
+                const list = document.getElementById('suspiciousList');
+                if (!data) { list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);"><i class="fas fa-check-circle" style="color:var(--green);margin-right:5px;"></i>No suspicious activity</div>'; return; }
+                let html = '';
+                Object.entries(data).forEach(([ip, events]) => {
+                    const entries = typeof events === 'object' ? Object.values(events) : [];
+                    const latest = entries[entries.length - 1] || {};
+                    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border);">' +
+                        '<div style="font-weight:700;color:var(--red);font-size:0.75rem;"><i class="fas fa-exclamation-triangle" style="margin-right:4px;"></i>' + esc(latest.ip || ip) + '</div>' +
+                        '<div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">' + entries.length + ' alerts · Last: ' + (latest.time || 'unknown') + ' · FP: ' + esc(latest.fingerprint || '?') + '</div></div>';
+                });
+                list.innerHTML = html;
+            } catch(e) { document.getElementById('suspiciousList').innerHTML = 'Error loading data'; }
+        }
+
+        // =============================================
+        // 13. GENERATION LOGS VIEWER (#45)
+        // =============================================
+        async function loadGenerationLogs() {
+            try {
+                const snap = await window._fbGet('/GenerationLogs');
+                const data = snap.val();
+                const list = document.getElementById('genLogsList');
+                if (!data) { list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);">No logs yet</div>'; return; }
+                const entries = Object.values(data).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 50);
+                let html = '';
+                entries.forEach(e => {
+                    const color = e.result === 'success' ? 'var(--green)' : 'var(--red)';
+                    html += '<div style="padding:6px 0;border-bottom:1px solid var(--border);">' +
+                        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                        '<span style="font-weight:700;color:' + color + ';font-size:0.7rem;">' + esc(e.result || '?') + '</span>' +
+                        '<span style="font-size:0.6rem;color:var(--muted);">' + (e.date || '?') + '</span></div>' +
+                        '<div style="font-size:0.6rem;color:var(--muted);margin-top:2px;">IP: ' + esc(e.ip || '?') + ' · FP: ' + esc(e.fingerprint || '?').substring(0, 12) + ' · Token: ' + esc(e.token || 'none').substring(0, 15) + '</div></div>';
+                });
+                list.innerHTML = html;
+            } catch(e) { document.getElementById('genLogsList').innerHTML = 'Error loading data'; }
+        }
+
+        async function clearGenerationLogs() {
+            showConfirm('Clear Logs', 'Delete all generation logs? This cannot be undone.', async () => {
+                await window._fbSet('/GenerationLogs', null);
+                loadGenerationLogs();
+                showToast('Logs cleared');
+                log('Generation logs cleared', 'warn');
+            });
+        }
+
+        // =============================================
+        // 9. BACKGROUND PARTICLES
+        // =============================================
+        function initParticles() {
+            if (animationId) cancelAnimationFrame(animationId);
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 35; i++) {
+                particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, v: Math.random() * 0.5 + 0.15, s: Math.random() * 2 + 0.5 });
+            }
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00f0ff";
+                ctx.globalAlpha = 0.12;
+                particles.forEach(p => { p.y -= p.v; if (p.y < 0) p.y = canvas.height; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); });
+                animationId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        // =============================================
+        // Q1: LIVE KEY COUNTDOWNS
+        // =============================================
+        let _cdInterval = null;
+        function _startKeyCountdowns() {
+            if (_cdInterval) clearInterval(_cdInterval);
+            _cdInterval = setInterval(() => {
+                document.querySelectorAll('[id^="cd_"][data-expiry]').forEach(el => {
+                    const expiry = parseInt(el.getAttribute('data-expiry'));
+                    if (!expiry) return;
+                    const rem = expiry - Math.floor(Date.now() / 1000);
+                    if (rem <= 0) {
+                        el.textContent = 'EXPIRED';
+                        el.className = 'key-countdown expiring';
+                        return;
+                    }
+                    const h = Math.floor(rem/3600), mn = Math.floor((rem%3600)/60), s = rem%60;
+                    el.innerHTML = '<i class="fas fa-clock" style="font-size:0.55rem;margin-right:2px;"></i>' + String(h).padStart(2,'0') + ':' + String(mn).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+                    if (rem < 7200) el.className = 'key-countdown expiring';
+                });
+            }, 1000);
+        }
+
+        // =============================================
+        // Q8: ADMIN ACTIVITY LOG
+        // =============================================
+        async function adminLog(action, details = {}) {
+            try {
+                await window._fbSet('/AdminLogs/' + Date.now() + '_' + Math.random().toString(36).substring(2,5), {
+                    action,
+                    details,
+                    timestamp: Date.now(),
+                    date: new Date().toISOString()
+                });
+            } catch(e) { /* non-blocking */ }
+        }
+
+        // =============================================
+        // R2/R3/R4/R5: RATE LIMIT CONFIG FUNCTIONS
+        // =============================================
+        async function saveRateLimitConfig() {
+            const enabled = document.getElementById('confRateLimitEnabled').checked;
+            await window._fbSet('/Config/RateLimit', { enabled });
+            showToast('Rate limit ' + (enabled ? 'enabled' : 'disabled'));
+            adminLog('rate_limit_toggled', { enabled });
+        }
+
+        async function loadRateLimitConfig() {
+            try {
+                const snap = await window._fbGet('/Config/RateLimit');
+                const cfg = snap.val();
+                const el = document.getElementById('confRateLimitEnabled');
+                if (el) el.checked = cfg ? (cfg.enabled !== false) : true;
+            } catch(e) {}
+        }
+
+        // R3: Count rate-limited IPs (have >= 5 timestamps in last 2H)
+        async function loadRateLimitedCount() {
+            try {
+                const snap = await window._fbGet('/RateLimits');
+                const data = snap.val();
+                const el = document.getElementById('statRateLimited');
+                if (!data || !el) return;
+                const TWO_HOURS = 2 * 60 * 60 * 1000;
+                const now = Date.now();
+                let count = 0;
+                Object.values(data).forEach(entry => {
+                    if (!entry || !entry.timestamps) return;
+                    const recent = entry.timestamps.filter(t => now - t < TWO_HOURS);
+                    if (recent.length >= 5) count++;
+                });
+                el.textContent = count;
+            } catch(e) {}
+        }
+
+        // R4: Manual IP unblock
+        async function unblockIP() {
+            const inp = document.getElementById('unblockIpInput').value.trim();
+            if (!inp) return showToast('Enter an IP first', true);
+            const ipKey = inp.replace(/[.:]/g, '_');
+            // Also handles combined fingerprint keys - delete all entries matching this IP
+            try {
+                const snap = await window._fbGet('/RateLimits');
+                const data = snap.val();
+                if (!data) return showToast('No rate limit data found', true);
+                const toDelete = Object.keys(data).filter(k => k.startsWith(ipKey));
+                if (toDelete.length === 0) return showToast('IP not found in rate limits', true);
+                await Promise.all(toDelete.map(k => window._fbSet('/RateLimits/' + k, null)));
+                showToast('Unblocked: ' + inp);
+                adminLog('ip_unblocked', { ip: inp });
+                loadRateLimitedCount();
+                document.getElementById('unblockIpInput').value = '';
+            } catch(e) { showToast('Failed to unblock', true); }
+        }
+
+        // R5: Save IP whitelist
+        async function saveWhitelist() {
+            const raw = document.getElementById('ipWhitelistInput').value.trim();
+            const list = raw ? raw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+            await window._fbSet('/Config/IPWhitelist', list);
+            showToast(list.length + ' IPs whitelisted');
+            adminLog('whitelist_saved', { count: list.length });
+        }
+
+        async function loadWhitelist() {
+            try {
+                const snap = await window._fbGet('/Config/IPWhitelist');
+                const data = snap.val();
+                const el = document.getElementById('ipWhitelistInput');
+                if (!el) return;
+                if (Array.isArray(data)) el.value = data.join('\n');
+                else if (data) el.value = Object.values(data).join('\n');
+            } catch(e) {}
+        }
+
+
+    </script>
+</body>
+</html>
