@@ -1288,8 +1288,65 @@
         }
 
         // =============================================
-        // 3. APP INIT
+        // 3. APP INIT (with retry + diagnostics)
         // =============================================
+        const _diagMode = new URLSearchParams(location.search).has('diag');
+        function _diagLog(msg, isErr) {
+            if (!_diagMode) return;
+            let panel = document.getElementById('diagPanel');
+            if (!panel) {
+                panel = document.createElement('div');
+                panel.id = 'diagPanel';
+                panel.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;max-height:40vh;overflow:auto;z-index:99999;background:rgba(10,2,30,0.95);border:1px solid #22D3EE;border-radius:8px;padding:10px 12px;font:11px ui-monospace,Menlo,monospace;color:#E8ECFF;line-height:1.5;';
+                document.body.appendChild(panel);
+            }
+            const line = document.createElement('div');
+            line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+            line.style.color = isErr ? '#ff6b6b' : '#A78BFA';
+            panel.appendChild(line);
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        async function _tryFbGetWithRetry(path, attempts = 3) {
+            const delays = [0, 1500, 4000];
+            let lastErr;
+            for (let i = 0; i < attempts; i++) {
+                if (delays[i]) await new Promise(r => setTimeout(r, delays[i]));
+                _diagLog('Attempt ' + (i + 1) + ' → ' + path);
+                try {
+                    return await window._fbGet(path);
+                } catch (err) {
+                    lastErr = err;
+                    _diagLog('Attempt ' + (i + 1) + ' failed: ' + (err.code || '') + ' ' + (err.message || err), true);
+                }
+            }
+            throw lastErr;
+        }
+
+        function _showInitFailure(err) {
+            hide('viewLoader');
+            show('viewLogin');
+            const code = (err && err.code) || '';
+            let msg;
+            if (code === 'PERMISSION_DENIED') {
+                msg = "Database permission denied — check Firebase Rules";
+            } else if (code === 'NETWORK_ERROR' || /network|fetch|timeout/i.test(err && (err.message || ''))) {
+                msg = "Network error — check your connection";
+            } else if (/disallowed|domain/i.test(err && (err.message || ''))) {
+                msg = "Domain not authorized in Firebase Console";
+            } else {
+                msg = "Database unreachable — " + (code || (err && err.message) || 'unknown error');
+            }
+            const loginBtn = document.querySelector('#viewLogin button');
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Retry';
+            }
+            showToast(msg, true);
+            log("Init failed: " + (err.code || '') + ' ' + (err.message || err), 'error');
+            _diagLog('FINAL FAILURE: ' + msg, true);
+        }
+
         async function appInit(isManual = false) {
             initDecryption();
             initParticles();
@@ -1297,17 +1354,19 @@
             show('viewLoader'); hide('viewLogin'); hide('viewDashboard');
             document.querySelector('.nav-fixed').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
+            _diagLog('appInit start (manual=' + isManual + ')');
 
             // Hard timeout — never let "Establishing Uplink" hang forever
+            let timedOut = false;
             const timeoutId = setTimeout(() => {
-                hide('viewLoader');
-                show('viewLogin');
-                showToast("Connection timed out — please log in again", true);
-            }, 12000);
+                timedOut = true;
+                _showInitFailure({ code: 'TIMEOUT', message: 'Connection timed out after 18s' });
+            }, 18000);
 
             try {
-                const snap = await window._fbGet('/');
-                let data   = snap.val();
+                const snap = await _tryFbGetWithRetry('/', 3);
+                if (timedOut) return;
+                let data = snap.val();
 
                 if (!data) {
                     await window._fbSet('/', DEFAULT_DATA);
@@ -1326,20 +1385,16 @@
                 document.querySelector('.nav-fixed').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.remove('hidden');
                 if (isManual) { showToast("Data refreshed"); log("Manual refresh completed"); }
-                // Load rate limit state & whitelist
                 loadRateLimitConfig();
                 loadRateLimitedCount();
                 loadWhitelist();
+                _diagLog('App ready — ' + Object.keys(dbData.ValidKeys || {}).length + ' keys');
                 log("App initialized — " + Object.keys(dbData.ValidKeys).length + " keys, " + (Object.keys(dbData.ActivatedUsers).length + Object.keys(dbData.BannedDevices).length) + " devices");
 
             } catch(err) {
                 clearTimeout(timeoutId);
-                hide('viewLoader');
-                // Sign out so the user can re-enter password — no DB URL prompt
-                try { await window._fbSignOut(); } catch(e) {}
-                show('viewLogin');
-                showToast("Cannot reach database — check your connection", true);
-                log("Init failed: " + (err.message || err), 'error');
+                if (timedOut) return;
+                _showInitFailure(err);
             }
         }
 
