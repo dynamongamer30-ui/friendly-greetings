@@ -26,6 +26,12 @@ export function AchievementToast() {
     return () => window.removeEventListener('dg:achievement', handler)
   }, [])
 
+  const dismiss = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setShow(false)
+    setTimeout(() => setVisible(null), 400)
+  }
+
   useEffect(() => {
     if (visible || queue.length === 0) return
 
@@ -37,15 +43,10 @@ export function AchievementToast() {
     requestAnimationFrame(() => requestAnimationFrame(() => setShow(true)))
     playAchievement()
 
-    // Clear any existing timers
     if (timerRef.current) clearTimeout(timerRef.current)
-
-    // Auto dismiss after exactly 3s
     timerRef.current = setTimeout(() => {
       setShow(false)
-      setTimeout(() => {
-        setVisible(null)
-      }, 400)
+      setTimeout(() => setVisible(null), 400)
     }, 3000)
 
     return () => {
@@ -57,6 +58,10 @@ export function AchievementToast() {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      onClick={dismiss}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') dismiss() }}
       style={{
         position: 'fixed',
         top: 20,
@@ -78,10 +83,10 @@ export function AchievementToast() {
         backdropFilter: 'blur(16px)',
         minWidth: 220,
         maxWidth: 320,
-        pointerEvents: 'none',
+        cursor: 'pointer',
       }}
+      aria-label="Dismiss achievement"
     >
-      {/* Icon */}
       <div style={{
         width: 36, height: 36, borderRadius: '50%',
         background: 'rgba(0,240,255,0.1)',
@@ -93,46 +98,29 @@ export function AchievementToast() {
         <Trophy size={18} color="#00F0FF" />
       </div>
 
-      {/* Text */}
       <div>
         <div style={{
-          fontSize: 10,
-          color: '#00F0FF',
-          fontWeight: 700,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          fontSize: 10, color: '#00F0FF', fontWeight: 700,
+          letterSpacing: '0.1em', textTransform: 'uppercase',
         }}>
           Achievement Unlocked
         </div>
-        <div style={{
-          fontSize: 13,
-          color: '#e2e8f0',
-          fontWeight: 700,
-          marginTop: 2,
-        }}>
+        <div style={{ fontSize: 13, color: '#e2e8f0', fontWeight: 700, marginTop: 2 }}>
           {visible.title}
         </div>
-        <div style={{
-          fontSize: 11,
-          color: '#64748b',
-          marginTop: 2,
-        }}>
+        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
           {visible.desc}
         </div>
       </div>
 
-      {/* Progress bar — drains over 3s */}
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
-        height: 2,
-        borderRadius: '0 0 1rem 1rem',
-        background: 'rgba(0,240,255,0.15)',
-        overflow: 'hidden',
+        height: 2, borderRadius: '0 0 1rem 1rem',
+        background: 'rgba(0,240,255,0.15)', overflow: 'hidden',
       }}>
         <div style={{
-          height: '100%',
-          background: '#00F0FF',
+          height: '100%', background: '#00F0FF',
           animation: show ? 'toast-drain 3s linear forwards' : 'none',
           boxShadow: '0 0 6px #00F0FF',
         }} />
