@@ -4,6 +4,7 @@ import {
   createRoute,
   Outlet,
   RouterProvider,
+  useRouterState,
 } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { GlassToaster } from './components/ui/GlassToast'
@@ -11,10 +12,11 @@ import CursorGlow from './components/system/CursorGlow'
 import PageTransition from './components/system/PageTransition'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { LoadingScreen } from './components/system/LoadingScreen'
-import { VisitorCounter } from './components/ui/VisitorCounter'
 import { AchievementToast } from './components/ui/AchievementToast'
-import { useEffect, useState } from 'react'
-import { playClick } from './lib/sound'
+import { AchievementHistory } from './components/ui/AchievementHistory'
+import { NotificationBell } from './components/ui/NotificationBell'
+import { useEffect, useRef, useState } from 'react'
+import { playClick, playWhoosh, tryResumeAmbient } from './lib/sound'
 
 import HomePage from './pages/HomePage'
 import DownloadPage from './pages/DownloadPage'
@@ -22,12 +24,25 @@ import UnlockPage from './pages/UnlockPage'
 import TutorialPage from './pages/TutorialPage'
 import DMCAPage from './pages/DMCAPage'
 import AdminPage from './pages/AdminPage'
+import KeysPage from './pages/KeysPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const rootRoute = createRootRoute({
   component: RootShell,
   notFoundComponent: NotFoundPage,
 })
+
+function RouteSoundEffect() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const prev = useRef<string | null>(null)
+  useEffect(() => {
+    if (prev.current !== null && prev.current !== pathname) {
+      playWhoosh()
+    }
+    prev.current = pathname
+  }, [pathname])
+  return null
+}
 
 function RootShell() {
   const [loaded, setLoaded] = useState(false)
@@ -46,6 +61,13 @@ function RootShell() {
     }
     document.addEventListener('click', onClick, true)
     return () => document.removeEventListener('click', onClick, true)
+  }, [])
+
+  // Resume ambient drone after first user gesture
+  useEffect(() => {
+    const resume = () => { tryResumeAmbient(); document.removeEventListener('pointerdown', resume) }
+    document.addEventListener('pointerdown', resume, { once: true })
+    return () => document.removeEventListener('pointerdown', resume)
   }, [])
 
   // Global touch ripple
@@ -86,18 +108,13 @@ function RootShell() {
 
   return (
     <>
-      {/* Feature 10: Loading splash screen */}
       {!loaded && <LoadingScreen onDone={() => setLoaded(true)} />}
-
-      {/* Feature 8: Scroll progress bar */}
       <ScrollProgress />
-
-      {/* Feature 3: Enhanced cursor trail */}
       <CursorGlow />
-
-      {/* Feature 14: Achievement pop-ups */}
+      <RouteSoundEffect />
+      <NotificationBell />
+      <AchievementHistory />
       <AchievementToast />
-
       <GlassToaster />
       <PageTransition>
         <Outlet />
@@ -117,8 +134,9 @@ const unlockRoute = createRoute({ getParentRoute: () => rootRoute, path: '/unloc
 const tutorialRoute = createRoute({ getParentRoute: () => rootRoute, path: '/tutorial', component: TutorialPage })
 const dmcaRoute = createRoute({ getParentRoute: () => rootRoute, path: '/dmca', component: DMCAPage })
 const adminRoute = createRoute({ getParentRoute: () => rootRoute, path: '/admin', component: AdminPage })
+const keysRoute = createRoute({ getParentRoute: () => rootRoute, path: '/keys', component: KeysPage })
 
-const routeTree = rootRoute.addChildren([homeRoute, downloadRoute, unlockRoute, tutorialRoute, dmcaRoute, adminRoute])
+const routeTree = rootRoute.addChildren([homeRoute, downloadRoute, unlockRoute, tutorialRoute, dmcaRoute, adminRoute, keysRoute])
 
 const router = createRouter({ routeTree, defaultNotFoundComponent: NotFoundPage })
 const queryClient = new QueryClient()
