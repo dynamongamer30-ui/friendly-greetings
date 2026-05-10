@@ -61,7 +61,7 @@ export function NotificationBell() {
 
       {open && (
         <div
-          className="absolute top-12 left-0 w-72 max-h-[60vh] overflow-y-auto rounded-2xl"
+          className="absolute top-12 right-0 w-72 max-h-[60vh] overflow-y-auto rounded-2xl"
           style={{
             background: 'rgba(5,8,10,0.96)',
             border: '1px solid rgba(0,240,255,0.25)',

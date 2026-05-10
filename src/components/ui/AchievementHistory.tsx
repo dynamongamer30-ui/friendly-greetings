@@ -13,7 +13,7 @@ export function AchievementHistory() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Achievements"
-        className="fixed top-4 left-16 z-[9989] w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+        className="fixed top-4 right-4 z-[9989] w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
         style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(255,215,0,0.3)', color: '#FFD700' }}
       >
         <Trophy className="w-4 h-4" />
