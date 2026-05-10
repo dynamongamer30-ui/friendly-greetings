@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Gamepad2 } from 'lucide-react'
 
-interface Props { onDone: () => void }
+interface Props {
+  onDone: () => void
+  siteMeta?: { siteName?: string } | null
+}
 
-export function LoadingScreen({ onDone }: Props) {
+export function LoadingScreen({ onDone, siteMeta }: Props) {
+  const name = siteMeta?.siteName || 'Dynamon Gamer'
   const [phase, setPhase] = useState<'in' | 'hold' | 'out'>('in')
 
   useEffect(() => {
@@ -26,9 +30,7 @@ export function LoadingScreen({ onDone }: Props) {
         pointerEvents: phase === 'out' ? 'none' : 'all',
       }}
     >
-      {/* Logo ring */}
       <div style={{ position: 'relative', width: 100, height: 100 }}>
-        {/* Spinning ring */}
         <div style={{
           position: 'absolute', inset: 0,
           borderRadius: '50%',
@@ -45,7 +47,6 @@ export function LoadingScreen({ onDone }: Props) {
           borderLeftColor: 'rgba(168,85,247,0.3)',
           animation: 'spin 1.5s linear infinite reverse',
         }} />
-        {/* Icon center */}
         <div style={{
           position: 'absolute', inset: 14,
           borderRadius: '50%',
@@ -58,7 +59,6 @@ export function LoadingScreen({ onDone }: Props) {
         </div>
       </div>
 
-      {/* Site name */}
       <div style={{
         fontFamily: "'Syne', sans-serif",
         fontSize: '1.4rem',
@@ -70,10 +70,9 @@ export function LoadingScreen({ onDone }: Props) {
         transform: phase === 'in' ? 'translateY(8px)' : 'translateY(0)',
         transition: 'opacity 0.4s ease, transform 0.4s ease',
       }}>
-        Dynamon Gamer
+        {name}
       </div>
 
-      {/* Loading bar */}
       <div style={{
         width: 180, height: 2,
         background: 'rgba(255,255,255,0.06)',
