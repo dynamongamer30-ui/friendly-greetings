@@ -40,19 +40,25 @@ export function NotificationBell() {
   }
 
   return (
-    <div className="fixed top-4 right-16 z-[9990]">
+    <div className="relative">
       <button
         type="button"
         onClick={toggle}
         aria-label="Notifications"
-        className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-        style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(34,211,238,0.25)', color: '#22D3EE' }}
+        className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
+        style={{
+          background: 'rgba(20,20,50,0.55)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(167,139,250,0.18)',
+          color: '#22D3EE',
+        }}
       >
         <Bell className="w-4 h-4" />
         {unread > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
-            style={{ background: '#22D3EE', color: '#03010d', boxShadow: '0 0 8px #22D3EE' }}
+            style={{ background: '#22D3EE', color: '#0A0A1A', boxShadow: '0 0 8px #22D3EE' }}
           >
             {unread > 9 ? '9+' : unread}
           </span>
