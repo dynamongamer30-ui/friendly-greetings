@@ -114,17 +114,12 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         background: 'linear-gradient(180deg, #03010d 0%, #0a0220 40%, #060118 100%)',
       }} />
 
-      {/* Aurora bands — layered slow-wave gradients */}
-      <div className="fantasy-aurora-1 absolute inset-0 z-0 pointer-events-none" />
-      <div className="fantasy-aurora-2 absolute inset-0 z-0 pointer-events-none" />
-      <div className="fantasy-aurora-3 absolute inset-0 z-0 pointer-events-none" />
+      {/* Aurora — single soft band */}
+      <div className="fantasy-aurora-1 absolute inset-0 z-0 pointer-events-none opacity-60" />
 
       {/* Star field — pure CSS dots */}
       <div className="fantasy-stars absolute inset-0 z-0 pointer-events-none" />
-      <div className="fantasy-stars-2 absolute inset-0 z-0 pointer-events-none" />
 
-      {/* God rays — diagonal light beams from top center */}
-      <div className="fantasy-rays absolute inset-0 z-0 pointer-events-none" />
 
       {/* Magic particles canvas */}
       <canvas
@@ -147,11 +142,11 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         </svg>
       </div>
 
-      {/* Sound toggle */}
+      {/* Sound toggle — top-left to avoid the bell+trophy cluster on the right */}
       <button
         type="button"
         onClick={() => { playClick(); setSoundOn(toggleSound()) }}
-        className="absolute top-4 right-4 z-20 w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+        className="absolute top-4 left-4 z-20 w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
         style={{ background: 'rgba(10,2,30,0.7)', border: '1px solid rgba(255,215,0,0.2)', color: '#FFD700' }}
         aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
       >
@@ -183,8 +178,8 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
 
       {/* Title with golden shimmer */}
       <h1
-        className="hero-title-fantasy relative z-10 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4"
-        style={{ fontFamily: "'Syne', sans-serif" }}
+        className="hero-title-fantasy relative z-10 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 mt-4"
+        style={{ fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif" }}
       >
         {typed}
         {typed.length < title.length && <span className="typewriter-caret" aria-hidden="true">&nbsp;</span>}

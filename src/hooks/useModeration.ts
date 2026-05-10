@@ -55,6 +55,16 @@ export function useRejectComment() {
   })
 }
 
+/** Admin: hard delete a comment regardless of approval state */
+export function useDeleteComment() {
+  return useMutation({
+    mutationFn: async ({ modId, commentId }: { modId: string; commentId: string }) => {
+      if (!auth.currentUser) throw new Error('Not authenticated')
+      await db.ref(`/Comments/${modId}/${commentId}`).remove()
+    },
+  })
+}
+
 /** Real-time list of replies for a single comment */
 export function useReplies(modId: string | undefined, commentId: string | undefined) {
   const [data, setData] = useState<Reply[]>([])

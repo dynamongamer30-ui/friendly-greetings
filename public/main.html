@@ -490,20 +490,7 @@
             </div>
         </div>
 
-        <div id="viewSetup" class="hidden">
-            <div class="setup-box" style="margin-top: 40px;">
-                <div class="setup-icon"><i class="fas fa-database"></i></div>
-                <h2>Database Setup</h2>
-                <p>Enter your Firebase Realtime Database URL</p>
-                <div class="inp-group">
-                    <label class="inp-label">Firebase URL</label>
-                    <input type="text" class="input-std input-no-icon" id="inputDbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com">
-                </div>
-                <button class="btn-block" onclick="saveUrlAndConnect()">
-                    <i class="fas fa-plug"></i> &nbsp;ESTABLISH CONNECTION
-                </button>
-            </div>
-        </div>
+        <!-- viewSetup removed — DB URL is hard-coded; password-only login -->
 
         <div id="viewDashboard" class="hidden fade-in">
 
@@ -1307,9 +1294,16 @@
             initDecryption();
             initParticles();
 
-            show('viewLoader'); hide('viewLogin'); hide('viewSetup'); hide('viewDashboard');
+            show('viewLoader'); hide('viewLogin'); hide('viewDashboard');
             document.querySelector('.nav-fixed').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
+
+            // Hard timeout — never let "Establishing Uplink" hang forever
+            const timeoutId = setTimeout(() => {
+                hide('viewLoader');
+                show('viewLogin');
+                showToast("Connection timed out — please log in again", true);
+            }, 12000);
 
             try {
                 const snap = await window._fbGet('/');
@@ -1327,6 +1321,7 @@
                 if (window.expireInterval) clearInterval(window.expireInterval);
                 window.expireInterval = setInterval(checkAndCleanExpiredKeys, 60000);
 
+                clearTimeout(timeoutId);
                 hide('viewLoader'); show('viewDashboard');
                 document.querySelector('.nav-fixed').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.remove('hidden');
@@ -1338,31 +1333,18 @@
                 log("App initialized — " + Object.keys(dbData.ValidKeys).length + " keys, " + (Object.keys(dbData.ActivatedUsers).length + Object.keys(dbData.BannedDevices).length) + " devices");
 
             } catch(err) {
+                clearTimeout(timeoutId);
                 hide('viewLoader');
-                showToast("Database connection error — check Firebase rules", true);
+                // Sign out so the user can re-enter password — no DB URL prompt
+                try { await window._fbSignOut(); } catch(e) {}
+                show('viewLogin');
+                showToast("Cannot reach database — check your connection", true);
                 log("Init failed: " + (err.message || err), 'error');
-                show('viewSetup');
             }
         }
 
         function saveUrlAndConnect() {
-            let inp = document.getElementById('inputDbUrl').value.trim();
-            if (!inp) return showToast("Invalid URL");
-            // Validate URL format
-            if (!inp.startsWith('https://') || !inp.includes('firebaseio.com')) {
-                return showToast("URL must be a valid Firebase RTDB URL (https://...firebaseio.com)", true);
-            }
-            // Update the DB reference to use the custom URL
-            dbUrl = inp;
-            const customApp = firebase.initializeApp({
-                ...firebaseConfig,
-                databaseURL: inp
-            }, 'custom_' + Date.now());
-            const customDb = customApp.database();
-            window._fbGet  = (path) => customDb.ref(path).once('value');
-            window._fbSet  = (path, value) => customDb.ref(path).set(value);
-            window._fbUpdt = (path, value) => customDb.ref(path).update(value);
-            showToast("Connected to custom database");
+            // Deprecated — DB URL is hard-coded. Kept as no-op for safety.
             appInit();
         }
 
