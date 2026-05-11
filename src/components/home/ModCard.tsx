@@ -261,6 +261,17 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
                 </span>
               </div>
             </div>
+            {/* Milestone progress to next tier (100/500/1000) */}
+            {(() => {
+              const next = dl < 100 ? 100 : dl < 500 ? 500 : dl < 1000 ? 1000 : 0
+              const prev = dl < 100 ? 0 : dl < 500 ? 100 : dl < 1000 ? 500 : 1000
+              const pct = next ? Math.min(100, Math.max(0, ((dl - prev) / (next - prev)) * 100)) : 100
+              return (
+                <span aria-hidden="true" className="milestone-bar">
+                  <span style={{ width: `${pct}%` }} />
+                </span>
+              )
+            })()}
           </Link>
         </div>
 
