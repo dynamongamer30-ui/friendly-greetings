@@ -43,7 +43,7 @@
         body { margin: 0; padding: 0 0 120px 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
         input, select, textarea { user-select: text; }
 
-        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.35; }
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.3; }
 
         /* ============================================
            HEADER
@@ -810,7 +810,7 @@
             <h3>Generate Keys</h3>
             <div class="inp-group">
                 <label class="inp-label">Prefix</label>
-                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="DG">
+                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="VIP">
             </div>
             <div class="inp-group">
                 <label class="inp-label">Quantity</label>
@@ -1467,8 +1467,19 @@
 
             Object.keys(dbData.ValidKeys).forEach(key => {
                 const val = dbData.ValidKeys[key];
+                const isVipKey = key.toUpperCase().startsWith("VIP");
 
-                // AUTO-DELETE: remove keys whose expiry timestamp has passed (midnight rule)
+                // VIP linking auto-expiry: once a VIP (expiry=0) key gets linked to a device,
+                // start its countdown from now + (duration * 3600). Lifetime keys (duration>=87600) stay 0.
+                if (isVipKey && typeof val === 'object' && val.expiry === 0 && keysInUse.has(key)) {
+                    const dur = Number(val.duration) || 0;
+                    if (dur > 0 && dur < 87600) {
+                        val.expiry = nowSec + (dur * 3600);
+                        hasChanges = true;
+                    }
+                }
+
+                // AUTO-DELETE: remove keys whose expiry timestamp has passed
                 if (typeof val === 'object' && val.expiry > 0 && val.expiry < nowSec) {
                     // Also unlink any bound device
                     if (val.device) {
@@ -1482,7 +1493,7 @@
                 }
 
                 // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (key.toUpperCase().startsWith("VIP")) return;
+                if (isVipKey) return;
                 if (keysInUse.has(key)) return;
 
                 let creationTime = 0;
@@ -1649,7 +1660,7 @@
                 if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
                 else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
                 else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
-                else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
+                else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP — UNUSED</span>`;
                 else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
 
                 // S2: source badge
@@ -1861,16 +1872,18 @@
             else durHours = parseInt(mode);
 
             const now = Math.floor(Date.now() / 1000);
-            // Keys always expire at the next 12:00 AM (midnight) — one key per day
-            const _midnight = new Date(); _midnight.setHours(24, 0, 0, 0);
-            const midnightSec = Math.floor(_midnight.getTime() / 1000);
+            const isVipPrefix = prefix.toUpperCase().startsWith('VIP');
+            const isLifetime  = durHours >= 87600;
             const newKeys = [];
             for (let i = 0; i < qty; i++) {
                 const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
                 const k   = prefix ? `${prefix}-${rnd}` : rnd;
+                // VIP or Lifetime → never expires until linked (handled on link)
+                // All other admin-generated keys → expire exactly now + (durHours * 3600)
+                const expirySec = (isLifetime || isVipPrefix) ? 0 : (now + (durHours * 3600));
                 dbData.ValidKeys[k] = {
                     status: "active",
-                    expiry: durHours >= 87600 ? 0 : midnightSec,
+                    expiry: expirySec,
                     duration: durHours,
                     device: "",
                     date: new Date().toISOString(),
@@ -2284,20 +2297,47 @@
         // =============================================
         function initParticles() {
             if (animationId) cancelAnimationFrame(animationId);
-            canvas.width  = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particles = [];
-            for (let i = 0; i < 35; i++) {
-                particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, v: Math.random() * 0.5 + 0.15, s: Math.random() * 2 + 0.5 });
-            }
-            function loop() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const resize = () => {
+                canvas.width  = window.innerWidth  * dpr;
+                canvas.height = window.innerHeight * dpr;
+                canvas.style.width  = window.innerWidth  + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+            };
+            resize();
+            // Slow-moving cyan + violet aurora blobs
+            const blobs = [
+                { x: 0.25, y: 0.30, r: 0.55, c: '0,240,255',  a: 0.45, vx:  0.00006, vy:  0.00004 },
+                { x: 0.75, y: 0.65, r: 0.60, c: '167,139,250', a: 0.40, vx: -0.00005, vy: -0.00003 },
+                { x: 0.55, y: 0.20, r: 0.45, c: '123,47,255',  a: 0.35, vx:  0.00004, vy:  0.00005 },
+                { x: 0.20, y: 0.80, r: 0.50, c: '34,211,238',  a: 0.32, vx: -0.00003, vy: -0.00006 }
+            ];
+            let last = performance.now();
+            function loop(now) {
+                const dt = now - last; last = now;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#00f0ff";
-                ctx.globalAlpha = 0.12;
-                particles.forEach(p => { p.y -= p.v; if (p.y < 0) p.y = canvas.height; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); });
+                ctx.globalCompositeOperation = 'lighter';
+                blobs.forEach(b => {
+                    b.x += b.vx * dt; b.y += b.vy * dt;
+                    if (b.x < -0.2 || b.x > 1.2) b.vx *= -1;
+                    if (b.y < -0.2 || b.y > 1.2) b.vy *= -1;
+                    const cx = b.x * canvas.width;
+                    const cy = b.y * canvas.height;
+                    const rad = b.r * Math.max(canvas.width, canvas.height);
+                    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+                    g.addColorStop(0,    `rgba(${b.c}, ${b.a})`);
+                    g.addColorStop(0.5,  `rgba(${b.c}, ${b.a * 0.35})`);
+                    g.addColorStop(1,    `rgba(${b.c}, 0)`);
+                    ctx.fillStyle = g;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.globalCompositeOperation = 'source-over';
                 animationId = requestAnimationFrame(loop);
             }
-            loop();
+            animationId = requestAnimationFrame(loop);
+            window.addEventListener('resize', resize, { passive: true });
         }
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
         // =============================================
