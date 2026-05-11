@@ -61,14 +61,23 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         initial={{ opacity: 0, scale: 0.85, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-28 h-28 mt-6 mb-7 rounded-full"
-        style={{ animation: 'heroLogoFloat 6s ease-in-out infinite' }}
+        className="relative z-10 mt-6 mb-7"
+        style={{
+          width: '7rem',
+          height: '7rem',
+          borderRadius: '50%',
+          animation: 'heroLogoFloat 6s ease-in-out infinite',
+          background: 'transparent',
+        }}
       >
-        {/* Outer bloom */}
+        {/* Outer bloom — sits behind, fully circular blurred glow */}
         <div
           aria-hidden="true"
-          className="absolute -inset-8 rounded-full pointer-events-none"
+          className="pointer-events-none"
           style={{
+            position: 'absolute',
+            top: '-2rem', left: '-2rem', right: '-2rem', bottom: '-2rem',
+            borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(34,211,238,0.45), rgba(167,139,250,0.25) 45%, transparent 70%)',
             filter: 'blur(20px)',
             animation: 'heroLogoBloom 4s ease-in-out infinite',
@@ -79,8 +88,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         <svg
           aria-hidden="true"
           viewBox="0 0 120 120"
-          className="absolute inset-0 w-full h-full"
-          style={{ overflow: 'visible' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}
         >
           <defs>
             <linearGradient id="auroraRing" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -101,15 +109,21 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           </g>
         </svg>
 
-        {/* Avatar — perfect circle, image fully covers, no masks */}
+        {/* Avatar — single bulletproof circular wrapper. No padding, no bg, no inset shadows that ring as squares. */}
         <div
-          className="absolute inset-2 z-10 flex items-center justify-center"
           style={{
+            position: 'absolute',
+            top: '8px',
+            left: '8px',
             width: 'calc(100% - 16px)',
             height: 'calc(100% - 16px)',
-            borderRadius: '9999px',
+            borderRadius: '50%',
             overflow: 'hidden',
-            background: 'linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
+            zIndex: 10,
           }}
         >
           {showImage ? (
@@ -124,20 +138,25 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
                 height: '100%',
                 objectFit: 'cover',
                 objectPosition: 'center',
+                borderRadius: '50%',
               }}
             />
           ) : (
-            <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, rgba(34,211,238,0.18), rgba(167,139,250,0.18))',
+              }}
+            >
+              <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />
+            </div>
           )}
         </div>
-        {/* Soft inner edge (above image, doesn't clip) */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-2 z-20 pointer-events-none rounded-full"
-          style={{
-            boxShadow: 'inset 0 0 18px rgba(10,10,26,0.45), inset 0 0 0 1px rgba(167,139,250,0.22)',
-          }}
-        />
 
         <style>{`
           @keyframes heroRingSpin { to { transform: rotate(360deg); } }
