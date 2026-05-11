@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import type { Mod } from '@/types/mod'
 import { sfx } from '@/lib/sound'
 import { haptics } from '@/lib/haptics'
-import { triggerAchievement } from '@/components/ui/AchievementToast'
+
 
 interface ModCardProps { mod: Mod; index: number }
 
