@@ -1935,8 +1935,24 @@
                     return;
                 }
 
+                // VIP keys: if unlinked and older than 24 hours, auto-delete
+                if (isVipKey) {
+                    if (keysInUse.has(key)) return;
+                    let vipCreated = 0;
+                    if (typeof val === 'object' && val.date) {
+                        const d = typeof val.date === 'number' ? val.date : new Date(val.date).getTime();
+                        vipCreated = d > 0 ? d : 0;
+                    }
+                    const TWENTY_FOUR_H = 24 * 60 * 60 * 1000;
+                    if (vipCreated > 0 && (nowMs - vipCreated > TWENTY_FOUR_H)) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true;
+                        deletedCount++;
+                    }
+                    return;
+                }
+
                 // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (isVipKey) return;
                 if (keysInUse.has(key)) return;
 
                 let creationTime = 0;
