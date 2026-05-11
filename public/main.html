@@ -1659,11 +1659,17 @@
         }
 
         async function doLogin() {
+            if (isLoginInProgress) return;
             const email = document.getElementById('loginPass').getAttribute('data-admin-email') || "";
             const pass  = document.getElementById('loginPass').value;
             const btn   = document.querySelector('#viewLogin .btn-block');
-            if (!pass) return showToast("Password required");
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+            if (!pass) return showToast("Password required", true);
+            const originalLabel = btn.innerHTML;
+            isLoginInProgress = true;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;AUTHENTICATING…';
 
             try {
                 const loginTimeout = new Promise((_, reject) =>
@@ -1672,20 +1678,28 @@
                 await Promise.race([window._fbSignIn(email, pass), loginTimeout]);
                 showToast("Access granted");
                 log("Login successful", 'success');
+                hide('viewLogin');
+                show('viewLoader');
+                appInit();
             } catch (error) {
                 console.error("Login error:", error.code, error.message);
-                const userMsg = (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential")
-                    ? "Incorrect password"
-                    : (error.code === "auth/too-many-requests")
-                    ? "Too many attempts — try again later"
-                    : (error.code === "auth/timeout")
-                    ? "Connection timed out — check your internet"
-                    : (error.code === "auth/network-request-failed")
-                    ? "Network error — check your connection"
-                    : "Authentication failed — " + (error.code || '');
+                const code = error.code || '';
+                const userMsg =
+                    code === "auth/invalid-email"           ? "Invalid email format" :
+                    code === "auth/user-not-found"          ? "Account not found" :
+                    (code === "auth/wrong-password" || code === "auth/invalid-credential") ? "Incorrect credentials" :
+                    code === "auth/too-many-requests"       ? "Too many attempts — try again later" :
+                    code === "auth/timeout"                 ? "Connection timed out — check your internet" :
+                    code === "auth/network-request-failed"  ? "Network error — check your connection" :
+                    "Authentication failed" + (code ? " — " + code : "");
                 showToast(userMsg, true);
-                log("Login failed: " + (error.code || error.message), 'error');
-                btn.innerHTML = '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
+                log("Login failed: " + (code || error.message), 'error');
+                btn.innerHTML = originalLabel || '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
+            } finally {
+                isLoginInProgress = false;
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
             }
         }
 
