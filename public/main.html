@@ -2457,6 +2457,93 @@
         }
 
 
+        // =============================================
+        // 10. AMBIENT SOUND + HAPTICS (matches main site)
+        // =============================================
+        (function(){
+            let _ac = null;
+            function getAC(){
+                if (_ac) return _ac;
+                try {
+                    const Ctor = window.AudioContext || window.webkitAudioContext;
+                    if (!Ctor) return null;
+                    _ac = new Ctor();
+                } catch(e){ return null; }
+                return _ac;
+            }
+            const KEY = 'sound_enabled';
+            let soundOn = true;
+            try { const v = localStorage.getItem(KEY); if (v !== null) soundOn = v === 'true'; } catch(e){}
+            window.toggleAdminSound = function(){
+                soundOn = !soundOn;
+                try { localStorage.setItem(KEY, String(soundOn)); } catch(e){}
+                if (soundOn) playTap(); return soundOn;
+            };
+            window.getAdminSound = function(){ return soundOn; };
+
+            function envBeep(freq, dur, type, gainPeak){
+                if (!soundOn) return;
+                const ac = getAC(); if (!ac) return;
+                try {
+                    const o = ac.createOscillator();
+                    const g = ac.createGain();
+                    o.type = type || 'sine';
+                    o.frequency.value = freq;
+                    g.gain.value = 0;
+                    g.gain.linearRampToValueAtTime(gainPeak || 0.08, ac.currentTime + 0.005);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + dur);
+                    o.connect(g).connect(ac.destination);
+                    o.start();
+                    o.stop(ac.currentTime + dur + 0.02);
+                } catch(e){}
+            }
+            function playTap(){     envBeep(880, 0.06, 'triangle', 0.07); envBeep(1320, 0.05, 'sine', 0.04); }
+            function playSuccess(){ envBeep(660, 0.10, 'sine', 0.09); setTimeout(()=>envBeep(990, 0.12, 'sine', 0.07), 70); }
+            function playError(){   envBeep(220, 0.18, 'sawtooth', 0.06); }
+            function playWhoosh(){  envBeep(140, 0.18, 'triangle', 0.05); }
+
+            window._sfx = { tap: playTap, success: playSuccess, error: playError, whoosh: playWhoosh };
+
+            // Haptics
+            const isTouch = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0;
+            function buzz(p){ try { if (isTouch && navigator.vibrate) navigator.vibrate(p); } catch(e){} }
+            window._haptics = {
+                light:   () => buzz(8),
+                medium:  () => buzz(15),
+                heavy:   () => buzz(30),
+                success: () => buzz([15,25,15]),
+                error:   () => buzz([40,50,40]),
+            };
+
+            // Global click hook — every button/link in the panel feels alive
+            function onAnyClick(e){
+                const t = e.target.closest('button, .btn-main, .btn-sm, .icon-btn, .chip, .card-icon-btn, .nav-tab, .key-click-area, [data-no-click-sound] ~ *');
+                const noSound = e.target.closest('[data-no-click-sound]');
+                if (!t || noSound) return;
+                playTap();
+                window._haptics.light();
+            }
+            document.addEventListener('pointerdown', onAnyClick, { passive: true, capture: true });
+
+            // Resume audio on first interaction (browser autoplay policy)
+            const resume = () => {
+                const ac = getAC();
+                if (ac && ac.state === 'suspended') { try { ac.resume(); } catch(e){} }
+                window.removeEventListener('pointerdown', resume);
+                window.removeEventListener('keydown', resume);
+            };
+            window.addEventListener('pointerdown', resume, { once: true });
+            window.addEventListener('keydown', resume, { once: true });
+
+            // Hook toast/showConfirm feel
+            const _origToast = window.showToast;
+            if (typeof _origToast === 'function') {
+                window.showToast = function(msg, isErr){
+                    try { (isErr ? playError : playSuccess)(); window._haptics[isErr ? 'error' : 'success'](); } catch(e){}
+                    return _origToast.apply(this, arguments);
+                };
+            }
+        })();
     </script>
 </body>
 </html>
