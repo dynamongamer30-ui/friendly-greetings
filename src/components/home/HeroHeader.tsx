@@ -32,22 +32,25 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
 
   return (
     <header className="relative flex flex-col items-center pt-12 pb-10 px-4 text-center">
-      {/* Top-right glass cluster — bell · trophy · sound */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-        <NotificationBell />
-        <AchievementHistory />
+      {/* Top-right glass cluster — bell · trophy · sound (single pill) */}
+      <div
+        className="absolute top-4 right-4 z-20 flex items-center gap-1 p-1.5 rounded-full"
+        style={{
+          background: 'rgba(20,20,50,0.55)',
+          backdropFilter: 'blur(16px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+          border: '1px solid rgba(167,139,250,0.18)',
+          boxShadow: '0 4px 18px rgba(0,0,0,0.35)',
+        }}
+      >
+        <NotificationBell bare />
+        <AchievementHistory bare />
         <button
           type="button"
           onClick={() => { playClick(); setSoundOn(toggleSound()) }}
           aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
-          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
-          style={{
-            background: 'rgba(20,20,50,0.55)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(167,139,250,0.18)',
-            color: '#A78BFA',
-          }}
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5"
+          style={{ color: '#A78BFA' }}
         >
           {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
         </button>
@@ -58,7 +61,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         initial={{ opacity: 0, scale: 0.85, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-28 h-28 mt-6 mb-7"
+        className="relative z-10 w-28 h-28 mt-6 mb-7 rounded-full"
         style={{ animation: 'heroLogoFloat 6s ease-in-out infinite' }}
       >
         {/* Outer bloom */}
@@ -98,13 +101,15 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           </g>
         </svg>
 
-        {/* Avatar — real <img> with soft radial mask so any black PNG bg fades into aurora */}
+        {/* Avatar — perfect circle, image fully covers, no masks */}
         <div
-          className="absolute inset-2 z-10 flex items-center justify-center rounded-full overflow-hidden"
+          className="absolute inset-2 z-10 flex items-center justify-center"
           style={{
+            width: 'calc(100% - 16px)',
+            height: 'calc(100% - 16px)',
+            borderRadius: '9999px',
+            overflow: 'hidden',
             background: 'linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10))',
-            border: '1px solid rgba(167,139,250,0.25)',
-            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 0 22px rgba(10,10,26,0.45)',
           }}
         >
           {showImage ? (
@@ -114,18 +119,25 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
               onError={() => setImgError(true)}
               draggable={false}
               style={{
+                display: 'block',
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: 'center top',
-                WebkitMaskImage: 'radial-gradient(circle at 50% 50%, #000 62%, rgba(0,0,0,0.55) 78%, transparent 96%)',
-                maskImage: 'radial-gradient(circle at 50% 50%, #000 62%, rgba(0,0,0,0.55) 78%, transparent 96%)',
+                objectPosition: 'center',
               }}
             />
           ) : (
             <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />
           )}
         </div>
+        {/* Soft inner edge (above image, doesn't clip) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-2 z-20 pointer-events-none rounded-full"
+          style={{
+            boxShadow: 'inset 0 0 18px rgba(10,10,26,0.45), inset 0 0 0 1px rgba(167,139,250,0.22)',
+          }}
+        />
 
         <style>{`
           @keyframes heroRingSpin { to { transform: rotate(360deg); } }
