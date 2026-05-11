@@ -1404,24 +1404,52 @@
 
         function openKeyDrawer(key) {
             drawerKey = key;
-            const val = dbData.ValidKeys[key];
-            if (!val) return;
-            const v = typeof val === 'object' ? val : {};
+            const raw = (dbData && dbData.ValidKeys) ? dbData.ValidKeys[key] : null;
+            // Tolerate legacy formats: object | ISO date string | epoch number | missing
+            let v = {};
+            if (raw && typeof raw === 'object') {
+                v = raw;
+            } else if (typeof raw === 'string' || typeof raw === 'number') {
+                v = { date: raw, duration: 24, hours: 24, expiry: 0 };
+            }
+            const isVip = String(key).toUpperCase().startsWith('VIP');
+            const isLinked = (() => {
+                if (!dbData) return false;
+                const inU = Object.values(dbData.ActivatedUsers || {}).some(d => d && d.Key === key);
+                const inB = Object.values(dbData.BannedDevices  || {}).some(d => d && d.Key === key);
+                return inU || inB;
+            })();
+
             document.getElementById('drawerKeyName').textContent = key;
-            document.getElementById('drawerStatus').textContent = v.status || 'active';
-            document.getElementById('drawerDuration').textContent = (v.duration || 24) + ' hours';
+            document.getElementById('drawerStatus').textContent =
+                v.status ? String(v.status).toUpperCase()
+                : isVip && !isLinked ? 'VIP — UNUSED'
+                : isLinked ? 'LINKED'
+                : 'ACTIVE';
+            const dur = Number(v.duration) || 24;
+            document.getElementById('drawerDuration').textContent =
+                dur >= 87600 ? 'Lifetime' : dur + ' hours';
             document.getElementById('drawerDevice').textContent = v.device || 'Unbound';
-            document.getElementById('drawerCreated').textContent = v.date ? new Date(v.date).toLocaleString() : 'Unknown';
-            // Expiry
-            if (v.expiry > 0) {
-                const remaining = v.expiry - Math.floor(Date.now() / 1000);
-                document.getElementById('drawerExpiry').textContent = remaining > 0
-                    ? Math.floor(remaining / 3600) + 'h ' + Math.floor((remaining % 3600) / 60) + 'm remaining'
-                    : 'EXPIRED';
-                document.getElementById('drawerExpiry').style.color = remaining > 0 ? 'var(--green)' : 'var(--red)';
+            let createdTxt = 'Unknown';
+            if (v.date) {
+                const t = typeof v.date === 'number' ? v.date : Date.parse(v.date);
+                if (!isNaN(t) && t > 0) createdTxt = new Date(t).toLocaleString();
+            }
+            document.getElementById('drawerCreated').textContent = createdTxt;
+
+            const expEl = document.getElementById('drawerExpiry');
+            if (Number(v.expiry) > 0) {
+                const remaining = Number(v.expiry) - Math.floor(Date.now() / 1000);
+                if (remaining > 0) {
+                    expEl.textContent = Math.floor(remaining / 3600) + 'h ' + Math.floor((remaining % 3600) / 60) + 'm remaining';
+                    expEl.style.color = 'var(--green)';
+                } else {
+                    expEl.textContent = 'EXPIRED';
+                    expEl.style.color = 'var(--red)';
+                }
             } else {
-                document.getElementById('drawerExpiry').textContent = v.duration >= 87600 ? 'Lifetime' : 'Not started';
-                document.getElementById('drawerExpiry').style.color = 'var(--blue)';
+                expEl.textContent = dur >= 87600 ? 'Lifetime' : (isVip ? 'Starts on link' : 'Not started');
+                expEl.style.color = 'var(--blue)';
             }
             document.getElementById('keyDrawer').classList.add('open');
             log('Opened key details: ' + key);
@@ -2052,11 +2080,13 @@
                 // Q7: expiring within 2 hours
                 const isExpiring = !isRevoked && remainSec > 0 && remainSec < 7200;
                 let   statusHtml = "";
-                if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
-                else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
-                else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
-                else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP — UNUSED</span>`;
-                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
+                // VIP keys: always show gold "VIP — UNUSED" badge when unlinked, never auto-delete badge
+                if (isRevoked)            statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
+                else if (isVip && !isLinked) statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP — UNUSED</span>`;
+                else if (isExpiring)      statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
+                else if (isLinked)        statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
+                else if (isVip)           statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
+                else                      statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
 
                 // S2: source badge
                 const src = typeof val === 'object' ? (val.source || '') : '';
@@ -2709,7 +2739,13 @@
             ];
             let last = performance.now();
             function loop(now) {
-                const dt = now - last; last = now;
+                if (document.hidden) {
+                    animationId = requestAnimationFrame(loop);
+                    last = now;
+                    return;
+                }
+                let dt = now - last; last = now;
+                if (dt > 100) dt = 100; // clamp after tab unhide
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.globalCompositeOperation = 'lighter';
                 blobs.forEach(b => {
