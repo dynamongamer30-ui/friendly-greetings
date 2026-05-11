@@ -2052,11 +2052,13 @@
                 // Q7: expiring within 2 hours
                 const isExpiring = !isRevoked && remainSec > 0 && remainSec < 7200;
                 let   statusHtml = "";
-                if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
-                else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
-                else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
-                else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP — UNUSED</span>`;
-                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
+                // VIP keys: always show gold "VIP — UNUSED" badge when unlinked, never auto-delete badge
+                if (isRevoked)            statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
+                else if (isVip && !isLinked) statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP — UNUSED</span>`;
+                else if (isExpiring)      statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
+                else if (isLinked)        statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
+                else if (isVip)           statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
+                else                      statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
 
                 // S2: source badge
                 const src = typeof val === 'object' ? (val.source || '') : '';
