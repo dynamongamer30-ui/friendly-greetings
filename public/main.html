@@ -165,9 +165,10 @@
            BULK BAR
         ============================================ */
         .bulk-bar {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
             background: rgba(255,69,0,0.02); border: 1px solid var(--border);
-            padding: 9px 14px; border-radius: var(--radius-md); margin-bottom: 12px;
+            padding: 9px 12px; border-radius: var(--radius-md); margin-bottom: 12px;
+            min-width: 0;
         }
         .chk-container { display: flex; align-items: center; gap: 9px; font-size: 0.72rem; color: var(--muted); font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .custom-chk {
@@ -177,7 +178,14 @@
         .custom-chk.checked { background: var(--accent); border-color: var(--accent); }
         .custom-chk i { font-size: 0.6rem; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.22s cubic-bezier(0.16,1,0.3,1); }
         .custom-chk.checked i { opacity: 1; transform: scale(1); color: #07030A; }
-        .bulk-actions { display: flex; gap: 8px; }
+        .bulk-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+        @media (max-width: 520px) {
+            .bulk-bar { padding: 8px; }
+            .bulk-bar > .chk-container { flex: 1 1 auto; }
+            .bulk-bar > button.btn-sm { flex: 0 0 auto; margin-left: 0 !important; margin-right: 0 !important; }
+            .bulk-actions { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .bulk-actions .btn-sm { width: 100%; padding: 8px 6px; font-size: 0.65rem; text-align: center; justify-content: center; }
+        }
         .btn-sm {
             padding: 7px 12px; border-radius: var(--radius-sm); font-size: 0.7rem;
             font-weight: 700; cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); letter-spacing: 0.3px; border: 1px solid transparent;
