@@ -53,41 +53,78 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         </button>
       </div>
 
-      {/* Logo */}
+      {/* Logo — liquid gradient ring */}
       <motion.div
         initial={{ opacity: 0, scale: 0.85, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-24 h-24 mt-6 mb-7"
+        className="relative z-10 w-28 h-28 mt-6 mb-7"
+        style={{ animation: 'heroLogoFloat 6s ease-in-out infinite' }}
       >
+        {/* Outer bloom */}
         <div
           aria-hidden="true"
-          className="absolute -inset-3 rounded-full"
+          className="absolute -inset-8 rounded-full pointer-events-none"
           style={{
-            background: 'conic-gradient(from 0deg, #22D3EE, #A78BFA, #22D3EE)',
-            mask: 'radial-gradient(circle, transparent 54%, black 56%)',
-            WebkitMask: 'radial-gradient(circle, transparent 54%, black 56%)',
-            animation: 'logo-ring-spin 8s linear infinite',
+            background: 'radial-gradient(circle, rgba(34,211,238,0.45), rgba(167,139,250,0.25) 45%, transparent 70%)',
+            filter: 'blur(20px)',
+            animation: 'heroLogoBloom 4s ease-in-out infinite',
           }}
         />
-        <div
+
+        {/* SVG liquid ring — guaranteed perfect circle */}
+        <svg
           aria-hidden="true"
-          className="absolute -inset-6 rounded-full opacity-60 blur-2xl"
-          style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.45), transparent 70%)' }}
-        />
+          viewBox="0 0 120 120"
+          className="absolute inset-0 w-full h-full"
+          style={{ overflow: 'visible' }}
+        >
+          <defs>
+            <linearGradient id="auroraRing" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#22D3EE" />
+              <stop offset="50%" stopColor="#A78BFA" />
+              <stop offset="100%" stopColor="#22D3EE" />
+            </linearGradient>
+          </defs>
+          <g style={{ transformOrigin: '60px 60px', animation: 'heroRingSpin 8s linear infinite' }}>
+            <circle
+              cx="60" cy="60" r="56"
+              fill="none"
+              stroke="url(#auroraRing)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="280 80"
+            />
+          </g>
+        </svg>
+
+        {/* Avatar */}
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center rounded-full overflow-hidden"
+          className="absolute inset-2 z-10 flex items-center justify-center rounded-full overflow-hidden"
           style={{
             backgroundImage: showImage ? `url(${logoUrl})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundColor: '#0A0A1A',
-            border: '1.5px solid rgba(167,139,250,0.35)',
+            border: '1px solid rgba(167,139,250,0.25)',
+            boxShadow: 'inset 0 0 20px rgba(10,10,26,0.6)',
           }}
         >
           {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />}
           {showImage && <img src={logoUrl} alt="" className="sr-only" onError={() => setImgError(true)} />}
         </div>
+
+        <style>{`
+          @keyframes heroRingSpin { to { transform: rotate(360deg); } }
+          @keyframes heroLogoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+          @keyframes heroLogoBloom {
+            0%, 100% { opacity: 0.55; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.08); }
+          }
+        `}</style>
       </motion.div>
 
       {/* Title */}
