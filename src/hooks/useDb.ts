@@ -4,9 +4,7 @@
  * FIXED: Comments now write approved:true by default so they appear immediately.
  *        Admin can still reject from the admin panel.
  */
-import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import firebase from 'firebase/compat/app'
 import { db, auth } from '@/lib/firebase'
 import { Cipher } from '@/lib/cipher'
 import type {
