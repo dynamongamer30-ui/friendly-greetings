@@ -294,11 +294,12 @@
         .custom-chk.checked i { opacity: 1; transform: scale(1); color: #07030A; }
         .bulk-actions { display: flex; flex-wrap: wrap; gap: 6px; }
         @media (max-width: 520px) {
-            .bulk-bar { padding: 8px; }
-            .bulk-bar > .chk-container { flex: 1 1 auto; }
-            .bulk-bar > button.btn-sm { flex: 0 0 auto; margin-left: 0 !important; margin-right: 0 !important; }
+            .bulk-bar { padding: 8px; gap: 6px; }
+            .bulk-bar > .chk-container { flex: 1 1 auto; min-width: 0; font-size: 0.65rem; }
+            .bulk-bar > button.btn-sm { flex: 0 0 auto; margin-left: 0 !important; margin-right: 0 !important; padding: 6px 9px; font-size: 0.62rem; }
             .bulk-actions { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-            .bulk-actions .btn-sm { width: 100%; padding: 8px 6px; font-size: 0.65rem; text-align: center; justify-content: center; }
+            .bulk-actions .btn-sm { width: 100%; padding: 8px 4px; font-size: 0.62rem; text-align: center; justify-content: center; }
+            #tabKeys, #tabDevices, #listKeys, #listDevices { overflow-x: hidden; max-width: 100%; }
         }
         .btn-sm {
             padding: 7px 12px; border-radius: var(--radius-sm); font-size: 0.7rem;
