@@ -78,7 +78,7 @@ export default function AuroraOrb() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       host.style.background =
-        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 69, 0,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(245, 158, 11,0.18), transparent 65%), #0A0A1A'
+        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 69, 0,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(245, 158, 11,0.18), transparent 65%), #07030A'
       return
     }
 
@@ -88,7 +88,7 @@ export default function AuroraOrb() {
     try {
       renderer = new Renderer({ alpha: false, dpr: Math.min(window.devicePixelRatio, dprCap) })
     } catch {
-      host.style.background = 'linear-gradient(135deg, #0A0A1A, #141432)'
+      host.style.background = 'linear-gradient(135deg, #07030A, #1a0a04)'
       return
     }
     const gl = renderer.gl
@@ -166,7 +166,7 @@ export default function AuroraOrb() {
         inset: 0,
         zIndex: 0,
         pointerEvents: 'none',
-        background: '#0A0A1A',
+        background: '#07030A',
       }}
     />
   )

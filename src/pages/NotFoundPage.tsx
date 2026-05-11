@@ -3,7 +3,7 @@ import { Home } from 'lucide-react'
 
 export default function NotFoundPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0A0A1A] px-4">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#07030A] px-4">
       {/* Aurora layers (same technique as Step 5) */}
       <div className="nf-aurora nf-aurora-1" aria-hidden />
       <div className="nf-aurora nf-aurora-2" aria-hidden />

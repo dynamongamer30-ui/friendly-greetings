@@ -55,8 +55,8 @@
     --font-ui: 'Space Grotesk', 'DM Sans', sans-serif;
 
     /* ── Cosmic Aurora palette ── */
-    --bg-base: #0A0A1A;
-    --bg-elev: #141432;
+    --bg-base: #07030A;
+    --bg-elev: #1a0a04;
     --surface: rgba(20, 20, 50, 0.55);
     --aurora-cyan: #FF4500;
     --aurora-violet: #F59E0B;
@@ -1356,7 +1356,7 @@
     radial-gradient(circle at 20% 30%, rgba(255, 69, 0,0.35), transparent 55%),
     radial-gradient(circle at 80% 20%, rgba(245, 158, 11,0.35), transparent 55%),
     radial-gradient(circle at 50% 80%, rgba(255, 69, 0,0.25), transparent 60%),
-    linear-gradient(135deg, #0A0A1A 0%, #050810 100%);
+    linear-gradient(135deg, #07030A 0%, #050810 100%);
   background-size: 200% 200%;
   animation: hero-mesh-shift 18s ease-in-out infinite;
   filter: blur(0.5px);
@@ -1890,7 +1890,7 @@ button, [role='button'], a {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0A1A;
+  background: #07030A;
 }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(#FF4500, #F59E0B);
@@ -2393,7 +2393,7 @@ html, body {
   --c-text-mute:   #8B92B8;
   --c-text-faint:  #475569;
   --c-surface-0:   #05080A;
-  --c-surface-1:   #0A0A1A;
+  --c-surface-1:   #07030A;
   --c-surface-2:   rgba(20,20,50,0.55);
   --c-surface-3:   rgba(20,20,50,0.75);
 
