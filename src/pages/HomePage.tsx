@@ -66,7 +66,7 @@ export default function HomePage() {
   }, [mods, searchTerm, category, sortBy])
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative" style={{ position: 'relative', zIndex: 1 }}>
       {/* Background is global AuroraOrb in App.tsx */}
 
       {/* Announcement banner */}
