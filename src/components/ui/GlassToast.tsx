@@ -80,10 +80,10 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 }
 
 const COLOR: Record<ToastType, { icon: string; border: string; glow: string; bar: string }> = {
-  success: { icon: '#22D3EE', border: 'rgba(34, 211, 238, 0.28)', glow: 'rgba(34, 211, 238, 0.12)', bar: '#22D3EE' },
+  success: { icon: '#FF4500', border: 'rgba(255, 69, 0, 0.28)', glow: 'rgba(255, 69, 0, 0.12)', bar: '#FF4500' },
   error:   { icon: '#EF4444', border: 'rgba(239, 68, 68, 0.28)', glow: 'rgba(239, 68, 68, 0.12)', bar: '#EF4444' },
   warning: { icon: '#EAB308', border: 'rgba(234, 179, 8, 0.28)', glow: 'rgba(234, 179, 8, 0.12)', bar: '#EAB308' },
-  info:    { icon: '#A78BFA', border: 'rgba(167, 139, 250, 0.28)', glow: 'rgba(167, 139, 250, 0.12)', bar: '#A78BFA' },
+  info:    { icon: '#F59E0B', border: 'rgba(245, 158, 11, 0.28)', glow: 'rgba(245, 158, 11, 0.12)', bar: '#F59E0B' },
 }
 
 /* ─── Single Toast Item with swipe-to-dismiss ─────────────────────── */

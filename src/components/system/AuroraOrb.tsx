@@ -49,13 +49,13 @@ const FRAG = /* glsl */ `
     float orb = smoothstep(0.55, 0.0, length(uv - m*0.6));
 
     // colors
-    vec3 cyan   = vec3(0.133, 0.827, 0.933);
-    vec3 violet = vec3(0.655, 0.545, 0.980);
-    vec3 deep   = vec3(0.039, 0.039, 0.102);
+    vec3 ember  = vec3(1.000, 0.271, 0.000);
+    vec3 amber  = vec3(0.961, 0.620, 0.043);
+    vec3 deep   = vec3(0.027, 0.012, 0.039);
 
-    vec3 col = mix(deep, violet, smoothstep(0.2, 0.8, f));
-    col = mix(col, cyan, smoothstep(0.55, 1.0, f) * 0.85);
-    col += orb * 0.18 * mix(cyan, violet, 0.5);
+    vec3 col = mix(deep, amber, smoothstep(0.2, 0.8, f));
+    col = mix(col, ember, smoothstep(0.55, 1.0, f) * 0.85);
+    col += orb * 0.18 * mix(ember, amber, 0.5);
 
     // vignette
     float v = smoothstep(1.2, 0.2, length(uv));
@@ -78,7 +78,7 @@ export default function AuroraOrb() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       host.style.background =
-        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(34,211,238,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(167,139,250,0.18), transparent 65%), #0A0A1A'
+        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 69, 0,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(245, 158, 11,0.18), transparent 65%), #07030A'
       return
     }
 
@@ -88,7 +88,7 @@ export default function AuroraOrb() {
     try {
       renderer = new Renderer({ alpha: false, dpr: Math.min(window.devicePixelRatio, dprCap) })
     } catch {
-      host.style.background = 'linear-gradient(135deg, #0A0A1A, #141432)'
+      host.style.background = 'linear-gradient(135deg, #07030A, #1a0a04)'
       return
     }
     const gl = renderer.gl
@@ -166,7 +166,7 @@ export default function AuroraOrb() {
         inset: 0,
         zIndex: 0,
         pointerEvents: 'none',
-        background: '#0A0A1A',
+        background: '#07030A',
       }}
     />
   )

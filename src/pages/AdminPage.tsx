@@ -84,8 +84,8 @@ export default function AdminPage() {
           className="glass-panel p-8 w-full max-w-sm space-y-6 relative z-10"
         >
           <div className="text-center space-y-3">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[rgba(34,211,238,0.08)] border border-[rgba(34,211,238,0.15)] flex items-center justify-center">
-              <Gamepad2 className="w-7 h-7 text-[#22D3EE]" />
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[rgba(255, 69, 0,0.08)] border border-[rgba(255, 69, 0,0.15)] flex items-center justify-center">
+              <Gamepad2 className="w-7 h-7 text-[#FF4500]" />
             </div>
             <h1 className="text-xl font-bold text-[#E2E8F0]">Admin Login</h1>
           </div>
@@ -145,13 +145,13 @@ export default function AdminPage() {
           background: 'rgba(20,20,50,0.55)',
           backdropFilter: 'blur(22px) saturate(140%)',
           WebkitBackdropFilter: 'blur(22px) saturate(140%)',
-          borderColor: 'rgba(167,139,250,0.14)',
+          borderColor: 'rgba(245, 158, 11,0.14)',
           position: 'relative',
           zIndex: 2,
         }}
       >
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(167,139,250,0.14)]">
-          <Gamepad2 className="w-5 h-5 text-[#22D3EE]" />
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(245, 158, 11,0.14)]">
+          <Gamepad2 className="w-5 h-5 text-[#FF4500]" />
           <span className="text-sm font-bold aurora-text">Admin Panel</span>
         </div>
         <nav className="flex md:flex-col p-2 gap-1 overflow-x-auto md:overflow-x-visible scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -165,10 +165,10 @@ export default function AdminPage() {
                 style={
                   active
                     ? {
-                        background: 'linear-gradient(135deg, rgba(34,211,238,0.18), rgba(167,139,250,0.18))',
-                        color: '#22D3EE',
-                        border: '1px solid rgba(34,211,238,0.32)',
-                        boxShadow: '0 0 18px rgba(34,211,238,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
+                        background: 'linear-gradient(135deg, rgba(255, 69, 0,0.18), rgba(245, 158, 11,0.18))',
+                        color: '#FF4500',
+                        border: '1px solid rgba(255, 69, 0,0.32)',
+                        boxShadow: '0 0 18px rgba(255, 69, 0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
                       }
                     : {
                         color: '#94a3b8',

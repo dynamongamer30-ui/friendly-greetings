@@ -48,7 +48,7 @@ function MatrixRain() {
     const interval = setInterval(() => {
       ctx.fillStyle = 'rgba(5, 8, 10, 0.08)'
       ctx.fillRect(0, 0, canvas!.width, canvas!.height)
-      ctx.fillStyle = 'rgba(34, 211, 238, 0.35)'
+      ctx.fillStyle = 'rgba(255, 69, 0, 0.35)'
       ctx.font = `${fontSize}px JetBrains Mono, monospace`
       for (let i = 0; i < columns; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)]
@@ -86,14 +86,14 @@ function ProgressRing({ value }: { value: number }) {
         <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(10,15,30,0.9)" strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2} cy={size / 2} r={r}
-          stroke="#22D3EE" strokeWidth={stroke} fill="none" strokeLinecap="round"
+          stroke="#FF4500" strokeWidth={stroke} fill="none" strokeLinecap="round"
           strokeDasharray={C}
           strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 500ms ease', filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.6))' }}
+          style={{ transition: 'stroke-dashoffset 500ms ease', filter: 'drop-shadow(0 0 6px rgba(255, 69, 0,0.6))' }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-sm font-bold text-[#22D3EE]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+        <span className="text-sm font-bold text-[#FF4500]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
           {Math.round(value)}%
         </span>
       </div>
@@ -127,7 +127,7 @@ export default function UnlockPage() {
       particleCount: 120,
       spread: 75,
       origin: { y: 0.5 },
-      colors: ['#22D3EE', '#A78BFA'],
+      colors: ['#FF4500', '#F59E0B'],
       disableForReducedMotion: true,
     })
     setTimeout(() => {
@@ -136,7 +136,7 @@ export default function UnlockPage() {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.6 },
-        colors: ['#22D3EE', '#A78BFA'],
+        colors: ['#FF4500', '#F59E0B'],
         disableForReducedMotion: true,
       })
       confetti({
@@ -144,7 +144,7 @@ export default function UnlockPage() {
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.6 },
-        colors: ['#22D3EE', '#A78BFA'],
+        colors: ['#FF4500', '#F59E0B'],
         disableForReducedMotion: true,
       })
     }, 200)
@@ -271,7 +271,7 @@ export default function UnlockPage() {
 
           <div className="w-full h-1.5 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#22D3EE] to-[#A78BFA] transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-[#FF4500] to-[#F59E0B] transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -286,7 +286,7 @@ export default function UnlockPage() {
                       {s.icon}
                     </div>
                   )}
-                  {s.status === 'running' && <Loader2 className="w-5 h-5 text-[#22D3EE] animate-spin" />}
+                  {s.status === 'running' && <Loader2 className="w-5 h-5 text-[#FF4500] animate-spin" />}
                   {s.status === 'done' && <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />}
                   {s.status === 'error' && <XCircle className="w-5 h-5 text-[#EF4444]" />}
                 </div>
@@ -294,7 +294,7 @@ export default function UnlockPage() {
                   <span style={{ fontFamily: "'Space Grotesk', sans-serif" }} className={`text-sm font-medium ${
                     s.status === 'done' ? 'text-[#22C55E]' :
                     s.status === 'error' ? 'text-[#EF4444]' :
-                    s.status === 'running' ? 'text-[#22D3EE]' : 'text-[#475569]'
+                    s.status === 'running' ? 'text-[#FF4500]' : 'text-[#475569]'
                   }`}>
                     {s.label}
                   </span>

@@ -3,7 +3,7 @@ import { Home } from 'lucide-react'
 
 export default function NotFoundPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0A0A1A] px-4">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#07030A] px-4">
       {/* Aurora layers (same technique as Step 5) */}
       <div className="nf-aurora nf-aurora-1" aria-hidden />
       <div className="nf-aurora nf-aurora-2" aria-hidden />
@@ -18,7 +18,7 @@ export default function NotFoundPage() {
         <Link
           to="/"
           className="inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-xl font-semibold text-[#05080A] active:scale-95 transition-transform"
-          style={{ background: 'linear-gradient(135deg,#22D3EE,#A78BFA)', boxShadow: '0 0 24px rgba(34,211,238,0.35)' }}
+          style={{ background: 'linear-gradient(135deg,#FF4500,#F59E0B)', boxShadow: '0 0 24px rgba(255, 69, 0,0.35)' }}
         >
           <Home className="w-4 h-4" />
           Go Home

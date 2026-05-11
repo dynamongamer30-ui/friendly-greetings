@@ -62,7 +62,7 @@ export function StarRating({ modId }: StarRatingProps) {
         particleCount: 60,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#A78BFA', '#22D3EE', '#a855f7', '#fff'],
+        colors: ['#F59E0B', '#FF4500', '#F59E0B', '#fff'],
         scalar: 0.8,
         gravity: 1.2,
       })
@@ -129,8 +129,8 @@ export function StarRating({ modId }: StarRatingProps) {
                 <svg viewBox="0 0 24 24" style={{ width: 28, height: 28 }} aria-hidden="true">
                   <path
                     d="M12 2.5l2.95 5.97 6.6.96-4.78 4.65 1.13 6.57L12 17.55l-5.9 3.1 1.13-6.57L2.45 9.43l6.6-.96L12 2.5z"
-                    fill={filled ? '#A78BFA' : 'none'}
-                    stroke={filled ? '#A78BFA' : 'rgba(167,139,250,0.45)'}
+                    fill={filled ? '#F59E0B' : 'none'}
+                    stroke={filled ? '#F59E0B' : 'rgba(245, 158, 11,0.45)'}
                     strokeWidth="1.4"
                     strokeLinejoin="round"
                     style={{ transition: 'fill 0.15s, stroke 0.15s' }}
@@ -146,7 +146,7 @@ export function StarRating({ modId }: StarRatingProps) {
             <Lock className="w-3.5 h-3.5" /> Your rating: {savedRating} ★
           </span>
         ) : pendingRating ? (
-          <span className="text-xs text-[#A78BFA] font-semibold">{LABELS[pendingRating]}</span>
+          <span className="text-xs text-[#F59E0B] font-semibold">{LABELS[pendingRating]}</span>
         ) : (
           <span className="text-xs text-[#64748b]">
             {hover ? LABELS[hover] : 'Tap a star to rate'}
@@ -158,7 +158,7 @@ export function StarRating({ modId }: StarRatingProps) {
       {pendingRating !== null && (
         <div
           className="glass-panel p-4 space-y-3 border"
-          style={{ borderColor: 'rgba(167,139,250,0.25)', borderRadius: 14 }}
+          style={{ borderColor: 'rgba(245, 158, 11,0.25)', borderRadius: 14 }}
         >
           <div className="text-sm font-semibold text-[#E2E8F0] leading-snug">
             {pendingRating === 5

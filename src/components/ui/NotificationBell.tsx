@@ -52,13 +52,13 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
         }
         style={
           bare
-            ? { color: '#22D3EE' }
+            ? { color: '#FF4500' }
             : {
                 background: 'rgba(20,20,50,0.55)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(167,139,250,0.18)',
-                color: '#22D3EE',
+                border: '1px solid rgba(245, 158, 11,0.18)',
+                color: '#FF4500',
               }
         }
       >
@@ -66,7 +66,7 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
         {unread > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center num-tab"
-            style={{ background: '#22D3EE', color: '#0A0A1A', boxShadow: '0 0 8px #22D3EE', animation: 'trophyBounce 0.45s cubic-bezier(0.34,1.56,0.64,1)' }}
+            style={{ background: '#FF4500', color: '#07030A', boxShadow: '0 0 8px #FF4500', animation: 'trophyBounce 0.45s cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             {unread > 9 ? '9+' : unread}
           </span>
@@ -78,14 +78,14 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
           className="absolute top-12 right-0 w-72 max-h-[60vh] overflow-y-auto rounded-2xl"
           style={{
             background: 'rgba(5,8,10,0.96)',
-            border: '1px solid rgba(34,211,238,0.25)',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(34,211,238,0.12)',
+            border: '1px solid rgba(255, 69, 0,0.25)',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(255, 69, 0,0.12)',
             backdropFilter: 'blur(16px)',
             animation: 'glassDropdownIn 0.22s cubic-bezier(0.16,1,0.3,1) both',
           }}
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
-            <span className="text-xs font-bold text-[#22D3EE] uppercase tracking-wider">Notifications</span>
+            <span className="text-xs font-bold text-[#FF4500] uppercase tracking-wider">Notifications</span>
             <button onClick={() => setOpen(false)} className="text-[#475569] hover:text-[#94a3b8]" data-no-click-sound="true">
               <X className="w-4 h-4" />
             </button>

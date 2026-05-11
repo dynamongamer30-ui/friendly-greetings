@@ -46,7 +46,7 @@ export function TrendingCarousel({ currentModId }: TrendingCarouselProps) {
             href={`/download?id=${mod.id}`}
             className="carousel-item group w-40 sm:w-44"
           >
-            <div className="glass-panel overflow-hidden transition-all duration-300 group-hover:border-[#22d3ee]/30 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.08)]">
+            <div className="glass-panel overflow-hidden transition-all duration-300 group-hover:border-[#FF4500]/30 group-hover:shadow-[0_0_20px_rgba(255, 69, 0,0.08)]">
               {/* Image */}
               <div className="relative aspect-square overflow-hidden">
                 <img
@@ -61,7 +61,7 @@ export function TrendingCarousel({ currentModId }: TrendingCarouselProps) {
 
               {/* Info */}
               <div className="p-3 space-y-1.5">
-                <h3 className="text-sm font-semibold text-white truncate leading-tight group-hover:text-[#22d3ee] transition-colors">
+                <h3 className="text-sm font-semibold text-white truncate leading-tight group-hover:text-[#FF4500] transition-colors">
                   {mod.title}
                 </h3>
 
@@ -84,7 +84,7 @@ export function TrendingCarousel({ currentModId }: TrendingCarouselProps) {
 /* ── Section header ──────────────────────────────────────────────────────── */
 function Header() {
   return (
-    <div className="flex items-center gap-2 text-sm font-semibold text-[#22d3ee] uppercase tracking-wider">
+    <div className="flex items-center gap-2 text-sm font-semibold text-[#FF4500] uppercase tracking-wider">
       <TrendingUp className="w-4 h-4" />
       Trending Mods
     </div>

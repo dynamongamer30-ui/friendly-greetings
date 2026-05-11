@@ -102,7 +102,7 @@ export function SettingsTab() {
             <div className="mt-2 flex items-center gap-3">
               <div
                 className="w-16 h-16 flex items-center justify-center"
-                style={{ borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(167,139,250,0.25)' }}
+                style={{ borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(245, 158, 11,0.25)' }}
               >
                 <img
                   src={logoUrl}
