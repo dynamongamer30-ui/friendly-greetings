@@ -120,7 +120,7 @@ function RootShell() {
       <ScrollProgress />
       <CursorGlow />
       <RouteSoundEffect />
-      <AchievementToast />
+      
       <GlassToaster />
       <PageTransition>
         <Outlet />
