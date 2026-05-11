@@ -1467,8 +1467,19 @@
 
             Object.keys(dbData.ValidKeys).forEach(key => {
                 const val = dbData.ValidKeys[key];
+                const isVipKey = key.toUpperCase().startsWith("VIP");
 
-                // AUTO-DELETE: remove keys whose expiry timestamp has passed (midnight rule)
+                // VIP linking auto-expiry: once a VIP (expiry=0) key gets linked to a device,
+                // start its countdown from now + (duration * 3600). Lifetime keys (duration>=87600) stay 0.
+                if (isVipKey && typeof val === 'object' && val.expiry === 0 && keysInUse.has(key)) {
+                    const dur = Number(val.duration) || 0;
+                    if (dur > 0 && dur < 87600) {
+                        val.expiry = nowSec + (dur * 3600);
+                        hasChanges = true;
+                    }
+                }
+
+                // AUTO-DELETE: remove keys whose expiry timestamp has passed
                 if (typeof val === 'object' && val.expiry > 0 && val.expiry < nowSec) {
                     // Also unlink any bound device
                     if (val.device) {
@@ -1482,7 +1493,7 @@
                 }
 
                 // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (key.toUpperCase().startsWith("VIP")) return;
+                if (isVipKey) return;
                 if (keysInUse.has(key)) return;
 
                 let creationTime = 0;
