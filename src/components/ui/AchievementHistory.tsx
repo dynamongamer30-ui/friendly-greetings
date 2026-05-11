@@ -15,7 +15,7 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
         aria-label="Achievements"
         className={
           bare
-            ? 'w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
+            ? 'w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
             : 'w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105'
         }
         style={
@@ -30,7 +30,7 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
               }
         }
       >
-        <Trophy className="w-4 h-4" />
+        <Trophy className="w-3.5 h-3.5" />
       </button>
 
       {open && (
