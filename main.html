@@ -15,22 +15,22 @@
            Mirrors src/index.css tokens (cyan + violet aurora)
         ============================================ */
         :root {
-            --bg: #05080A;
-            --surface: #0A0F14;
+            --bg: #07030A;
+            --surface: #14080411;
             --card: rgba(255, 255, 255, 0.04);
             --card-strong: rgba(10, 14, 20, 0.72);
             --nav: rgba(8, 12, 18, 0.75);
             --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(34, 211, 238, 0.32);
-            --accent: #22D3EE;          /* cyan */
-            --accent-2: #00F0FF;
-            --accent-glow: rgba(34, 211, 238, 0.55);
-            --accent-dim: rgba(34, 211, 238, 0.12);
-            --violet: #A78BFA;
-            --violet-2: #7B2FFF;
-            --violet-dim: rgba(167, 139, 250, 0.14);
-            --grad-aurora: linear-gradient(135deg, #22D3EE 0%, #A78BFA 100%);
-            --grad-aurora-soft: linear-gradient(135deg, rgba(34,211,238,0.85), rgba(167,139,250,0.85));
+            --border-hover: rgba(255, 69, 0, 0.32);
+            --accent: #FF4500;          /* cyan */
+            --accent-2: #FF4500;
+            --accent-glow: rgba(255, 69, 0, 0.55);
+            --accent-dim: rgba(255, 69, 0, 0.12);
+            --violet: #F59E0B;
+            --violet-2: #F97316;
+            --violet-dim: rgba(245, 158, 11, 0.14);
+            --grad-aurora: linear-gradient(135deg, #FF4500 0%, #F59E0B 100%);
+            --grad-aurora-soft: linear-gradient(135deg, rgba(255, 69, 0,0.85), rgba(245, 158, 11,0.85));
             --text: #E6EDF5;
             --text-soft: #B8C5D6;
             --muted: #6B7B8E;
@@ -39,12 +39,12 @@
             --blue: #38BDF8;
             --orange: #F97316;
             --gold: #F59E0B;
-            --purple: #A78BFA;
+            --purple: #F59E0B;
 
             --inset-glow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
             --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.55);
-            --shadow-glow: 0 0 32px rgba(34, 211, 238, 0.10);
-            --shadow-hero: 0 30px 80px -20px rgba(34, 211, 238, 0.25), 0 20px 60px -20px rgba(167, 139, 250, 0.20);
+            --shadow-glow: 0 0 32px rgba(255, 69, 0, 0.10);
+            --shadow-hero: 0 30px 80px -20px rgba(255, 69, 0, 0.25), 0 20px 60px -20px rgba(245, 158, 11, 0.20);
             --glass: blur(22px) saturate(160%);
 
             --radius-lg: 20px;
@@ -73,8 +73,8 @@
         body::before {
             content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -2;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 0%, rgba(34,211,238,0.10), transparent 60%),
-                radial-gradient(ellipse 70% 50% at 85% 100%, rgba(167,139,250,0.10), transparent 60%),
+                radial-gradient(ellipse 80% 60% at 20% 0%, rgba(255, 69, 0,0.10), transparent 60%),
+                radial-gradient(ellipse 70% 50% at 85% 100%, rgba(245, 158, 11,0.10), transparent 60%),
                 radial-gradient(ellipse 50% 40% at 50% 50%, rgba(123,47,255,0.05), transparent 70%);
         }
         input, select, textarea { user-select: text; font-family: inherit; }
@@ -148,7 +148,7 @@
             background: var(--grad-aurora);
             border-radius: 11px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35), var(--inset-glow);
+            box-shadow: 0 6px 18px rgba(255, 69, 0, 0.35), var(--inset-glow);
             position: relative; overflow: hidden;
         }
         .brand-icon::after {
@@ -204,7 +204,7 @@
         }
         .stat-card::before {
             content: ''; position: absolute; inset: 0; pointer-events: none;
-            background: linear-gradient(115deg, transparent 30%, rgba(34,211,238,0.10) 50%, transparent 70%);
+            background: linear-gradient(115deg, transparent 30%, rgba(255, 69, 0,0.10) 50%, transparent 70%);
             background-size: 220% 100%; background-position: 200% 0;
             transition: background-position 0.9s ease; opacity: 0;
         }
@@ -242,15 +242,17 @@
         .input-std::placeholder { color: var(--muted); }
         .input-std:focus, .select-std:focus {
             border-color: var(--accent);
-            background: rgba(34, 211, 238, 0.05);
-            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.14), 0 0 24px rgba(34, 211, 238, 0.18);
+            background: rgba(255, 69, 0, 0.05);
+            box-shadow: 0 0 0 4px rgba(255, 69, 0, 0.14), 0 0 24px rgba(255, 69, 0, 0.18);
         }
         .input-no-icon { padding-left: 14px; }
         .select-std {
             padding: 12px 38px 12px 14px; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%2322D3EE' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23F59E0B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right 14px center;
         }
+        .select-std option { background: #1a0a04; color: #F59E0B; padding: 8px; }
+        .select-std option:checked { background: rgba(255,69,0,0.25); color: #FF4500; }
         .btn-main {
             background: var(--grad-aurora);
             color: #05080A; border: none;
@@ -261,7 +263,7 @@
             cursor: pointer; display: flex; align-items: center;
             gap: 8px; white-space: nowrap;
             letter-spacing: 0.2px;
-            box-shadow: 0 8px 24px rgba(34, 211, 238, 0.32), var(--inset-glow);
+            box-shadow: 0 8px 24px rgba(255, 69, 0, 0.32), var(--inset-glow);
             transition: transform 0.18s var(--ease-spring), box-shadow 0.25s, filter 0.2s;
             position: relative; overflow: hidden;
         }
@@ -271,7 +273,7 @@
             background-size: 200% 100%; background-position: 200% 0;
             transition: background-position 0.7s ease;
         }
-        .btn-main:hover { box-shadow: 0 12px 36px rgba(34, 211, 238, 0.45), var(--inset-glow); filter: brightness(1.08); }
+        .btn-main:hover { box-shadow: 0 12px 36px rgba(255, 69, 0, 0.45), var(--inset-glow); filter: brightness(1.08); }
         .btn-main:hover::after { background-position: -200% 0; }
         .btn-main:active { transform: scale(0.97); }
 
@@ -295,7 +297,7 @@
         .chip.active {
             background: var(--accent-dim);
             color: var(--accent); border-color: var(--accent);
-            box-shadow: 0 0 18px rgba(34, 211, 238, 0.25), var(--inset-glow);
+            box-shadow: 0 0 18px rgba(255, 69, 0, 0.25), var(--inset-glow);
         }
 
         /* ============================================
@@ -316,7 +318,7 @@
             transition: all 0.2s var(--ease-spring); flex-shrink: 0;
             background: rgba(255,255,255,0.02);
         }
-        .custom-chk.checked { background: var(--grad-aurora); border-color: transparent; box-shadow: 0 0 14px rgba(34,211,238,0.35); }
+        .custom-chk.checked { background: var(--grad-aurora); border-color: transparent; box-shadow: 0 0 14px rgba(255, 69, 0,0.35); }
         .custom-chk i { font-size: 0.62rem; color: #05080A; opacity: 0; transform: scale(0.5); transition: all 0.2s; }
         .custom-chk.checked i { opacity: 1; transform: scale(1); }
         .bulk-actions { display: flex; gap: 8px; }
@@ -328,8 +330,8 @@
         .btn-sm:active { transform: scale(0.94); }
         .btn-sm-danger { background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.28); color: var(--red); }
         .btn-sm-danger:hover { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 0 18px rgba(239,68,68,0.4); }
-        .btn-sm-blue { background: var(--accent-dim); border-color: rgba(34,211,238,0.3); color: var(--accent); }
-        .btn-sm-blue:hover { background: var(--accent); color: #05080A; border-color: var(--accent); box-shadow: 0 0 18px rgba(34,211,238,0.45); }
+        .btn-sm-blue { background: var(--accent-dim); border-color: rgba(255, 69, 0,0.3); color: var(--accent); }
+        .btn-sm-blue:hover { background: var(--accent); color: #05080A; border-color: var(--accent); box-shadow: 0 0 18px rgba(255, 69, 0,0.45); }
 
         /* ============================================
            ITEM CARDS
@@ -345,7 +347,7 @@
             transition: transform 0.25s var(--ease-spring), border-color 0.25s, box-shadow 0.25s;
         }
         .item-card:hover { transform: translateY(-2px); border-color: var(--border-hover); box-shadow: var(--shadow-hero), var(--inset-glow); }
-        .item-card.selected { border-color: var(--accent); background: rgba(34,211,238,0.06); box-shadow: 0 0 28px rgba(34,211,238,0.2), var(--inset-glow); }
+        .item-card.selected { border-color: var(--accent); background: rgba(255, 69, 0,0.06); box-shadow: 0 0 28px rgba(255, 69, 0,0.2), var(--inset-glow); }
         .item-card.active-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
             background: linear-gradient(180deg, #22C55E, #4ADE80);
@@ -436,7 +438,7 @@
             padding: 8px; height: 64px; border-radius: 9999px;
             width: 88%; max-width: 380px;
             display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 0 32px rgba(34,211,238,0.10), var(--inset-glow);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 0 32px rgba(255, 69, 0,0.10), var(--inset-glow);
             backdrop-filter: var(--glass);
             -webkit-backdrop-filter: var(--glass);
             pointer-events: auto;
@@ -454,7 +456,7 @@
         .nav-btn.active::before {
             content: ''; position: absolute; inset: 4px;
             background: var(--accent-dim); border-radius: 9999px;
-            box-shadow: 0 0 18px rgba(34,211,238,0.3), var(--inset-glow);
+            box-shadow: 0 0 18px rgba(255, 69, 0,0.3), var(--inset-glow);
             z-index: -1;
         }
         .nav-btn.active i { filter: drop-shadow(0 0 8px var(--accent-glow)); }
@@ -485,7 +487,7 @@
         }
         .setup-box::after {
             content: ''; position: absolute; top: -60%; left: -20%; right: -20%; height: 160%;
-            background: radial-gradient(ellipse at center, rgba(34,211,238,0.18), rgba(167,139,250,0.10) 40%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(255, 69, 0,0.18), rgba(245, 158, 11,0.10) 40%, transparent 70%);
             filter: blur(40px); pointer-events: none; z-index: -1;
             animation: auroraPulse 6s ease-in-out infinite;
         }
@@ -496,7 +498,7 @@
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 20px;
             font-size: 1.5rem; color: #05080A;
-            box-shadow: 0 12px 32px rgba(34,211,238,0.4), var(--inset-glow);
+            box-shadow: 0 12px 32px rgba(255, 69, 0,0.4), var(--inset-glow);
             position: relative;
         }
         .setup-icon::after {
@@ -520,11 +522,11 @@
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700; margin-top: 12px; cursor: pointer;
             font-size: 0.9rem; letter-spacing: 0.2px;
-            box-shadow: 0 10px 28px rgba(34,211,238,0.32), var(--inset-glow);
+            box-shadow: 0 10px 28px rgba(255, 69, 0,0.32), var(--inset-glow);
             transition: transform 0.18s var(--ease-spring), box-shadow 0.25s, filter 0.2s;
             position: relative; overflow: hidden;
         }
-        .btn-block:hover { box-shadow: 0 14px 36px rgba(34,211,238,0.45), var(--inset-glow); filter: brightness(1.08); }
+        .btn-block:hover { box-shadow: 0 14px 36px rgba(255, 69, 0,0.45), var(--inset-glow); filter: brightness(1.08); }
         .btn-block:active { transform: scale(0.97); }
         .loader-view { text-align: center; padding: 90px 0; animation: fadeIn 0.4s ease both; }
         .loader-view i {
@@ -541,7 +543,7 @@
         ============================================ */
         .modal-overlay {
             position: fixed; inset: 0;
-            background: rgba(2, 4, 8, 0.72); z-index: 200;
+            background: rgba(7, 3, 10, 0.75); z-index: 200;
             display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(16px) saturate(140%);
             -webkit-backdrop-filter: blur(16px) saturate(140%);
@@ -550,15 +552,15 @@
         }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal-content {
-            background: var(--card-strong);
+            background: rgba(20, 8, 4, 0.85);
             backdrop-filter: var(--glass);
             -webkit-backdrop-filter: var(--glass);
             width: 100%; max-width: 360px; padding: 28px;
-            border-radius: 22px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-hero), var(--inset-glow);
-            transform: scale(0.9) translateY(14px);
-            transition: transform 0.4s var(--ease-spring), opacity 0.3s;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 69, 0, 0.15);
+            box-shadow: 0 20px 60px rgba(255, 69, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transform: scale(0.96) translateY(8px);
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s;
             position: relative; overflow: hidden;
         }
         .modal-content::before {
@@ -593,7 +595,7 @@
             border-radius: 9999px; z-index: 300;
             transition: transform 0.45s var(--ease-spring), opacity 0.3s;
             display: flex; align-items: center; gap: 10px; font-weight: 600;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.6), 0 0 28px rgba(34,211,238,0.18), var(--inset-glow);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.6), 0 0 28px rgba(255, 69, 0,0.18), var(--inset-glow);
             font-size: 0.84rem; white-space: nowrap;
             backdrop-filter: var(--glass);
             -webkit-backdrop-filter: var(--glass);
@@ -665,7 +667,7 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #22D3EE, #A78BFA);
+            background: linear-gradient(180deg, #FF4500, #F59E0B);
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
@@ -692,7 +694,7 @@
         ============================================ */
         .src-badge { font-size: 0.5rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; border: 1px solid transparent; vertical-align: middle; }
         .src-web { background: rgba(56,189,248,0.14); color: var(--blue); border-color: rgba(56,189,248,0.28); }
-        .src-api { background: rgba(167,139,250,0.16); color: var(--violet); border-color: rgba(167,139,250,0.32); }
+        .src-api { background: rgba(245, 158, 11,0.16); color: var(--violet); border-color: rgba(245, 158, 11,0.32); }
         .key-countdown { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--orange); }
         .key-countdown.expiring { color: var(--red); font-weight: 800; }
         .badge-expiring { background: rgba(249,115,22,0.18); color: var(--orange); border-color: rgba(249,115,22,0.4); animation: pulse-warn 1.5s ease infinite; }
@@ -778,7 +780,7 @@
             width: 380px; height: 380px;
             border-radius: 50%; pointer-events: none;
             z-index: 9996;
-            background: radial-gradient(circle, rgba(34,211,238,0.10), rgba(167,139,250,0.05) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 69, 0,0.10), rgba(245, 158, 11,0.05) 40%, transparent 70%);
             filter: blur(30px);
             mix-blend-mode: screen;
             transform: translate(-200px, -200px) translate(-50%, -50%);
@@ -795,7 +797,7 @@
         .touch-ripple {
             position: fixed; width: 12px; height: 12px;
             border-radius: 50%; pointer-events: none;
-            background: radial-gradient(circle, rgba(34,211,238,0.5), transparent 70%);
+            background: radial-gradient(circle, rgba(255, 69, 0,0.5), transparent 70%);
             transform: translate(-50%, -50%) scale(1);
             animation: ripple 0.6s var(--ease-out) forwards;
             z-index: 9995;
@@ -1585,12 +1587,16 @@
         window._fbSignOut = () => auth.signOut();
 
         // Wait for Firebase to check if we are logged in
+        let isLoginInProgress = false;
+        let _authInitialized = false;
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Session managed by Firebase Auth — no localStorage token needed
+                if (isLoginInProgress) return; // doLogin() handles success path
+                _authInitialized = true;
                 appInit(); // Load dashboard
             } else {
-                hide('viewLoader'); 
+                _authInitialized = true;
+                hide('viewLoader');
                 show('viewLogin'); // Show login screen
             }
         });
@@ -1653,11 +1659,17 @@
         }
 
         async function doLogin() {
+            if (isLoginInProgress) return;
             const email = document.getElementById('loginPass').getAttribute('data-admin-email') || "";
             const pass  = document.getElementById('loginPass').value;
             const btn   = document.querySelector('#viewLogin .btn-block');
-            if (!pass) return showToast("Password required");
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+            if (!pass) return showToast("Password required", true);
+            const originalLabel = btn.innerHTML;
+            isLoginInProgress = true;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;AUTHENTICATING…';
 
             try {
                 const loginTimeout = new Promise((_, reject) =>
@@ -1666,20 +1678,28 @@
                 await Promise.race([window._fbSignIn(email, pass), loginTimeout]);
                 showToast("Access granted");
                 log("Login successful", 'success');
+                hide('viewLogin');
+                show('viewLoader');
+                appInit();
             } catch (error) {
                 console.error("Login error:", error.code, error.message);
-                const userMsg = (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential")
-                    ? "Incorrect password"
-                    : (error.code === "auth/too-many-requests")
-                    ? "Too many attempts — try again later"
-                    : (error.code === "auth/timeout")
-                    ? "Connection timed out — check your internet"
-                    : (error.code === "auth/network-request-failed")
-                    ? "Network error — check your connection"
-                    : "Authentication failed — " + (error.code || '');
+                const code = error.code || '';
+                const userMsg =
+                    code === "auth/invalid-email"           ? "Invalid email format" :
+                    code === "auth/user-not-found"          ? "Account not found" :
+                    (code === "auth/wrong-password" || code === "auth/invalid-credential") ? "Incorrect credentials" :
+                    code === "auth/too-many-requests"       ? "Too many attempts — try again later" :
+                    code === "auth/timeout"                 ? "Connection timed out — check your internet" :
+                    code === "auth/network-request-failed"  ? "Network error — check your connection" :
+                    "Authentication failed" + (code ? " — " + code : "");
                 showToast(userMsg, true);
-                log("Login failed: " + (error.code || error.message), 'error');
-                btn.innerHTML = '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
+                log("Login failed: " + (code || error.message), 'error');
+                btn.innerHTML = originalLabel || '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
+            } finally {
+                isLoginInProgress = false;
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
             }
         }
 
@@ -1706,12 +1726,12 @@
             if (!panel) {
                 panel = document.createElement('div');
                 panel.id = 'diagPanel';
-                panel.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;max-height:40vh;overflow:auto;z-index:99999;background:rgba(10,2,30,0.95);border:1px solid #22D3EE;border-radius:8px;padding:10px 12px;font:11px ui-monospace,Menlo,monospace;color:#E8ECFF;line-height:1.5;';
+                panel.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;max-height:40vh;overflow:auto;z-index:99999;background:rgba(10,2,30,0.95);border:1px solid #FF4500;border-radius:8px;padding:10px 12px;font:11px ui-monospace,Menlo,monospace;color:#E8ECFF;line-height:1.5;';
                 document.body.appendChild(panel);
             }
             const line = document.createElement('div');
             line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
-            line.style.color = isErr ? '#ff6b6b' : '#A78BFA';
+            line.style.color = isErr ? '#ff6b6b' : '#F59E0B';
             panel.appendChild(line);
             panel.scrollTop = panel.scrollHeight;
         }
@@ -1915,8 +1935,24 @@
                     return;
                 }
 
+                // VIP keys: if unlinked and older than 24 hours, auto-delete
+                if (isVipKey) {
+                    if (keysInUse.has(key)) return;
+                    let vipCreated = 0;
+                    if (typeof val === 'object' && val.date) {
+                        const d = typeof val.date === 'number' ? val.date : new Date(val.date).getTime();
+                        vipCreated = d > 0 ? d : 0;
+                    }
+                    const TWENTY_FOUR_H = 24 * 60 * 60 * 1000;
+                    if (vipCreated > 0 && (nowMs - vipCreated > TWENTY_FOUR_H)) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true;
+                        deletedCount++;
+                    }
+                    return;
+                }
+
                 // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (isVipKey) return;
                 if (keysInUse.has(key)) return;
 
                 let creationTime = 0;
@@ -2733,9 +2769,9 @@
             // Slow-moving cyan + violet aurora blobs
             const blobs = [
                 { x: 0.25, y: 0.30, r: 0.55, c: '0,240,255',  a: 0.45, vx:  0.00006, vy:  0.00004 },
-                { x: 0.75, y: 0.65, r: 0.60, c: '167,139,250', a: 0.40, vx: -0.00005, vy: -0.00003 },
+                { x: 0.75, y: 0.65, r: 0.60, c: '245, 158, 11', a: 0.40, vx: -0.00005, vy: -0.00003 },
                 { x: 0.55, y: 0.20, r: 0.45, c: '123,47,255',  a: 0.35, vx:  0.00004, vy:  0.00005 },
-                { x: 0.20, y: 0.80, r: 0.50, c: '34,211,238',  a: 0.32, vx: -0.00003, vy: -0.00006 }
+                { x: 0.20, y: 0.80, r: 0.50, c: '255, 69, 0',  a: 0.32, vx: -0.00003, vy: -0.00006 }
             ];
             let last = performance.now();
             function loop(now) {
