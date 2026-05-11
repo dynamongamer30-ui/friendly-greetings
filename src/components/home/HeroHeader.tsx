@@ -41,8 +41,6 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           boxShadow: '0 4px 18px rgba(0,0,0,0.35)',
         }}
       >
-        <NotificationBell bare />
-        <AchievementHistory bare />
         <button
           type="button"
           onClick={() => { playClick(); setSoundOn(toggleSound()) }}
