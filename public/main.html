@@ -856,25 +856,26 @@
             <h3>Generate Keys</h3>
             <div class="inp-group">
                 <label class="inp-label">Prefix</label>
-                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="DG">
+                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="VIP">
             </div>
             <div class="inp-group">
                 <label class="inp-label">Quantity</label>
                 <input type="number" class="input-std input-no-icon" id="keyQty" value="1" min="1" max="50">
             </div>
             <div class="inp-group">
-                <label class="inp-label">Duration</label>
+                <label class="inp-label">Active Duration <span style="color:var(--muted);font-weight:500;text-transform:none;font-size:0.6rem;">(starts when key is used)</span></label>
                 <select id="keyDurationMode" class="select-std" onchange="toggleCustomDuration()">
-                    <option value="2">2 Hours</option>
-                    <option value="24" selected>24 Hours</option>
-                    <option value="720">720 Hours (30 Days)</option>
+                    <option value="2h">2 Hours</option>
+                    <option value="7d" selected>7 Days</option>
+                    <option value="1m">1 Month</option>
                     <option value="life">Lifetime</option>
-                    <option value="custom">Custom...</option>
+                    <option value="custom">Custom Date / Time</option>
                 </select>
             </div>
             <div class="inp-group hidden" id="groupCustomDur">
-                <label class="inp-label">Custom Hours</label>
-                <input type="number" class="input-std input-no-icon" id="keyCustomVal" placeholder="Enter hours">
+                <label class="inp-label">Custom Expiry Date &amp; Time</label>
+                <input type="datetime-local" class="input-std input-no-icon" id="keyCustomVal">
+                <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">Key will expire at this exact moment after activation.</div>
             </div>
             <div class="grid-2">
                 <button class="btn-block" style="margin:0;" onclick="generateKeys()">GENERATE</button>
