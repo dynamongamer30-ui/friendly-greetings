@@ -98,20 +98,33 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           </g>
         </svg>
 
-        {/* Avatar */}
+        {/* Avatar — real <img> with soft radial mask so any black PNG bg fades into aurora */}
         <div
           className="absolute inset-2 z-10 flex items-center justify-center rounded-full overflow-hidden"
           style={{
-            backgroundImage: showImage ? `url(${logoUrl})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundColor: '#0A0A1A',
+            background: 'linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10))',
             border: '1px solid rgba(167,139,250,0.25)',
-            boxShadow: 'inset 0 0 20px rgba(10,10,26,0.6)',
+            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 0 22px rgba(10,10,26,0.45)',
           }}
         >
-          {!showImage && <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />}
-          {showImage && <img src={logoUrl} alt="" className="sr-only" onError={() => setImgError(true)} />}
+          {showImage ? (
+            <img
+              src={logoUrl}
+              alt=""
+              onError={() => setImgError(true)}
+              draggable={false}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+                WebkitMaskImage: 'radial-gradient(circle at 50% 50%, #000 62%, rgba(0,0,0,0.55) 78%, transparent 96%)',
+                maskImage: 'radial-gradient(circle at 50% 50%, #000 62%, rgba(0,0,0,0.55) 78%, transparent 96%)',
+              }}
+            />
+          ) : (
+            <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />
+          )}
         </div>
 
         <style>{`

@@ -83,8 +83,10 @@ export default function AuroraOrb() {
     }
 
     let renderer: Renderer
+    const isMobile = window.innerWidth < 768
+    const dprCap = isMobile ? 1.0 : 1.5
     try {
-      renderer = new Renderer({ alpha: false, dpr: Math.min(window.devicePixelRatio, 1.5) })
+      renderer = new Renderer({ alpha: false, dpr: Math.min(window.devicePixelRatio, dprCap) })
     } catch {
       host.style.background = 'linear-gradient(135deg, #0A0A1A, #141432)'
       return
@@ -127,7 +129,7 @@ export default function AuroraOrb() {
 
     let raf = 0
     let last = performance.now()
-    const targetFps = 30
+    const targetFps = isMobile ? 24 : 30
     const frameMs = 1000 / targetFps
     let acc = 0
     const start = performance.now()

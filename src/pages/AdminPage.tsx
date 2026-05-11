@@ -139,26 +139,47 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full md:w-56 shrink-0 bg-[rgba(10,15,20,0.95)] border-b md:border-b-0 md:border-r border-[rgba(255,255,255,0.06)]">
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(255,255,255,0.06)]">
+      <aside
+        className="w-full md:w-56 shrink-0 border-b md:border-b-0 md:border-r"
+        style={{
+          background: 'rgba(20,20,50,0.55)',
+          backdropFilter: 'blur(22px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(22px) saturate(140%)',
+          borderColor: 'rgba(167,139,250,0.14)',
+        }}
+      >
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(167,139,250,0.14)]">
           <Gamepad2 className="w-5 h-5 text-[#22D3EE]" />
-          <span className="text-sm font-bold text-[#E2E8F0]">Admin Panel</span>
+          <span className="text-sm font-bold aurora-text">Admin Panel</span>
         </div>
         <nav className="flex md:flex-col p-2 gap-1 overflow-x-auto md:overflow-x-visible scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 md:flex-shrink ${
-                activeTab === tab.id
-                  ? 'bg-[rgba(34,211,238,0.1)] text-[#22D3EE] border border-[rgba(34,211,238,0.2)]'
-                  : 'text-[#64748b] hover:text-[#E2E8F0] hover:bg-[rgba(255,255,255,0.04)] border border-transparent'
-              }`}
-            >
-              {tab.icon}
-              <span className="hidden xs:inline md:inline">{tab.label}</span>
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const active = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 md:flex-shrink"
+                style={
+                  active
+                    ? {
+                        background: 'linear-gradient(135deg, rgba(34,211,238,0.18), rgba(167,139,250,0.18))',
+                        color: '#22D3EE',
+                        border: '1px solid rgba(34,211,238,0.32)',
+                        boxShadow: '0 0 18px rgba(34,211,238,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
+                      }
+                    : {
+                        color: '#94a3b8',
+                        background: 'transparent',
+                        border: '1px solid transparent',
+                      }
+                }
+              >
+                {tab.icon}
+                <span className="hidden xs:inline md:inline">{tab.label}</span>
+              </button>
+            )
+          })}
         </nav>
       </aside>
 

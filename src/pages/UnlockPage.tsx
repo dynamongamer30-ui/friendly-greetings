@@ -262,7 +262,7 @@ export default function UnlockPage() {
             <ProgressRing value={progress} />
             <h1
               className="text-2xl font-extrabold unlock-title"
-              style={{ fontFamily: "'Syne', sans-serif" }}
+              style={{ fontFamily: "'Space Grotesk', 'DM Sans', sans-serif" }}
             >
               Secure Verification
             </h1>
