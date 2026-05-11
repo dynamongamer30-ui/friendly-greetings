@@ -1538,7 +1538,7 @@
         // To secure: set window.__FIREBASE_CONFIG from a server-rendered <script> or env proxy
         const firebaseConfig = window.__FIREBASE_CONFIG || {
             apiKey:            "AIzaSyD0o0Bsr8dB6goTVshvcLZqwUCraf9SDxs",
-            authDomain:        "dynamongamer.space",
+            authDomain:        "admin-panel-d762b.firebaseapp.com",
             databaseURL:       "https://admin-panel-d762b-default-rtdb.firebaseio.com",
             projectId:         "admin-panel-d762b",
             storageBucket:     "admin-panel-d762b.firebasestorage.app",
@@ -1625,29 +1625,32 @@
         }
 
         async function doLogin() {
-            // Admin email loaded from config attribute (no longer hardcoded in JS)
-            const email = document.getElementById('loginPass').getAttribute('data-admin-email') || ""; 
-            
+            const email = document.getElementById('loginPass').getAttribute('data-admin-email') || "";
             const pass  = document.getElementById('loginPass').value;
             const btn   = document.querySelector('#viewLogin .btn-block');
             if (!pass) return showToast("Password required");
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
 
             try {
-                await window._fbSignIn(email, pass);
-                // Auth listener will automatically handle the rest!
+                const loginTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject({ code: 'auth/timeout', message: 'Login timed out' }), 10000)
+                );
+                await Promise.race([window._fbSignIn(email, pass), loginTimeout]);
                 showToast("Access granted");
                 log("Login successful", 'success');
             } catch (error) {
-                // Sanitized error — never expose raw Firebase messages to UI
                 console.error("Login error:", error.code, error.message);
                 const userMsg = (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential")
                     ? "Incorrect password"
                     : (error.code === "auth/too-many-requests")
                     ? "Too many attempts — try again later"
-                    : "Authentication failed";
+                    : (error.code === "auth/timeout")
+                    ? "Connection timed out — check your internet"
+                    : (error.code === "auth/network-request-failed")
+                    ? "Network error — check your connection"
+                    : "Authentication failed — " + (error.code || '');
                 showToast(userMsg, true);
-                log("Login failed: " + error.code, 'error');
+                log("Login failed: " + (error.code || error.message), 'error');
                 btn.innerHTML = '<i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE';
             }
         }
