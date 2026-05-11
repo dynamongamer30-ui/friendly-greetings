@@ -1699,44 +1699,61 @@
 
                 const isSelected = selectedKeys.includes(key);
                 const val        = dbData.ValidKeys[key];
-                let durText = "24H";
+                const nowMsR     = Date.now();
+                const nowSecR    = Math.floor(nowMsR / 1000);
+                const UNUSED_TTL_MS = 24 * 60 * 60 * 1000;
+
+                const _durLabel = (m) => ({ '2h':'2H', '7d':'7D', '1m':'1M', 'life':'∞', 'custom':'CUSTOM' }[m] || (m || '—'));
+
+                let durText   = "—";
                 let remainSec = 0;
+                let unusedRemainSec = 0;
+                let isUnused  = false;
                 if (typeof val === 'object') {
-                    if (val.expiry > 0) {
-                        remainSec = val.expiry - Math.floor(Date.now() / 1000);
-                        durText = remainSec > 0 ? Math.floor(remainSec / 3600) + "H" : "EXPIRED";
+                    if (val.status === 'revoked') {
+                        durText = 'REVOKED';
+                    } else if (val.expiry > 0) {
+                        remainSec = val.expiry - nowSecR;
+                        durText   = remainSec > 0 ? _durLabel(val.duration) : "EXPIRED";
+                    } else if (val.duration === 'life' && val.activated) {
+                        durText = '∞ LIFETIME';
                     } else {
-                        durText = val.status === 'revoked' ? "REVOKED" : (val.duration ? "UNUSED (" + val.duration + "H)" : "UNUSED");
+                        // Not yet activated
+                        isUnused = true;
+                        const created = val.createdAt || (val.date ? new Date(val.date).getTime() : nowMsR);
+                        unusedRemainSec = Math.max(0, Math.floor((created + UNUSED_TTL_MS - nowMsR) / 1000));
+                        durText = 'UNUSED · ' + _durLabel(val.duration);
                     }
                 }
 
                 const isLinked   = linkedKeys.has(key);
                 const isVip      = key.toUpperCase().startsWith("VIP");
                 const isRevoked  = typeof val === 'object' && val.status === 'revoked';
-                // Q7: expiring within 2 hours
                 const isExpiring = !isRevoked && remainSec > 0 && remainSec < 7200;
                 let   statusHtml = "";
                 if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
                 else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
                 else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
                 else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
-                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
+                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 24H AUTO-DEL</span>`;
 
-                // S2: source badge
                 const src = typeof val === 'object' ? (val.source || '') : '';
                 const srcBadge = src === 'web' ? `<span class="src-badge src-web">WEB</span>` : src === 'api' ? `<span class="src-badge src-api">API</span>` : '';
 
-                // Q1: live HH:MM:SS countdown
                 const cdId = 'cd_' + key.replace(/[^a-z0-9]/gi,'_');
                 let cdHtml = '';
                 if (remainSec > 0) {
                     const h = Math.floor(remainSec/3600), mn = Math.floor((remainSec%3600)/60), s = remainSec%60;
                     const cdClass = isExpiring ? 'key-countdown expiring' : 'key-countdown';
                     cdHtml = `<span class="${cdClass}" id="${cdId}" data-expiry="${(typeof val==='object'?val.expiry:0)}"><i class="fas fa-clock" style="font-size:0.55rem;margin-right:2px;"></i>${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(s).padStart(2,'0')}</span> · `;
+                } else if (isUnused && unusedRemainSec > 0) {
+                    const h = Math.floor(unusedRemainSec/3600), mn = Math.floor((unusedRemainSec%3600)/60);
+                    cdHtml = `<span class="key-countdown" style="color:var(--orange);"><i class="fas fa-hourglass-half" style="font-size:0.55rem;margin-right:2px;"></i>UNUSED · expires in ${h}h ${mn}m</span> · `;
                 }
 
+                const rowClass = isVip ? 'item-card active-card vip-row' : 'item-card active-card';
                 list.innerHTML += `
-                <div class="item-card active-card ${isSelected ? 'selected' : ''}">
+                <div class="${rowClass} ${isSelected ? 'selected' : ''}" style="position:relative;">
                     <div class="row-top">
                         <div class="chk-container" onclick="toggleSelectKey('${key}')">
                             <div class="custom-chk ${isSelected ? 'checked' : ''}"><i class="fas fa-check"></i></div>
