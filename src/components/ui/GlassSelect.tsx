@@ -74,7 +74,7 @@ export function GlassSelect({
               >
                 <span className="flex-1 text-left">{opt.label}</span>
                 {opt.value === value && (
-                  <Check className="w-3.5 h-3.5 shrink-0 text-[#22D3EE]" />
+                  <Check className="w-3.5 h-3.5 shrink-0 text-[#FF4500]" />
                 )}
               </button>
             ))}

@@ -20,13 +20,13 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
         }
         style={
           bare
-            ? { color: '#A78BFA' }
+            ? { color: '#F59E0B' }
             : {
                 background: 'rgba(20,20,50,0.55)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(167,139,250,0.18)',
-                color: '#A78BFA',
+                border: '1px solid rgba(245, 158, 11,0.18)',
+                color: '#F59E0B',
               }
         }
       >
@@ -43,13 +43,13 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
             className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-2xl p-5"
             style={{
               background: 'rgba(5,8,10,0.98)',
-              border: '1px solid rgba(167,139,250,0.3)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(167,139,250,0.15)',
+              border: '1px solid rgba(245, 158, 11,0.3)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(245, 158, 11,0.15)',
             }}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#A78BFA] flex items-center gap-2">
+              <h2 className="text-base font-bold text-[#F59E0B] flex items-center gap-2">
                 <Trophy className="w-5 h-5" /> Achievements
               </h2>
               <button onClick={() => setOpen(false)} className="text-[#64748b] hover:text-[#94a3b8]" data-no-click-sound="true">
@@ -68,21 +68,21 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
                     key={a.id}
                     className="flex items-start gap-3 p-3 rounded-xl"
                     style={{
-                      background: isLocked ? 'rgba(255,255,255,0.02)' : 'rgba(167,139,250,0.05)',
-                      border: `1px solid ${isLocked ? 'rgba(255,255,255,0.06)' : 'rgba(167,139,250,0.2)'}`,
+                      background: isLocked ? 'rgba(255,255,255,0.02)' : 'rgba(245, 158, 11,0.05)',
+                      border: `1px solid ${isLocked ? 'rgba(255,255,255,0.06)' : 'rgba(245, 158, 11,0.2)'}`,
                       opacity: isLocked ? 0.55 : 1,
                     }}
                   >
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
                       style={{
-                        background: isLocked ? 'rgba(255,255,255,0.04)' : 'rgba(167,139,250,0.15)',
-                        border: `1px solid ${isLocked ? 'rgba(255,255,255,0.08)' : 'rgba(167,139,250,0.3)'}`,
+                        background: isLocked ? 'rgba(255,255,255,0.04)' : 'rgba(245, 158, 11,0.15)',
+                        border: `1px solid ${isLocked ? 'rgba(255,255,255,0.08)' : 'rgba(245, 158, 11,0.3)'}`,
                       }}
                     >
                       {isLocked
                         ? <Lock className="w-4 h-4 text-[#64748b]" />
-                        : <Trophy className="w-4 h-4 text-[#A78BFA]" />}
+                        : <Trophy className="w-4 h-4 text-[#F59E0B]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-bold text-[#E2E8F0]" style={isLocked ? { filter: 'blur(0.4px)' } : undefined}>
@@ -92,7 +92,7 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
                         {isLocked ? 'Locked — keep exploring to unlock.' : a.desc}
                       </div>
                       {!isLocked && (
-                        <div className="text-[10px] text-[#A78BFA] mt-1 font-mono">
+                        <div className="text-[10px] text-[#F59E0B] mt-1 font-mono">
                           {format(new Date(u.unlockedAt), 'MMM d, yyyy · h:mm a')}
                         </div>
                       )}

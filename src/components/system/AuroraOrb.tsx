@@ -78,7 +78,7 @@ export default function AuroraOrb() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       host.style.background =
-        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(34,211,238,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(167,139,250,0.18), transparent 65%), #0A0A1A'
+        'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 69, 0,0.18), transparent 60%), radial-gradient(ellipse 60% 50% at 60% 70%, rgba(245, 158, 11,0.18), transparent 65%), #0A0A1A'
       return
     }
 

@@ -30,10 +30,10 @@ export function Footer({ siteMeta }: FooterProps) {
 
   return (
     <footer
-      className="relative mt-20 border-t border-[rgba(34,211,238,0.18)]"
+      className="relative mt-20 border-t border-[rgba(255, 69, 0,0.18)]"
       style={{
-        background: 'linear-gradient(180deg, transparent 0%, rgba(34,211,238,0.025) 100%)',
-        boxShadow: '0 -1px 24px rgba(34,211,238,0.08), inset 0 1px 0 rgba(34,211,238,0.18)',
+        background: 'linear-gradient(180deg, transparent 0%, rgba(255, 69, 0,0.025) 100%)',
+        boxShadow: '0 -1px 24px rgba(255, 69, 0,0.08), inset 0 1px 0 rgba(255, 69, 0,0.18)',
       }}
     >
       {/* Aurora wave divider */}
@@ -45,7 +45,7 @@ export function Footer({ siteMeta }: FooterProps) {
         className="absolute inset-0 pointer-events-none opacity-[0.07]"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(34,211,238,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.5) 1px, transparent 1px)',
+            'linear-gradient(rgba(255, 69, 0,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 69, 0,0.5) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
           maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
           WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 70%)',
@@ -56,8 +56,8 @@ export function Footer({ siteMeta }: FooterProps) {
         aria-hidden="true"
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(34,211,238,0.6) 50%, transparent 100%)',
-          boxShadow: '0 0 18px rgba(34,211,238,0.45)',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(255, 69, 0,0.6) 50%, transparent 100%)',
+          boxShadow: '0 0 18px rgba(255, 69, 0,0.45)',
         }}
       />
 
@@ -73,7 +73,7 @@ export function Footer({ siteMeta }: FooterProps) {
             fontSize: 'clamp(3rem, 12vw, 9rem)',
             fontWeight: 800,
             letterSpacing: '-0.05em',
-            background: 'linear-gradient(180deg, rgba(167,139,250,0.06) 0%, rgba(34,211,238,0) 80%)',
+            background: 'linear-gradient(180deg, rgba(245, 158, 11,0.06) 0%, rgba(255, 69, 0,0) 80%)',
             WebkitBackgroundClip: 'text',
             backgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -92,15 +92,15 @@ export function Footer({ siteMeta }: FooterProps) {
             <div className="w-9 h-9 rounded-full bg-black overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
               {siteMeta?.logoUrl
                 ? <img src={siteMeta.logoUrl} className="w-full h-full object-cover" />
-                : <div className="w-full h-full flex items-center justify-center bg-[rgba(34,211,238,0.1)]"><Gamepad2 className="w-5 h-5 text-[#22D3EE]" /></div>}
+                : <div className="w-full h-full flex items-center justify-center bg-[rgba(255, 69, 0,0.1)]"><Gamepad2 className="w-5 h-5 text-[#FF4500]" /></div>}
             </div>
             <span className="text-sm font-bold text-[#E2E8F0]">{name}</span>
           </div>
 
           <nav className="flex items-center gap-6">
-            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">Home</Link>
-            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">Tutorial</Link>
-            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#22D3EE] transition-colors">DMCA</Link>
+            <Link to="/" className="text-xs font-medium text-[#64748b] hover:text-[#FF4500] transition-colors">Home</Link>
+            <Link to="/tutorial" className="text-xs font-medium text-[#64748b] hover:text-[#FF4500] transition-colors">Tutorial</Link>
+            <Link to="/dmca" className="text-xs font-medium text-[#64748b] hover:text-[#FF4500] transition-colors">DMCA</Link>
           </nav>
 
           <div className="flex items-center gap-2">

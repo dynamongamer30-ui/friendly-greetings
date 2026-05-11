@@ -61,7 +61,7 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
           aria-hidden
           style={{
             position: 'absolute', width: 600, height: 600,
-            background: 'radial-gradient(circle, rgba(34,211,238,0.18), rgba(167,139,250,0.10) 40%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255, 69, 0,0.18), rgba(245, 158, 11,0.10) 40%, transparent 70%)',
             filter: 'blur(40px)',
             animation: 'splashPulse 3s ease-in-out infinite',
           }}
@@ -78,7 +78,7 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
             margin: 0,
             display: 'flex',
             gap: '0.02em',
-            background: 'linear-gradient(90deg, #22D3EE 0%, #A78BFA 100%)',
+            background: 'linear-gradient(90deg, #FF4500 0%, #F59E0B 100%)',
             WebkitBackgroundClip: 'text',
             backgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -113,10 +113,10 @@ export function LoadingScreen({ onDone, siteMeta }: Props) {
           <div
             style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(90deg, #22D3EE, #A78BFA)',
+              background: 'linear-gradient(90deg, #FF4500, #F59E0B)',
               transform: 'translateX(-100%)',
               animation: 'splashHair 1.6s cubic-bezier(0.65,0,0.35,1) 0.3s forwards',
-              boxShadow: '0 0 8px rgba(34,211,238,0.5)',
+              boxShadow: '0 0 8px rgba(255, 69, 0,0.5)',
             }}
           />
         </div>

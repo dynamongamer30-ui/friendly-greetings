@@ -22,8 +22,8 @@ interface CommentSectionProps {
 
 /* ── Avatar colors derived from initial ──────────────────────────────────── */
 const AVATAR_COLORS = [
-  'rgba(34,211,238,0.18)',   // cyan
-  'rgba(167,139,250,0.18)',  // purple
+  'rgba(255, 69, 0,0.18)',   // cyan
+  'rgba(245, 158, 11,0.18)',  // purple
   'rgba(34,197,94,0.18)',   // green
   'rgba(251,146,60,0.18)',  // orange
   'rgba(244,63,94,0.18)',   // rose
@@ -79,7 +79,7 @@ export function CommentSection({ modId, comments, isLoading }: CommentSectionPro
   return (
     <section className="space-y-5">
       {/* ── Header ────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 text-sm font-semibold text-[#22d3ee] uppercase tracking-wider">
+      <div className="flex items-center gap-2 text-sm font-semibold text-[#FF4500] uppercase tracking-wider">
         <MessageSquare className="w-4 h-4" />
         Comments
         {visibleComments.length > 0 && (

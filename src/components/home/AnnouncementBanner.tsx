@@ -13,11 +13,11 @@ export function AnnouncementBanner({ message, onDismiss }: AnnouncementBannerPro
         background: 'rgba(20,20,50,0.55)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
-        borderBottom: '1px solid rgba(167,139,250,0.14)',
+        borderBottom: '1px solid rgba(245, 158, 11,0.14)',
       }}
     >
       <div className="max-w-6xl mx-auto px-3 h-9 flex items-center gap-2.5">
-        <Megaphone className="w-3.5 h-3.5 shrink-0" style={{ color: '#A78BFA' }} />
+        <Megaphone className="w-3.5 h-3.5 shrink-0" style={{ color: '#F59E0B' }} />
         <div className="marquee flex-1 min-w-0 overflow-hidden">
           <div className="marquee-track text-[11px] sm:text-xs font-medium" style={{ color: '#E8ECFF' }}>
             <span>{message}</span>

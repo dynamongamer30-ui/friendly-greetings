@@ -43,7 +43,7 @@ export default function DMCAPage() {
         {/* Back link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#22D3EE] transition-colors uppercase tracking-wider"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#FF4500] transition-colors uppercase tracking-wider"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home

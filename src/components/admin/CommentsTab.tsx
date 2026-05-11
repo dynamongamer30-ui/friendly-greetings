@@ -15,8 +15,8 @@ import {
 import { RepliesBlock } from '@/components/comments/RepliesBlock'
 
 const AVATAR_COLORS = [
-  'rgba(34,211,238,0.18)',
-  'rgba(167,139,250,0.18)',
+  'rgba(255, 69, 0,0.18)',
+  'rgba(245, 158, 11,0.18)',
   'rgba(34,197,94,0.18)',
   'rgba(251,146,60,0.18)',
   'rgba(244,63,94,0.18)',
@@ -132,12 +132,12 @@ export function CommentsTab() {
               onClick={() => setFilter(t.id)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 active
-                  ? 'bg-[rgba(34,211,238,0.12)] text-[#22D3EE] border border-[rgba(34,211,238,0.35)] shadow-[0_0_12px_rgba(34,211,238,0.18)]'
+                  ? 'bg-[rgba(255, 69, 0,0.12)] text-[#FF4500] border border-[rgba(255, 69, 0,0.35)] shadow-[0_0_12px_rgba(255, 69, 0,0.18)]'
                   : 'bg-[rgba(255,255,255,0.03)] text-[#94a3b8] border border-[rgba(255,255,255,0.06)] hover:text-[#E2E8F0]'
               }`}
             >
               {t.label}
-              <span className={`text-[10px] px-1.5 rounded-full ${active ? 'bg-[rgba(34,211,238,0.18)] text-[#22D3EE]' : 'bg-[rgba(255,255,255,0.06)] text-[#64748b]'}`}>
+              <span className={`text-[10px] px-1.5 rounded-full ${active ? 'bg-[rgba(255, 69, 0,0.18)] text-[#FF4500]' : 'bg-[rgba(255,255,255,0.06)] text-[#64748b]'}`}>
                 {t.count}
               </span>
             </button>
@@ -159,7 +159,7 @@ export function CommentsTab() {
         <div className="space-y-8">
           {Array.from(grouped.entries()).map(([modId, list]) => (
             <section key={modId} className="space-y-3">
-              <h3 className="text-sm font-bold text-[#22D3EE] uppercase tracking-wider">
+              <h3 className="text-sm font-bold text-[#FF4500] uppercase tracking-wider">
                 {modTitleById.get(modId) || modId}
                 <span className="ml-2 text-[#64748b] normal-case font-medium">({list.length})</span>
               </h3>

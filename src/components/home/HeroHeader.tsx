@@ -39,7 +39,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           background: 'rgba(20,20,50,0.55)',
           backdropFilter: 'blur(16px) saturate(140%)',
           WebkitBackdropFilter: 'blur(16px) saturate(140%)',
-          border: '1px solid rgba(167,139,250,0.18)',
+          border: '1px solid rgba(245, 158, 11,0.18)',
           boxShadow: '0 4px 18px rgba(0,0,0,0.35)',
         }}
       >
@@ -50,7 +50,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           onClick={() => { playClick(); setSoundOn(toggleSound()) }}
           aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
           className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5"
-          style={{ color: '#A78BFA' }}
+          style={{ color: '#F59E0B' }}
         >
           {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
         </button>
@@ -78,7 +78,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
             position: 'absolute',
             top: '-2rem', left: '-2rem', right: '-2rem', bottom: '-2rem',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(34,211,238,0.45), rgba(167,139,250,0.25) 45%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255, 69, 0,0.45), rgba(245, 158, 11,0.25) 45%, transparent 70%)',
             filter: 'blur(20px)',
             animation: 'heroLogoBloom 4s ease-in-out infinite',
           }}
@@ -92,9 +92,9 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         >
           <defs>
             <linearGradient id="auroraRing" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#22D3EE" />
-              <stop offset="50%" stopColor="#A78BFA" />
-              <stop offset="100%" stopColor="#22D3EE" />
+              <stop offset="0%" stopColor="#FF4500" />
+              <stop offset="50%" stopColor="#F59E0B" />
+              <stop offset="100%" stopColor="#FF4500" />
             </linearGradient>
           </defs>
           <g style={{ transformOrigin: '60px 60px', animation: 'heroRingSpin 8s linear infinite' }}>
@@ -150,10 +150,10 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, rgba(34,211,238,0.18), rgba(167,139,250,0.18))',
+                background: 'linear-gradient(135deg, rgba(255, 69, 0,0.18), rgba(245, 158, 11,0.18))',
               }}
             >
-              <Gamepad2 className="w-10 h-10" style={{ color: '#A78BFA' }} />
+              <Gamepad2 className="w-10 h-10" style={{ color: '#F59E0B' }} />
             </div>
           )}
         </div>
@@ -203,8 +203,8 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-md"
       >
         {[
-          { icon: Download, label: 'Downloads', value: totalDownloads.toLocaleString(), color: '#22D3EE', dot: false },
-          { icon: Package, label: 'Mods', value: String(totalMods), color: '#A78BFA', dot: false },
+          { icon: Download, label: 'Downloads', value: totalDownloads.toLocaleString(), color: '#FF4500', dot: false },
+          { icon: Package, label: 'Mods', value: String(totalMods), color: '#F59E0B', dot: false },
           { icon: Clock, label: 'Updated', value: updatedLabel, color: '#E8ECFF', dot: true },
         ].map((s) => (
           <div
@@ -214,7 +214,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
               background: 'rgba(20,20,50,0.45)',
               backdropFilter: 'blur(14px)',
               WebkitBackdropFilter: 'blur(14px)',
-              border: '1px solid rgba(167,139,250,0.14)',
+              border: '1px solid rgba(245, 158, 11,0.14)',
             }}
           >
             <s.icon className="w-3.5 h-3.5" style={{ color: s.color }} />

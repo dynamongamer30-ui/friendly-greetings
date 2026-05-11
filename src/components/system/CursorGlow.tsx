@@ -4,7 +4,7 @@ interface TrailDot {
   x: number; y: number; life: number; maxLife: number; size: number; color: string
 }
 
-const TRAIL_COLORS = ['#22D3EE', '#33f3ff', '#a855f7', '#818cf8', '#22D3EE']
+const TRAIL_COLORS = ['#FF4500', '#33f3ff', '#F59E0B', '#F97316', '#FF4500']
 
 export default function CursorGlow() {
   const glowRef = useRef<HTMLDivElement | null>(null)

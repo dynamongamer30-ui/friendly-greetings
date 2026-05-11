@@ -101,7 +101,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
       innerRef.current.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`
     }
     if (foilRef.current) {
-      foilRef.current.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(255,255,255,0.10) 0%, rgba(34,211,238,0.05) 30%, rgba(167,139,250,0.04) 60%, transparent 80%)`
+      foilRef.current.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(255,255,255,0.10) 0%, rgba(255, 69, 0,0.05) 30%, rgba(245, 158, 11,0.04) 60%, transparent 80%)`
       foilRef.current.style.opacity = '1'
     }
   }
@@ -163,7 +163,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
   }
 
   const dl = mod.downloads || 0
-  const milestone = dl >= 1000 ? { color: '#a855f7' } : dl >= 500 ? { color: '#A78BFA' } : dl >= 100 ? { color: '#22D3EE' } : null
+  const milestone = dl >= 1000 ? { color: '#F59E0B' } : dl >= 500 ? { color: '#F59E0B' } : dl >= 100 ? { color: '#FF4500' } : null
 
   return (
     <div
@@ -190,7 +190,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               style={{
                 position: 'absolute', inset: 0, zIndex: 6, pointerEvents: 'none',
                 borderRadius: 'inherit',
-                boxShadow: 'inset 0 0 50px rgba(34,211,238,0.55)',
+                boxShadow: 'inset 0 0 50px rgba(255, 69, 0,0.55)',
                 opacity: cyanGlow,
               }}
             />
@@ -199,7 +199,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               style={{
                 position: 'absolute', inset: 0, zIndex: 6, pointerEvents: 'none',
                 borderRadius: 'inherit',
-                boxShadow: 'inset 0 0 50px rgba(167,139,250,0.55)',
+                boxShadow: 'inset 0 0 50px rgba(245, 158, 11,0.55)',
                 opacity: violetGlow,
               }}
             />
@@ -208,7 +208,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               style={{
                 position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)',
                 zIndex: 7, pointerEvents: 'none',
-                color: '#22D3EE', filter: 'drop-shadow(0 0 8px rgba(34,211,238,0.7))',
+                color: '#FF4500', filter: 'drop-shadow(0 0 8px rgba(255, 69, 0,0.7))',
                 opacity: rightHintOp,
                 display: 'flex', alignItems: 'center', gap: 4,
                 fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -221,7 +221,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               style={{
                 position: 'absolute', top: '50%', left: 14, transform: 'translateY(-50%)',
                 zIndex: 7, pointerEvents: 'none',
-                color: '#A78BFA', filter: 'drop-shadow(0 0 8px rgba(167,139,250,0.7))',
+                color: '#F59E0B', filter: 'drop-shadow(0 0 8px rgba(245, 158, 11,0.7))',
                 opacity: leftHintOp,
                 display: 'flex', alignItems: 'center', gap: 4,
                 fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -253,9 +253,9 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               className="glass-panel group flex flex-col overflow-hidden contain-card"
               style={{
                 boxShadow: glowing
-                  ? `0 0 0 1px rgba(34,211,238,0.35), 0 0 30px rgba(34,211,238,0.14), 0 0 60px rgba(34,211,238,0.06)`
+                  ? `0 0 0 1px rgba(255, 69, 0,0.35), 0 0 30px rgba(255, 69, 0,0.14), 0 0 60px rgba(255, 69, 0,0.06)`
                   : '0 0 0 1px rgba(255,255,255,0.09)',
-                borderColor: glowing ? 'rgba(34,211,238,0.28)' : 'rgba(255,255,255,0.09)',
+                borderColor: glowing ? 'rgba(255, 69, 0,0.28)' : 'rgba(255,255,255,0.09)',
                 transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
                 position: 'relative',
               }}
@@ -306,17 +306,17 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
                     type="button"
                     onClick={e => { e.preventDefault(); e.stopPropagation(); setFlipped(true) }}
                     className="absolute bottom-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: 'rgba(34,211,238,0.15)', border: '1px solid rgba(34,211,238,0.3)' }}
+                    style={{ background: 'rgba(255, 69, 0,0.15)', border: '1px solid rgba(255, 69, 0,0.3)' }}
                     title="See details"
                     data-no-click-sound="true"
                   >
-                    <Zap size={12} color="#22D3EE" />
+                    <Zap size={12} color="#FF4500" />
                   </button>
                 )}
               </div>
 
               <div className="flex flex-col flex-1 p-4 gap-2.5">
-                <h3 className="text-sm font-bold text-[#E2E8F0] group-hover:text-[#22D3EE] transition-colors line-clamp-2">
+                <h3 className="text-sm font-bold text-[#E2E8F0] group-hover:text-[#FF4500] transition-colors line-clamp-2">
                   {mod.title}
                 </h3>
                 <p className="text-xs text-[#64748b] line-clamp-2 leading-relaxed flex-1">
@@ -363,20 +363,20 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
 
           {/* ── BACK ── */}
           <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-            <div className="glass-panel h-full flex flex-col p-5 gap-4" style={{ border: '1px solid rgba(34,211,238,0.2)' }}>
+            <div className="glass-panel h-full flex flex-col p-5 gap-4" style={{ border: '1px solid rgba(255, 69, 0,0.2)' }}>
               <div className="flex items-start justify-between">
-                <h3 className="text-sm font-bold text-[#22D3EE]">{mod.title}</h3>
+                <h3 className="text-sm font-bold text-[#FF4500]">{mod.title}</h3>
                 <button type="button" onClick={() => { setFlipped(false); haptics.tick() }} className="text-xs text-[#475569] hover:text-[#94a3b8] transition-colors" data-no-click-sound="true">✕</button>
               </div>
               <div className="space-y-3 flex-1">
                 <div className="flex items-center gap-2">
-                  <Download size={14} color="#22D3EE" />
+                  <Download size={14} color="#FF4500" />
                   <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#e2e8f0]">{(mod.downloads || 0).toLocaleString()}</span> downloads</span>
                 </div>
                 {mod.ratingCount ? (
                   <div className="flex items-center gap-2">
-                    <Star size={14} color="#A78BFA" />
-                    <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#A78BFA]">{ratingAvg.toFixed(1)}</span> avg rating <span className="text-[#475569] ml-1">({mod.ratingCount})</span></span>
+                    <Star size={14} color="#F59E0B" />
+                    <span className="text-xs text-[#94a3b8]"><span className="font-bold text-[#F59E0B]">{ratingAvg.toFixed(1)}</span> avg rating <span className="text-[#475569] ml-1">({mod.ratingCount})</span></span>
                   </div>
                 ) : null}
                 <div className="flex items-center gap-2">
