@@ -1897,36 +1897,55 @@
             document.getElementById('groupCustomDur').classList.toggle('hidden', document.getElementById('keyDurationMode').value !== 'custom');
         }
 
+        // Duration mode → seconds (0 = lifetime). Custom returns absolute epoch sec via customExpirySec.
+        function _durationToSeconds(mode, customExpirySec) {
+            switch (mode) {
+                case '2h':  return 2 * 3600;
+                case '7d':  return 7 * 86400;
+                case '1m':  return 30 * 86400;
+                case 'life':return 0;
+                case 'custom': {
+                    if (!customExpirySec) return 0;
+                    return Math.max(60, customExpirySec - Math.floor(Date.now()/1000));
+                }
+                default: return 7 * 86400;
+            }
+        }
+
         function generateKeys() {
             const qty    = parseInt(document.getElementById('keyQty').value) || 1;
             const prefix = document.getElementById('keyPrefix').value.toUpperCase().trim();
             const mode   = document.getElementById('keyDurationMode').value;
 
-            let durHours = 24;
-            if (mode === 'life') durHours = 87600;
-            else if (mode === 'custom') durHours = parseInt(document.getElementById('keyCustomVal').value) || 24;
-            else durHours = parseInt(mode);
+            let customExpirySec = 0;
+            if (mode === 'custom') {
+                const dt = document.getElementById('keyCustomVal').value;
+                if (!dt) return showToast('Pick a custom date/time first', true);
+                customExpirySec = Math.floor(new Date(dt).getTime() / 1000);
+                if (!customExpirySec || customExpirySec <= Math.floor(Date.now()/1000)) {
+                    return showToast('Custom expiry must be in the future', true);
+                }
+            }
 
-            const now = Math.floor(Date.now() / 1000);
-            // Keys always expire at the next 12:00 AM (midnight) — one key per day
-            const _midnight = new Date(); _midnight.setHours(24, 0, 0, 0);
-            const midnightSec = Math.floor(_midnight.getTime() / 1000);
+            const nowMs   = Date.now();
             const newKeys = [];
             for (let i = 0; i < qty; i++) {
                 const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
                 const k   = prefix ? `${prefix}-${rnd}` : rnd;
                 dbData.ValidKeys[k] = {
-                    status: "active",
-                    expiry: durHours >= 87600 ? 0 : midnightSec,
-                    duration: durHours,
-                    device: "",
-                    date: new Date().toISOString(),
-                    source: "api"
+                    status:    "active",
+                    expiry:    0,                  // 0 until activated
+                    duration:  mode,               // '2h' | '7d' | '1m' | 'life' | 'custom'
+                    customExpiry: customExpirySec, // absolute sec for custom mode (else 0)
+                    activated: 0,                  // ms timestamp on first device link
+                    device:    "",
+                    createdAt: nowMs,              // ms — drives 24h unused-TTL
+                    date:      new Date(nowMs).toISOString(),
+                    source:    "api"
                 };
                 newKeys.push(k);
             }
 
-            // Q5: Show scrollable list + Q2: copy all button
             const outDiv = document.getElementById('genKeyOutput');
             const listDiv = document.getElementById('genKeyList');
             listDiv.innerHTML = newKeys.map(k =>
@@ -1936,12 +1955,12 @@
                 </div>`
             ).join('');
             outDiv.style.display = 'block';
-            // Q2: auto-copy first key if single, just show list for bulk
             if (newKeys.length === 1) copy(newKeys[0]);
-            log('Generated ' + newKeys.length + ' key(s) via admin', 'success');
-            adminLog('keys_generated', { qty: newKeys.length, prefix, durHours });
+            log('Generated ' + newKeys.length + ' key(s) · mode=' + mode, 'success');
+            adminLog('keys_generated', { qty: newKeys.length, prefix, mode });
             syncDB();
         }
+
 
         // Q2: Copy all generated keys
         function copyAllKeys() {
