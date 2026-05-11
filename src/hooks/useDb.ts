@@ -109,26 +109,24 @@ export function useIncrementDownload() {
 
 // ─── Comments ────────────────────────────────────────────────────────────────
 
-/** Real-time listener on /Comments/{modId} */
+/** One-time fetch of /Comments/{modId} (cached, manual refresh via invalidateQueries(['comments', modId])) */
 export function useComments(modId: string | undefined) {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (!modId) { setIsLoading(false); return }
-    const ref = db.ref(`/Comments/${modId}`)
-    const handler = ref.on('value', (snap) => {
+  const query = useQuery<Comment[]>({
+    queryKey: ['comments', modId],
+    queryFn: async () => {
+      if (!modId) return []
+      const snap = await db.ref(`/Comments/${modId}`).once('value')
       const data = snap.val()
-      if (!data) { setComments([]); setIsLoading(false); return }
+      if (!data) return []
       const list: Comment[] = Object.values(data) as Comment[]
       list.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-      setComments(list)
-      setIsLoading(false)
-    })
-    return () => ref.off('value', handler)
-  }, [modId])
-
-  return { data: comments, isLoading }
+      return list
+    },
+    enabled: !!modId,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  })
+  return { data: query.data ?? [], isLoading: query.isLoading }
 }
 
 /**
