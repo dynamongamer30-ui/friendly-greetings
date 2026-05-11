@@ -1144,6 +1144,7 @@
             if (typeof val === 'object') {
                 val.status = 'revoked';
                 val.expiry = 0;
+                val.revokedAt = Date.now();
                 // Unlink device
                 if (val.device) {
                     if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
