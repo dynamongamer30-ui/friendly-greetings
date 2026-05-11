@@ -126,13 +126,20 @@
         .input-std:focus { border-color: rgba(255,69,0,0.35); background: rgba(255,69,0,0.04); box-shadow: 0 0 0 3px rgba(255,69,0,0.06); }
         .input-no-icon { padding-left: 13px; }
         .select-std {
-            width: 100%; background: rgba(255,69,0,0.03); border: 1px solid var(--border);
-            padding: 11px 36px 11px 13px; color: var(--text); border-radius: var(--radius-md);
-            font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D'http%3A//www.w3.org/2000/svg' width%3D'12' height%3D'12'%3E%3Cpath fill%3D'%236b7280' d%3D'M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 13px center;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(20,12,30,0.92), rgba(10,10,26,0.92));
+            border: 1px solid rgba(245,158,11,0.28);
+            padding: 11px 38px 11px 13px; color: var(--text); border-radius: var(--radius-md);
+            font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+            appearance: none; -webkit-appearance: none; cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D'http%3A//www.w3.org/2000/svg' width%3D'12' height%3D'12'%3E%3Cpath fill%3D'%23F59E0B' d%3D'M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 0 rgba(245,158,11,0);
+            transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
         }
-        .select-std:focus { border-color: rgba(255,69,0,0.35); box-shadow: 0 0 0 3px rgba(255,69,0,0.06); }
+        .select-std:hover { border-color: rgba(245,158,11,0.5); box-shadow: 0 0 14px rgba(245,158,11,0.15); }
+        .select-std:focus { outline: none; border-color: rgba(255,69,0,0.55); box-shadow: 0 0 0 3px rgba(255,69,0,0.18), 0 0 18px rgba(255,69,0,0.25); }
+        .select-std option { background: #0a0a1a; color: #E2E8F0; font-weight: 600; }
         .btn-main {
             background: var(--accent); color: #07030A; border: none;
             padding: 0 18px; border-radius: var(--radius-md); font-weight: 800;
@@ -158,9 +165,10 @@
            BULK BAR
         ============================================ */
         .bulk-bar {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
             background: rgba(255,69,0,0.02); border: 1px solid var(--border);
-            padding: 9px 14px; border-radius: var(--radius-md); margin-bottom: 12px;
+            padding: 9px 12px; border-radius: var(--radius-md); margin-bottom: 12px;
+            min-width: 0;
         }
         .chk-container { display: flex; align-items: center; gap: 9px; font-size: 0.72rem; color: var(--muted); font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .custom-chk {
@@ -170,7 +178,14 @@
         .custom-chk.checked { background: var(--accent); border-color: var(--accent); }
         .custom-chk i { font-size: 0.6rem; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.22s cubic-bezier(0.16,1,0.3,1); }
         .custom-chk.checked i { opacity: 1; transform: scale(1); color: #07030A; }
-        .bulk-actions { display: flex; gap: 8px; }
+        .bulk-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+        @media (max-width: 520px) {
+            .bulk-bar { padding: 8px; }
+            .bulk-bar > .chk-container { flex: 1 1 auto; }
+            .bulk-bar > button.btn-sm { flex: 0 0 auto; margin-left: 0 !important; margin-right: 0 !important; }
+            .bulk-actions { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .bulk-actions .btn-sm { width: 100%; padding: 8px 6px; font-size: 0.65rem; text-align: center; justify-content: center; }
+        }
         .btn-sm {
             padding: 7px 12px; border-radius: var(--radius-sm); font-size: 0.7rem;
             font-weight: 700; cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); letter-spacing: 0.3px; border: 1px solid transparent;
@@ -219,7 +234,26 @@
         .status-badge { font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent; }
         .status-linked { color: #34d399; background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.2); }
         .status-expire { color: var(--orange); background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.2); }
-        .status-vip { color: var(--gold); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
+        .status-vip {
+            color: #fff7d6;
+            background: linear-gradient(135deg, rgba(255,69,0,0.35), rgba(245,158,11,0.55));
+            border-color: rgba(255,215,120,0.7);
+            text-shadow: 0 0 6px rgba(255,200,80,0.7);
+            box-shadow: 0 0 10px rgba(245,158,11,0.55), 0 0 22px rgba(255,69,0,0.35), inset 0 0 6px rgba(255,255,255,0.18);
+            animation: vipGlowPulse 2.2s ease-in-out infinite;
+            font-weight: 800; letter-spacing: 0.6px;
+        }
+        .status-vip i { color: #ffd76b; filter: drop-shadow(0 0 4px rgba(255,200,80,0.9)); }
+        @keyframes vipGlowPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(245,158,11,0.45), 0 0 18px rgba(255,69,0,0.3), inset 0 0 6px rgba(255,255,255,0.18); }
+            50%      { box-shadow: 0 0 14px rgba(245,158,11,0.75), 0 0 30px rgba(255,69,0,0.55), inset 0 0 8px rgba(255,255,255,0.28); }
+        }
+        .vip-row::before {
+            content:''; position:absolute; top:0; left:0; width:3px; height:100%;
+            background: linear-gradient(180deg, #FF4500, #F59E0B);
+            box-shadow: 0 0 12px rgba(245,158,11,0.6), 0 0 22px rgba(255,69,0,0.4);
+            border-radius: 3px;
+        }
         .badge {
             font-weight: 700; text-transform: uppercase; padding: 3px 9px;
             border-radius: var(--radius-sm); font-size: 0.58rem; letter-spacing: 0.5px;
@@ -318,10 +352,10 @@
         }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal-content {
-            background: #080f14; width: 90%; max-width: 340px; padding: 26px;
+            background: #080f14; width: 92%; max-width: min(360px, 92vw); padding: 22px;
             border-radius: var(--radius-lg); border: 1px solid rgba(255,69,0,0.12);
             box-shadow: 0 0 60px rgba(0,0,0,0.9); transform: scale(0.92) translateY(10px);
-            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); max-height: 90vh; overflow-y: auto;
         }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
         .modal-content h3 { margin: 0 0 18px; font-size: 1.1rem; font-weight: 800; }
@@ -822,25 +856,26 @@
             <h3>Generate Keys</h3>
             <div class="inp-group">
                 <label class="inp-label">Prefix</label>
-                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="DG">
+                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="VIP">
             </div>
             <div class="inp-group">
                 <label class="inp-label">Quantity</label>
                 <input type="number" class="input-std input-no-icon" id="keyQty" value="1" min="1" max="50">
             </div>
             <div class="inp-group">
-                <label class="inp-label">Duration</label>
+                <label class="inp-label">Active Duration <span style="color:var(--muted);font-weight:500;text-transform:none;font-size:0.6rem;">(starts when key is used)</span></label>
                 <select id="keyDurationMode" class="select-std" onchange="toggleCustomDuration()">
-                    <option value="2">2 Hours</option>
-                    <option value="24" selected>24 Hours</option>
-                    <option value="720">720 Hours (30 Days)</option>
+                    <option value="2h">2 Hours</option>
+                    <option value="7d" selected>7 Days</option>
+                    <option value="1m">1 Month</option>
                     <option value="life">Lifetime</option>
-                    <option value="custom">Custom...</option>
+                    <option value="custom">Custom Date / Time</option>
                 </select>
             </div>
             <div class="inp-group hidden" id="groupCustomDur">
-                <label class="inp-label">Custom Hours</label>
-                <input type="number" class="input-std input-no-icon" id="keyCustomVal" placeholder="Enter hours">
+                <label class="inp-label">Custom Expiry Date &amp; Time</label>
+                <input type="datetime-local" class="input-std input-no-icon" id="keyCustomVal">
+                <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">Key will expire at this exact moment after activation.</div>
             </div>
             <div class="grid-2">
                 <button class="btn-block" style="margin:0;" onclick="generateKeys()">GENERATE</button>
@@ -1080,7 +1115,7 @@
         function rotateKey(oldKey) {
             if (!dbData.ValidKeys[oldKey]) return;
             const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const prefix = oldKey.includes('-') ? oldKey.split('-')[0] : 'DG';
+            const prefix = oldKey.includes('-') ? oldKey.split('-')[0] : 'VIP';
             const newKey = prefix + '-' + rnd;
             dbData.ValidKeys[newKey] = { ...dbData.ValidKeys[oldKey], date: new Date().toISOString() };
             delete dbData.ValidKeys[oldKey];
@@ -1109,6 +1144,7 @@
             if (typeof val === 'object') {
                 val.status = 'revoked';
                 val.expiry = 0;
+                val.revokedAt = Date.now();
                 // Unlink device
                 if (val.device) {
                     if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
@@ -1465,56 +1501,78 @@
         // =============================================
         // 4. AUTO CLEANER
         // =============================================
+        // Lifecycle: 24h unused-TTL + activation hook + post-activation expiry
         function checkAndCleanExpiredKeys() {
             if (!dbData?.ValidKeys) return;
-            const nowMs         = Date.now();
-            const nowSec        = Math.floor(nowMs / 1000);
-            const TEN_MIN       = 10 * 60 * 1000;
-            const keysInUse     = new Set();
-            let deletedCount    = 0;
-            let hasChanges      = false;
+            const nowMs        = Date.now();
+            const nowSec       = Math.floor(nowMs / 1000);
+            const UNUSED_TTL   = 24 * 60 * 60 * 1000; // 24h
+            const REVOKED_TTL  = 24 * 60 * 60;        // 24h after revoke (sec)
+            const linkedKeys   = new Set();
+            let deletedCount   = 0;
+            let activatedCount = 0;
+            let hasChanges     = false;
 
-            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
-            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
+            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
+            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
 
             Object.keys(dbData.ValidKeys).forEach(key => {
                 const val = dbData.ValidKeys[key];
+                if (typeof val !== 'object' || !val) return;
 
-                // AUTO-DELETE: remove keys whose expiry timestamp has passed (midnight rule)
-                if (typeof val === 'object' && val.expiry > 0 && val.expiry < nowSec) {
-                    // Also unlink any bound device
+                // Forward-migrate legacy keys that have no createdAt
+                if (!val.createdAt) {
+                    const d = val.date ? (typeof val.date === 'number' ? val.date : new Date(val.date).getTime()) : nowMs;
+                    val.createdAt = d || nowMs;
+                    hasChanges = true;
+                }
+
+                // 1) ACTIVATION HOOK: key just got linked to a device → start the timer.
+                if (linkedKeys.has(key) && !val.activated && val.duration && val.duration !== undefined) {
+                    val.activated = nowMs;
+                    const dur = _durationToSeconds(val.duration, val.customExpiry || 0);
+                    val.expiry = dur > 0 ? (nowSec + dur) : 0; // 0 = lifetime
+                    activatedCount++;
+                    hasChanges = true;
+                }
+
+                // 2) Activated key whose timer elapsed → delete (incl. VIP).
+                if (val.expiry > 0 && val.expiry < nowSec) {
                     if (val.device) {
                         if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
                         if (dbData.BannedDevices[val.device])  delete dbData.BannedDevices[val.device];
                     }
                     delete dbData.ValidKeys[key];
-                    hasChanges = true;
-                    deletedCount++;
+                    hasChanges = true; deletedCount++;
                     return;
                 }
 
-                // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (key.toUpperCase().startsWith("VIP")) return;
-                if (keysInUse.has(key)) return;
-
-                let creationTime = 0;
-                if (typeof val === 'object' && val.date) {
-                    // Support both ISO string and epoch-ms formats
-                    const d = typeof val.date === 'number' ? val.date : new Date(val.date).getTime();
-                    creationTime = d > 0 ? d : 0;
-                } else if (typeof val === 'string' || typeof val === 'number') {
-                    creationTime = new Date(val).getTime() || 0;
+                // 3) Revoked older than 24h → delete.
+                if (val.status === 'revoked') {
+                    const revokedAt = val.revokedAt || val.createdAt;
+                    if (nowMs - revokedAt > UNUSED_TTL) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true; deletedCount++;
+                    }
+                    return;
                 }
 
-                if (creationTime > 0 && (nowMs - creationTime > TEN_MIN)) {
-                    delete dbData.ValidKeys[key];
-                    hasChanges = true;
-                    deletedCount++;
+                // 4) UNUSED 24h TTL: never activated and >24h old → delete.
+                if (!val.activated && !linkedKeys.has(key)) {
+                    if (nowMs - val.createdAt > UNUSED_TTL) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true; deletedCount++;
+                    }
                 }
             });
 
-            if (hasChanges) { syncDB(); showToast(`Cleaned ${deletedCount} unused key${deletedCount > 1 ? 's' : ''}`); log('Auto-cleaned ' + deletedCount + ' expired key(s)', 'warn'); }
+            if (hasChanges) {
+                syncDB();
+                if (deletedCount)   { showToast(`Cleaned ${deletedCount} expired key${deletedCount > 1 ? 's' : ''}`); log('Auto-cleaned ' + deletedCount + ' key(s)', 'warn'); }
+                if (activatedCount) { log('Activated ' + activatedCount + ' key(s) — timer started', 'success'); }
+            }
         }
+
 
         // Select all expired/revoked keys so the bulk DELETE button can remove them at once
         function selectExpiredKeys() {
@@ -1641,44 +1699,61 @@
 
                 const isSelected = selectedKeys.includes(key);
                 const val        = dbData.ValidKeys[key];
-                let durText = "24H";
+                const nowMsR     = Date.now();
+                const nowSecR    = Math.floor(nowMsR / 1000);
+                const UNUSED_TTL_MS = 24 * 60 * 60 * 1000;
+
+                const _durLabel = (m) => ({ '2h':'2H', '7d':'7D', '1m':'1M', 'life':'∞', 'custom':'CUSTOM' }[m] || (m || '—'));
+
+                let durText   = "—";
                 let remainSec = 0;
+                let unusedRemainSec = 0;
+                let isUnused  = false;
                 if (typeof val === 'object') {
-                    if (val.expiry > 0) {
-                        remainSec = val.expiry - Math.floor(Date.now() / 1000);
-                        durText = remainSec > 0 ? Math.floor(remainSec / 3600) + "H" : "EXPIRED";
+                    if (val.status === 'revoked') {
+                        durText = 'REVOKED';
+                    } else if (val.expiry > 0) {
+                        remainSec = val.expiry - nowSecR;
+                        durText   = remainSec > 0 ? _durLabel(val.duration) : "EXPIRED";
+                    } else if (val.duration === 'life' && val.activated) {
+                        durText = '∞ LIFETIME';
                     } else {
-                        durText = val.status === 'revoked' ? "REVOKED" : (val.duration ? "UNUSED (" + val.duration + "H)" : "UNUSED");
+                        // Not yet activated
+                        isUnused = true;
+                        const created = val.createdAt || (val.date ? new Date(val.date).getTime() : nowMsR);
+                        unusedRemainSec = Math.max(0, Math.floor((created + UNUSED_TTL_MS - nowMsR) / 1000));
+                        durText = 'UNUSED · ' + _durLabel(val.duration);
                     }
                 }
 
                 const isLinked   = linkedKeys.has(key);
                 const isVip      = key.toUpperCase().startsWith("VIP");
                 const isRevoked  = typeof val === 'object' && val.status === 'revoked';
-                // Q7: expiring within 2 hours
                 const isExpiring = !isRevoked && remainSec > 0 && remainSec < 7200;
                 let   statusHtml = "";
                 if (isRevoked)       statusHtml = `<span class="status-badge" style="color:var(--red);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);"><i class="fas fa-ban"></i> REVOKED</span>`;
                 else if (isExpiring) statusHtml = `<span class="status-badge badge-expiring"><i class="fas fa-exclamation-triangle"></i> EXPIRING</span>`;
                 else if (isLinked)   statusHtml = `<span class="status-badge status-linked"><i class="fas fa-link"></i> LINKED</span>`;
                 else if (isVip)      statusHtml = `<span class="status-badge status-vip"><i class="fas fa-crown"></i> VIP</span>`;
-                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 10M AUTO-DEL</span>`;
+                else                 statusHtml = `<span class="status-badge status-expire"><i class="fas fa-hourglass-half"></i> 24H AUTO-DEL</span>`;
 
-                // S2: source badge
                 const src = typeof val === 'object' ? (val.source || '') : '';
                 const srcBadge = src === 'web' ? `<span class="src-badge src-web">WEB</span>` : src === 'api' ? `<span class="src-badge src-api">API</span>` : '';
 
-                // Q1: live HH:MM:SS countdown
                 const cdId = 'cd_' + key.replace(/[^a-z0-9]/gi,'_');
                 let cdHtml = '';
                 if (remainSec > 0) {
                     const h = Math.floor(remainSec/3600), mn = Math.floor((remainSec%3600)/60), s = remainSec%60;
                     const cdClass = isExpiring ? 'key-countdown expiring' : 'key-countdown';
                     cdHtml = `<span class="${cdClass}" id="${cdId}" data-expiry="${(typeof val==='object'?val.expiry:0)}"><i class="fas fa-clock" style="font-size:0.55rem;margin-right:2px;"></i>${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(s).padStart(2,'0')}</span> · `;
+                } else if (isUnused && unusedRemainSec > 0) {
+                    const h = Math.floor(unusedRemainSec/3600), mn = Math.floor((unusedRemainSec%3600)/60);
+                    cdHtml = `<span class="key-countdown" style="color:var(--orange);"><i class="fas fa-hourglass-half" style="font-size:0.55rem;margin-right:2px;"></i>UNUSED · expires in ${h}h ${mn}m</span> · `;
                 }
 
+                const rowClass = isVip ? 'item-card active-card vip-row' : 'item-card active-card';
                 list.innerHTML += `
-                <div class="item-card active-card ${isSelected ? 'selected' : ''}">
+                <div class="${rowClass} ${isSelected ? 'selected' : ''}" style="position:relative;">
                     <div class="row-top">
                         <div class="chk-container" onclick="toggleSelectKey('${key}')">
                             <div class="custom-chk ${isSelected ? 'checked' : ''}"><i class="fas fa-check"></i></div>
@@ -1862,36 +1937,55 @@
             document.getElementById('groupCustomDur').classList.toggle('hidden', document.getElementById('keyDurationMode').value !== 'custom');
         }
 
+        // Duration mode → seconds (0 = lifetime). Custom returns absolute epoch sec via customExpirySec.
+        function _durationToSeconds(mode, customExpirySec) {
+            switch (mode) {
+                case '2h':  return 2 * 3600;
+                case '7d':  return 7 * 86400;
+                case '1m':  return 30 * 86400;
+                case 'life':return 0;
+                case 'custom': {
+                    if (!customExpirySec) return 0;
+                    return Math.max(60, customExpirySec - Math.floor(Date.now()/1000));
+                }
+                default: return 7 * 86400;
+            }
+        }
+
         function generateKeys() {
             const qty    = parseInt(document.getElementById('keyQty').value) || 1;
             const prefix = document.getElementById('keyPrefix').value.toUpperCase().trim();
             const mode   = document.getElementById('keyDurationMode').value;
 
-            let durHours = 24;
-            if (mode === 'life') durHours = 87600;
-            else if (mode === 'custom') durHours = parseInt(document.getElementById('keyCustomVal').value) || 24;
-            else durHours = parseInt(mode);
+            let customExpirySec = 0;
+            if (mode === 'custom') {
+                const dt = document.getElementById('keyCustomVal').value;
+                if (!dt) return showToast('Pick a custom date/time first', true);
+                customExpirySec = Math.floor(new Date(dt).getTime() / 1000);
+                if (!customExpirySec || customExpirySec <= Math.floor(Date.now()/1000)) {
+                    return showToast('Custom expiry must be in the future', true);
+                }
+            }
 
-            const now = Math.floor(Date.now() / 1000);
-            // Keys always expire at the next 12:00 AM (midnight) — one key per day
-            const _midnight = new Date(); _midnight.setHours(24, 0, 0, 0);
-            const midnightSec = Math.floor(_midnight.getTime() / 1000);
+            const nowMs   = Date.now();
             const newKeys = [];
             for (let i = 0; i < qty; i++) {
                 const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
                 const k   = prefix ? `${prefix}-${rnd}` : rnd;
                 dbData.ValidKeys[k] = {
-                    status: "active",
-                    expiry: durHours >= 87600 ? 0 : midnightSec,
-                    duration: durHours,
-                    device: "",
-                    date: new Date().toISOString(),
-                    source: "api"
+                    status:    "active",
+                    expiry:    0,                  // 0 until activated
+                    duration:  mode,               // '2h' | '7d' | '1m' | 'life' | 'custom'
+                    customExpiry: customExpirySec, // absolute sec for custom mode (else 0)
+                    activated: 0,                  // ms timestamp on first device link
+                    device:    "",
+                    createdAt: nowMs,              // ms — drives 24h unused-TTL
+                    date:      new Date(nowMs).toISOString(),
+                    source:    "api"
                 };
                 newKeys.push(k);
             }
 
-            // Q5: Show scrollable list + Q2: copy all button
             const outDiv = document.getElementById('genKeyOutput');
             const listDiv = document.getElementById('genKeyList');
             listDiv.innerHTML = newKeys.map(k =>
@@ -1901,12 +1995,12 @@
                 </div>`
             ).join('');
             outDiv.style.display = 'block';
-            // Q2: auto-copy first key if single, just show list for bulk
             if (newKeys.length === 1) copy(newKeys[0]);
-            log('Generated ' + newKeys.length + ' key(s) via admin', 'success');
-            adminLog('keys_generated', { qty: newKeys.length, prefix, durHours });
+            log('Generated ' + newKeys.length + ' key(s) · mode=' + mode, 'success');
+            adminLog('keys_generated', { qty: newKeys.length, prefix, mode });
             syncDB();
         }
+
 
         // Q2: Copy all generated keys
         function copyAllKeys() {
