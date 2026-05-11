@@ -40,7 +40,7 @@ export function AchievementHistory({ bare = false }: { bare?: boolean } = {}) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-2xl p-5"
+            className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-2xl p-4 sm:p-5 mx-2"
             style={{
               background: 'rgba(5,8,10,0.98)',
               border: '1px solid rgba(245, 158, 11,0.3)',

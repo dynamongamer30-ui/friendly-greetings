@@ -34,7 +34,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
     <header className="relative flex flex-col items-center pt-12 pb-10 px-4 text-center">
       {/* Top-right glass cluster — bell · trophy · sound (single pill) */}
       <div
-        className="absolute top-4 right-4 z-20 flex items-center gap-1 p-1.5 rounded-full"
+        className="absolute top-4 right-2 z-20 flex items-center gap-1 p-1.5 rounded-full"
         style={{
           background: 'rgba(20,20,50,0.55)',
           backdropFilter: 'blur(16px) saturate(140%)',
