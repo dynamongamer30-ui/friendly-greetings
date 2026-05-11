@@ -1742,13 +1742,27 @@
             }, 18000);
 
             try {
-                const snap = await _tryFbGetWithRetry('/', 3);
+                const [configSnap, keysSnap, usersSnap, bannedSnap] = await Promise.all([
+                    _tryFbGetWithRetry('/Config', 3),
+                    _tryFbGetWithRetry('/ValidKeys', 3),
+                    _tryFbGetWithRetry('/ActivatedUsers', 3),
+                    _tryFbGetWithRetry('/BannedDevices', 3)
+                ]);
                 if (timedOut) return;
-                let data = snap.val();
+                let data = {
+                    Config:         configSnap.val()  || { ...DEFAULT_DATA.Config },
+                    ValidKeys:      keysSnap.val()    || {},
+                    ActivatedUsers: usersSnap.val()   || {},
+                    BannedDevices:  bannedSnap.val()  || {}
+                };
 
-                if (!data) {
-                    await window._fbSet('/', DEFAULT_DATA);
-                    data = DEFAULT_DATA;
+                if (!configSnap.val()) {
+                    await Promise.all([
+                        window._fbSet('/Config', DEFAULT_DATA.Config),
+                        window._fbSet('/ValidKeys', {}),
+                        window._fbSet('/ActivatedUsers', {}),
+                        window._fbSet('/BannedDevices', {})
+                    ]);
                 }
 
                 dbData = data;
