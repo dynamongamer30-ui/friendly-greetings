@@ -36,6 +36,9 @@ export function Footer({ siteMeta }: FooterProps) {
         boxShadow: '0 -1px 24px rgba(34,211,238,0.08), inset 0 1px 0 rgba(34,211,238,0.18)',
       }}
     >
+      {/* Aurora wave divider */}
+      <div aria-hidden="true" className="aurora-wave" />
+
       {/* Cyber grid lines */}
       <div
         aria-hidden="true"
@@ -57,6 +60,31 @@ export function Footer({ siteMeta }: FooterProps) {
           boxShadow: '0 0 18px rgba(34,211,238,0.45)',
         }}
       />
+
+      {/* Faint gradient watermark of site name */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-hidden select-none"
+        style={{ paddingBottom: '8px' }}
+      >
+        <span
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 'clamp(3rem, 12vw, 9rem)',
+            fontWeight: 800,
+            letterSpacing: '-0.05em',
+            background: 'linear-gradient(180deg, rgba(167,139,250,0.06) 0%, rgba(34,211,238,0) 80%)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent',
+            whiteSpace: 'nowrap',
+            lineHeight: 0.85,
+          }}
+        >
+          {name}
+        </span>
+      </div>
 
       <div className="relative max-w-6xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">

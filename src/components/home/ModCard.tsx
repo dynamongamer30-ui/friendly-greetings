@@ -138,7 +138,7 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
             to="/download"
             search={{ id: mod.id }}
             onClick={(e) => { handleDownloadClick(e as unknown as React.MouseEvent<HTMLAnchorElement>); handleFirstDownload() }}
-            className="glass-panel group flex flex-col overflow-hidden"
+            className="glass-panel group flex flex-col overflow-hidden contain-card"
             style={{
               boxShadow: glowing
                 ? `0 0 0 1px rgba(34,211,238,0.35), 0 0 30px rgba(34,211,238,0.14), 0 0 60px rgba(34,211,238,0.06)`
@@ -148,6 +148,9 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
               position: 'relative',
             }}
           >
+            {/* Gradient corner accent */}
+            <span aria-hidden="true" className="corner-accent" />
+
             {/* Holographic foil overlay */}
             {glowing && (
               <div
@@ -185,12 +188,14 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
             ))}
 
             {/* Image */}
-            <div className="relative h-44 overflow-hidden">
+            <div className="relative mod-card-image overflow-hidden lqip" data-loaded="false">
               <img
                 src={mod.imageUrl || 'https://placehold.co/400x250/0a0f15/1e293b?text=No+Image'}
                 alt={mod.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
+                onLoad={(e) => { (e.currentTarget.parentElement as HTMLElement | null)?.setAttribute('data-loaded', 'true') }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#05080A] via-transparent to-transparent" />
 
