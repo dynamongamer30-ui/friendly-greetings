@@ -1500,56 +1500,78 @@
         // =============================================
         // 4. AUTO CLEANER
         // =============================================
+        // Lifecycle: 24h unused-TTL + activation hook + post-activation expiry
         function checkAndCleanExpiredKeys() {
             if (!dbData?.ValidKeys) return;
-            const nowMs         = Date.now();
-            const nowSec        = Math.floor(nowMs / 1000);
-            const TEN_MIN       = 10 * 60 * 1000;
-            const keysInUse     = new Set();
-            let deletedCount    = 0;
-            let hasChanges      = false;
+            const nowMs        = Date.now();
+            const nowSec       = Math.floor(nowMs / 1000);
+            const UNUSED_TTL   = 24 * 60 * 60 * 1000; // 24h
+            const REVOKED_TTL  = 24 * 60 * 60;        // 24h after revoke (sec)
+            const linkedKeys   = new Set();
+            let deletedCount   = 0;
+            let activatedCount = 0;
+            let hasChanges     = false;
 
-            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
-            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) keysInUse.add(d.Key); });
+            Object.values(dbData.ActivatedUsers || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
+            Object.values(dbData.BannedDevices  || {}).forEach(d => { if (d?.Key) linkedKeys.add(d.Key); });
 
             Object.keys(dbData.ValidKeys).forEach(key => {
                 const val = dbData.ValidKeys[key];
+                if (typeof val !== 'object' || !val) return;
 
-                // AUTO-DELETE: remove keys whose expiry timestamp has passed (midnight rule)
-                if (typeof val === 'object' && val.expiry > 0 && val.expiry < nowSec) {
-                    // Also unlink any bound device
+                // Forward-migrate legacy keys that have no createdAt
+                if (!val.createdAt) {
+                    const d = val.date ? (typeof val.date === 'number' ? val.date : new Date(val.date).getTime()) : nowMs;
+                    val.createdAt = d || nowMs;
+                    hasChanges = true;
+                }
+
+                // 1) ACTIVATION HOOK: key just got linked to a device → start the timer.
+                if (linkedKeys.has(key) && !val.activated && val.duration && val.duration !== undefined) {
+                    val.activated = nowMs;
+                    const dur = _durationToSeconds(val.duration, val.customExpiry || 0);
+                    val.expiry = dur > 0 ? (nowSec + dur) : 0; // 0 = lifetime
+                    activatedCount++;
+                    hasChanges = true;
+                }
+
+                // 2) Activated key whose timer elapsed → delete (incl. VIP).
+                if (val.expiry > 0 && val.expiry < nowSec) {
                     if (val.device) {
                         if (dbData.ActivatedUsers[val.device]) delete dbData.ActivatedUsers[val.device];
                         if (dbData.BannedDevices[val.device])  delete dbData.BannedDevices[val.device];
                     }
                     delete dbData.ValidKeys[key];
-                    hasChanges = true;
-                    deletedCount++;
+                    hasChanges = true; deletedCount++;
                     return;
                 }
 
-                // Existing logic: delete unused unlinked keys older than 10 minutes
-                if (key.toUpperCase().startsWith("VIP")) return;
-                if (keysInUse.has(key)) return;
-
-                let creationTime = 0;
-                if (typeof val === 'object' && val.date) {
-                    // Support both ISO string and epoch-ms formats
-                    const d = typeof val.date === 'number' ? val.date : new Date(val.date).getTime();
-                    creationTime = d > 0 ? d : 0;
-                } else if (typeof val === 'string' || typeof val === 'number') {
-                    creationTime = new Date(val).getTime() || 0;
+                // 3) Revoked older than 24h → delete.
+                if (val.status === 'revoked') {
+                    const revokedAt = val.revokedAt || val.createdAt;
+                    if (nowMs - revokedAt > UNUSED_TTL) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true; deletedCount++;
+                    }
+                    return;
                 }
 
-                if (creationTime > 0 && (nowMs - creationTime > TEN_MIN)) {
-                    delete dbData.ValidKeys[key];
-                    hasChanges = true;
-                    deletedCount++;
+                // 4) UNUSED 24h TTL: never activated and >24h old → delete.
+                if (!val.activated && !linkedKeys.has(key)) {
+                    if (nowMs - val.createdAt > UNUSED_TTL) {
+                        delete dbData.ValidKeys[key];
+                        hasChanges = true; deletedCount++;
+                    }
                 }
             });
 
-            if (hasChanges) { syncDB(); showToast(`Cleaned ${deletedCount} unused key${deletedCount > 1 ? 's' : ''}`); log('Auto-cleaned ' + deletedCount + ' expired key(s)', 'warn'); }
+            if (hasChanges) {
+                syncDB();
+                if (deletedCount)   { showToast(`Cleaned ${deletedCount} expired key${deletedCount > 1 ? 's' : ''}`); log('Auto-cleaned ' + deletedCount + ' key(s)', 'warn'); }
+                if (activatedCount) { log('Activated ' + activatedCount + ' key(s) — timer started', 'success'); }
+            }
         }
+
 
         // Select all expired/revoked keys so the bulk DELETE button can remove them at once
         function selectExpiredKeys() {
