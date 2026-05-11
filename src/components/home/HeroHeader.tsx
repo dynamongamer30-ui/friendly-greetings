@@ -159,13 +159,13 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
         className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-md"
       >
         {[
-          { icon: Download, label: 'Downloads', value: totalDownloads.toLocaleString(), color: '#22D3EE' },
-          { icon: Package, label: 'Mods', value: String(totalMods), color: '#A78BFA' },
-          { icon: Clock, label: 'Updated', value: updatedLabel, color: '#E8ECFF' },
+          { icon: Download, label: 'Downloads', value: totalDownloads.toLocaleString(), color: '#22D3EE', dot: false },
+          { icon: Package, label: 'Mods', value: String(totalMods), color: '#A78BFA', dot: false },
+          { icon: Clock, label: 'Updated', value: updatedLabel, color: '#E8ECFF', dot: true },
         ].map((s) => (
           <div
             key={s.label}
-            className="rounded-2xl px-2 py-3 flex flex-col items-center gap-1"
+            className="stat-pill rounded-2xl px-2 py-3 flex flex-col items-center gap-1"
             style={{
               background: 'rgba(20,20,50,0.45)',
               backdropFilter: 'blur(14px)',
@@ -174,10 +174,11 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
             }}
           >
             <s.icon className="w-3.5 h-3.5" style={{ color: s.color }} />
-            <div className="text-[15px] sm:text-base font-bold" style={{ color: s.color, fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div className="text-[15px] sm:text-base font-bold num-tab" style={{ color: s.color, fontFamily: "'Space Grotesk', sans-serif" }}>
               {s.value}
             </div>
-            <div className="text-[9px] uppercase tracking-wider" style={{ color: '#8B92B8' }}>
+            <div className="text-[9px] uppercase tracking-wider flex items-center gap-1" style={{ color: '#8B92B8' }}>
+              {s.dot && <span className="pulse-dot" aria-hidden />}
               {s.label}
             </div>
           </div>

@@ -54,11 +54,11 @@ export function NotificationBell() {
           color: '#22D3EE',
         }}
       >
-        <Bell className="w-4 h-4" />
+        <Bell className={`w-4 h-4 ${unread > 0 ? 'bell-wiggle' : ''}`} />
         {unread > 0 && (
           <span
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
-            style={{ background: '#22D3EE', color: '#0A0A1A', boxShadow: '0 0 8px #22D3EE' }}
+            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center num-tab"
+            style={{ background: '#22D3EE', color: '#0A0A1A', boxShadow: '0 0 8px #22D3EE', animation: 'trophyBounce 0.45s cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             {unread > 9 ? '9+' : unread}
           </span>

@@ -15,6 +15,12 @@ export default function CursorGlow() {
   const colorIdxRef = useRef(0)
 
   useEffect(() => {
+    // Skip on touch devices and reduced motion
+    if (typeof window !== 'undefined') {
+      const noHover = window.matchMedia('(hover: none), (pointer: coarse)').matches
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (noHover || reduced) return
+    }
     // Create canvas for trail
     const canvas = document.createElement('canvas')
     canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;'
