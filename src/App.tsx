@@ -13,7 +13,7 @@ import PageTransition from './components/system/PageTransition'
 import AuroraOrb from './components/system/AuroraOrb'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { LoadingScreen } from './components/system/LoadingScreen'
-import { AchievementToast } from './components/ui/AchievementToast'
+
 import { useEffect, useRef, useState } from 'react'
 import { playClick, playWhoosh, tryResumeAmbient } from './lib/sound'
 import { haptics } from './lib/haptics'
