@@ -9,13 +9,40 @@ export default function KeysPage() {
 
         {/* Icon + heading */}
         <div className="space-y-3">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[rgba(34,211,238,0.08)] border border-[rgba(34,211,238,0.15)] flex items-center justify-center">
-            <Key className="w-8 h-8 text-[#22D3EE]" />
+          <div className="relative w-20 h-20 mx-auto">
+            <div
+              aria-hidden
+              className="absolute -inset-4 rounded-full pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle, rgba(34,211,238,0.35), rgba(167,139,250,0.20) 50%, transparent 75%)',
+                filter: 'blur(18px)',
+              }}
+            />
+            <svg viewBox="0 0 80 80" className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
+              <defs>
+                <linearGradient id="keysRing" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#22D3EE" />
+                  <stop offset="50%" stopColor="#A78BFA" />
+                  <stop offset="100%" stopColor="#22D3EE" />
+                </linearGradient>
+              </defs>
+              <g style={{ transformOrigin: '40px 40px', animation: 'heroRingSpin 8s linear infinite' }}>
+                <circle cx="40" cy="40" r="37" fill="none" stroke="url(#keysRing)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="180 60" />
+              </g>
+            </svg>
+            <div className="absolute inset-3 rounded-full flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34,211,238,0.12), rgba(167,139,250,0.12))',
+                border: '1px solid rgba(167,139,250,0.25)',
+                boxShadow: 'inset 0 0 12px rgba(10,10,26,0.4)',
+              }}>
+              <Key className="w-7 h-7 text-[#22D3EE]" />
+            </div>
           </div>
-          <h1 className="text-2xl font-extrabold text-[#E2E8F0] tracking-tight">
+          <h1 className="text-2xl font-extrabold aurora-text tracking-tight">
             Key System
           </h1>
-          <p className="text-sm text-[#64748b]">
+          <p className="text-sm text-[#8B92B8]">
             Manage keys &amp; devices, or generate a new access key
           </p>
         </div>
