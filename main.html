@@ -1428,7 +1428,12 @@
 
         async function syncDB() {
             try {
-                await window._fbSet('/', dbData);
+                await Promise.all([
+                    window._fbSet('/Config', dbData.Config),
+                    window._fbSet('/ValidKeys', dbData.ValidKeys),
+                    window._fbSet('/ActivatedUsers', dbData.ActivatedUsers),
+                    window._fbSet('/BannedDevices', dbData.BannedDevices)
+                ]);
                 showToast("Saved");
                 renderAll();
                 log('Database synced successfully', 'success');
