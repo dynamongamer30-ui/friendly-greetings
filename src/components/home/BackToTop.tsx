@@ -20,9 +20,10 @@ export function BackToTop() {
         transform: visible ? 'scale(1) translateY(0)' : 'scale(0.6) translateY(20px)',
         pointerEvents: visible ? 'auto' : 'none',
         transition: 'opacity 0.35s cubic-bezier(0.34,1.56,0.64,1), transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background-color 0.2s ease',
+        paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
       }}
     >
-      <ArrowUp className="w-5 h-5" />
+      <ArrowUp className={`w-5 h-5 ${visible ? 'idle-bounce' : ''}`} />
     </button>
   )
 }
