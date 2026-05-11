@@ -47,7 +47,7 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
         aria-label="Notifications"
         className={
           bare
-            ? 'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
+            ? 'relative w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
             : 'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105'
         }
         style={
@@ -62,7 +62,7 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
               }
         }
       >
-        <Bell className={`w-4 h-4 ${unread > 0 ? 'bell-wiggle' : ''}`} />
+        <Bell className={`w-3.5 h-3.5 ${unread > 0 ? 'bell-wiggle' : ''}`} />
         {unread > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center num-tab"
