@@ -6,15 +6,15 @@ export function DMCATab() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-[#22D3EE] animate-spin" />
+      <div className="glass-panel p-5 sm:p-6 space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="admin-skel" />)}
       </div>
     )
   }
 
   if (!requests || requests.length === 0) {
     return (
-      <div className="text-center py-20">
+      <div className="glass-panel p-10 text-center">
         <FileWarning className="w-10 h-10 text-[#475569] mx-auto mb-3" />
         <h3 className="text-sm font-bold text-[#E2E8F0] mb-1">No DMCA Requests</h3>
         <p className="text-xs text-[#64748b]">No takedown requests have been submitted yet.</p>
@@ -23,7 +23,7 @@ export function DMCATab() {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="glass-panel p-3 sm:p-4 overflow-x-auto">
       <table className="w-full text-sm text-left">
         <thead>
           <tr className="border-b border-[rgba(255,255,255,0.06)]">

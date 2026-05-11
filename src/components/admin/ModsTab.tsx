@@ -119,7 +119,7 @@ export function ModsTab() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="glass-panel p-5 sm:p-6 space-y-6 max-w-3xl">
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
           Select Mod

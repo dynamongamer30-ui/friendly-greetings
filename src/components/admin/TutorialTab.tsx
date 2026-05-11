@@ -44,14 +44,14 @@ export function TutorialTab() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-[#22D3EE] animate-spin" />
+      <div className="glass-panel p-5 sm:p-6 space-y-3 max-w-2xl">
+        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="admin-skel" />)}
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="glass-panel p-5 sm:p-6 space-y-6 max-w-2xl">
       {/* Title */}
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">

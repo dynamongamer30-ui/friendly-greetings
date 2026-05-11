@@ -82,14 +82,14 @@ export function SecurityTab() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-[#22D3EE] animate-spin" />
+      <div className="glass-panel p-5 sm:p-6 space-y-3 max-w-md">
+        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="admin-skel" />)}
       </div>
     )
   }
 
   return (
-    <div className="space-y-8 max-w-md">
+    <div className="glass-panel p-5 sm:p-6 space-y-8 max-w-md">
       {/* Timer */}
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">

@@ -52,14 +52,14 @@ export function SettingsTab() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-[#22D3EE] animate-spin" />
+      <div className="glass-panel p-5 sm:p-6 space-y-3 max-w-2xl">
+        {Array.from({ length: 5 }).map((_, i) => <div key={i} className="admin-skel" />)}
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="glass-panel p-5 sm:p-6 space-y-6 max-w-2xl">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Site Name */}
         <div className="space-y-1.5 sm:col-span-2">
@@ -100,8 +100,15 @@ export function SettingsTab() {
           </p>
           {logoUrl && (
             <div className="mt-2 flex items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-black border border-[rgba(255,255,255,0.1)] flex items-center justify-center overflow-hidden">
-                <img src={logoUrl} alt="Logo preview" className="w-full h-full object-cover rounded-full" style={{clipPath: 'circle(50%)'}} />
+              <div
+                className="w-16 h-16 flex items-center justify-center"
+                style={{ borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(167,139,250,0.25)' }}
+              >
+                <img
+                  src={logoUrl}
+                  alt="Logo preview"
+                  style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               </div>
               <span className="text-xs text-[#64748b]">Preview</span>
             </div>
