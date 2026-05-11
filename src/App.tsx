@@ -16,6 +16,7 @@ import { LoadingScreen } from './components/system/LoadingScreen'
 import { AchievementToast } from './components/ui/AchievementToast'
 import { useEffect, useRef, useState } from 'react'
 import { playClick, playWhoosh, tryResumeAmbient } from './lib/sound'
+import { haptics } from './lib/haptics'
 
 import HomePage from './pages/HomePage'
 import DownloadPage from './pages/DownloadPage'
@@ -49,17 +50,21 @@ function RouteSoundEffect() {
 function RootShell() {
   const [loaded, setLoaded] = useState(false)
 
-  // Global click sound
+  // Global click sound + haptics
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null
       if (!target) return
-      const btn = target.closest('button') as HTMLButtonElement | null
+      const btn = target.closest('button, a[href], [role="button"]') as HTMLElement | null
       if (!btn) return
-      if (btn.disabled) return
+      if ((btn as HTMLButtonElement).disabled) return
       if (btn.dataset.noClickSound === 'true') return
       if (btn.dataset.downloading === 'true') return
       playClick()
+      // Heavier haptic for primary CTAs
+      const isPrimary = btn.classList.contains('btn-primary') || btn.dataset.primary === 'true'
+      if (isPrimary) haptics.medium()
+      else haptics.light()
     }
     document.addEventListener('click', onClick, true)
     return () => document.removeEventListener('click', onClick, true)
