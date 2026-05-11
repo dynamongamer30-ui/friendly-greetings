@@ -1,321 +1,254 @@
-# Dynamon Gamer — Premium Visual Overhaul Plan
 
-Scope: pixel, motion, sound, feel. Zero changes to Firebase, auth, routing, sessions, encryption, rate limiting, admin logic, or any data hook. Only presentation files (`src/components/**`, `src/index.css`, `src/lib/sound.ts`, `src/components/system/*`, `src/components/ui/*`).
+# Premium Visual / Motion / Sound / Haptics Upgrade Plan
 
----
-
-## 1 — Visual & Design
-
-### 1.1 Background depth pass *(Medium)*
-- **Now:** Single `AuroraOrb` WebGL shader fills the viewport.
-- **Propose:** Add three stacked, non-interactive layers behind it: (a) faint 1px noise/grain PNG at 4% opacity, (b) a slow-drifting starfield (CSS `background-image` of dots, 60s `translate` loop), (c) a subtle vignette mask (radial darkening at edges 0%→18%).
-- **Why:** Kills the flat “gradient blob” feel — adds atmospheric depth like Linear/Vercel hero sections.
-
-### 1.2 Glass refinement *(Easy)*
-- **Now:** `.glass-panel` = blur 22px, flat 1px border, single fill.
-- **Propose:** Add inner highlight (top edge `inset 0 1px 0 rgba(255,255,255,0.06)`), outer ambient shadow (`0 30px 60px -20px rgba(0,0,0,0.6)`), and a **gradient border** via `border-image` cyan→violet→transparent at 18% alpha. Add `.glass-panel--strong` and `.glass-panel--subtle` variants for hierarchy.
-- **Why:** True frosted-glass depth; current panels read as flat tinted rectangles on mobile.
-
-### 1.3 Color token system *(Medium)*
-- **Now:** Hex colors hardcoded inline in dozens of components (`#22D3EE`, `#A78BFA`, `#8B92B8`, `#0A0A1A`).
-- **Propose:** Promote all to CSS custom properties (`--c-aurora-cyan`, `--c-aurora-violet`, `--c-text-mute`, `--c-surface-1/2/3`) and reference everywhere. Add `--gradient-aurora-radial`, `--gradient-aurora-conic`, `--shadow-aurora-sm/md/lg` reusable tokens.
-- **Why:** One file controls the entire palette → instant theme tweaks, perfect consistency.
-
-### 1.4 Hero stat pills upgrade *(Easy)*
-- **Now:** Three flat glass tiles with small icon + number.
-- **Propose:** Add gradient top-edge accent line (cyan→violet 1px), animated count-up on first paint (already have `RollingNumber` — reuse), tiny pulsing dot next to “Updated” label, hover lift `translateY(-2px)` with cyan glow.
-- **Why:** Pills currently feel static; small motion makes the hero feel alive.
-
-### 1.5 Mod card polish *(Medium)*
-- **Now:** Holographic tilt + radial shimmer + ripples + flip — already strong.
-- **Propose:** (a) Gradient corner accent (top-right cyan→violet triangle 30×30 at 25% opacity), (b) image lazy-load with blur-up placeholder (LQIP shimmer → sharp), (c) bottom “download bar” fills with cyan gradient as `downloads` approach next milestone, (d) replace the orange `🔥` emoji with a custom flame SVG that flickers.
-- **Why:** Cards become trophy-like, milestone progress becomes visible at a glance.
-
-### 1.6 Search bar reinvented *(Medium)*
-- **Now:** Flat dark input with placeholder.
-- **Propose:** Floating glass capsule with aurora-gradient outline that **animates from cyan to violet on focus**, magnifier icon morphs to sparkle while typing, animated placeholder cycling through suggestions (“Try ‘Dynamons World 2’…”, “Try ‘Unlimited Coins’…”) with typewriter cadence, clear button rotates 90° on appear.
-- **Why:** The search bar is the second-most-touched element; right now it’s the dullest.
-
-### 1.7 Category pills *(Easy)*
-- **Now:** Standard rounded buttons, color flip on active.
-- **Propose:** Active pill gets animated aurora gradient *fill* with subtle conic rotation, inactive pills get hairline border only. Switch animation: layoutId (framer-motion) so the gradient pill slides between categories instead of swap-flashing.
-- **Why:** Tab switching becomes a hero moment.
-
-### 1.8 Footer *(Easy)*
-- **Now:** Plain text + links.
-- **Propose:** Add aurora wave divider at top (animated SVG path, 10s loop), social icons get magnetic hover (slight pull toward cursor), tiny gradient watermark of site name behind copyright.
-
-### 1.9 Buttons system *(Easy)*
-- **Now:** `.btn-primary` solid cyan + glow.
-- **Propose:** Add `.btn-aurora` (animated gradient fill that flows left↔right), `.btn-glass` (frosted with inner glow on hover), and a *liquid press* effect: on `:active`, scale 0.97 + inner shadow ripple.
-- **Why:** Buttons currently glow but don’t feel tactile.
-
-### 1.10 Empty states / loading skeletons *(Easy)*
-- **Now:** Generic shimmer rectangles; EmptyState exists but plain.
-- **Propose:** Skeletons get aurora-tinted shimmer (currently white). EmptyState gets a small animated SVG illustration (floating gamepad with orbit ring) + helpful CTA copy.
-
-### 1.11 Notification bell + Achievement history *(Easy)*
-- **Now:** Glass icon buttons.
-- **Propose:** Bell wiggles (rotate ±8° spring) when unread > 0; numeric badge gets spring scale-in. Trophy button pulses aurora-violet when new achievement unlocked.
-
-### 1.12 Lightbox (image preview) *(Easy)*
-- **Now:** Standard backdrop + image.
-- **Propose:** Backdrop uses the AuroraOrb shader at 30% opacity, image gets a subtle `box-shadow` aurora bloom, swipe-to-dismiss with rubberband on mobile.
-
-### 1.13 Comments section glow accents *(Easy)*
-- **Now:** Plain text bubbles.
-- **Propose:** Author avatar gets thin aurora ring (1.5px), reply threads get a vertical aurora-gradient connector line, “new comment” entry animates with spring slide-up + soft chime.
-
-### 1.14 Toasts *(Easy)*
-- **Now:** GlassToast exists.
-- **Propose:** Add type-specific left-edge accent bar (success=cyan, error=red-pink, info=violet, achievement=animated aurora). Add subtle progress hairline at bottom that depletes over duration.
+Scope guarantee: zero changes to Firebase, auth, routing logic, sessions, encryption, rate limits, admin business logic, or any data flow. Only files in `src/components/**` (markup/styles/handlers), `src/index.css`, `src/lib/sound.ts`, `src/lib/haptics.ts` (new), and a few wrappers around existing UI.
 
 ---
 
-## 2 — Typography
+## 1. Avatar / Hero Logo — black square inside the ring
 
-### 2.1 Display / body pairing audit *(Easy)*
-- **Now:** Space Grotesk + DM Sans loaded via `<link>`; mostly applied.
-- **Propose:** Lock Space Grotesk 700 for display, 500 for UI labels, DM Sans 400/500 for body. Remove inline `fontFamily` declarations everywhere — let CSS variables (`--font-display`, `--font-body`, `--font-ui`) take over.
+**Current problem** — `src/components/home/HeroHeader.tsx` lines 102–115. The avatar container has `backgroundColor: '#0A0A1A'` and `border-radius` only on the outer wrapper. The actual `<img>` is rendered as `sr-only`, so the visible avatar is a CSS `background-image: url(...)`. The container is a circle (`rounded-full`, `inset-2`), but the source PNG has its own opaque dark/black background that fills the inner circle — looking like a black square hugging the edges. The "circle ring" is the SVG, but the avatar itself shows the image's native black background.
 
-### 2.2 Variable font upgrade *(Medium)*
-- **Now:** Static weights.
-- **Propose:** Switch to **Space Grotesk Variable** + **DM Sans Variable**. Use `font-variation-settings: 'wght' var(--w)` with smooth weight transitions on hover (e.g. nav links morph from 500 → 700).
-- **Why:** Fewer HTTP requests, buttery weight transitions impossible with static fonts.
+**What I will change**
+- Replace background-image technique with a real `<img>` inside a perfectly clipped circle (`overflow: hidden; border-radius: 50%; aspect-ratio: 1;`).
+- Apply a soft inner radial mask (`mask-image: radial-gradient(circle, #000 62%, transparent 75%)`) so the image fades into the aurora background — no black corners, no harsh seam.
+- Drop `backgroundColor: '#0A0A1A'`; replace with a translucent aurora wash (`linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10))`) so even a transparent PNG looks intentional.
+- Add `object-fit: cover; object-position: center top;` so the character's face is always centered.
+- Add a 1 px inner highlight ring (`box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06)`) for depth.
+- Keep the existing aurora ring SVG and bloom — they stay.
 
-### 2.3 Fluid type scale *(Easy)*
-- **Now:** Mix of `text-[44px]`, `text-7xl`, fixed rems.
-- **Propose:** Replace with a `clamp()` scale: `--text-display: clamp(2.5rem, 6vw, 4.5rem)`, `--text-h2: clamp(1.75rem, 4vw, 2.75rem)`, etc. Apply via utility classes.
-- **Why:** Perfectly readable from 320px → 1920px without breakpoints.
+**Why better** — removes the black square artifact, makes the avatar feel like it's floating inside the aurora ring instead of sitting on a black tile.
 
-### 2.4 Text rhythm *(Easy)*
-- **Now:** Inconsistent leading and letter-spacing.
-- **Propose:** Standardize: display `tracking-[-0.03em] leading-[1.02]`, headings `tracking-[-0.02em] leading-[1.12]`, body `leading-[1.6]`, UI labels `tracking-[0.08em] uppercase`.
-
-### 2.5 Aurora-text refinement *(Easy)*
-- **Now:** `.aurora-text` 8s shimmer (great).
-- **Propose:** Add `.aurora-text--slow` (16s, for long titles) and `.aurora-text--static` (no animation, just gradient — for dense UIs). Add subtle 0.5px text-shadow in cyan for glow on dark backgrounds.
-
-### 2.6 Numerals *(Easy)*
-- **Now:** Default proportional figures.
-- **Propose:** Apply `font-variant-numeric: tabular-nums` to all stat counters, download counts, ratings — numbers stop shifting as they update.
-
-### 2.7 Selection style *(Easy)*
-- **Propose:** `::selection` → background `rgba(34,211,238,0.35)`, text `#E8ECFF`. Branded text selection.
+**Difficulty:** Easy
 
 ---
 
-## 3 — Animation & Motion
+## 2. ModCard — left/right swipe (flashcard / scorecard system)
 
-### 3.1 Page transitions *(Medium)*
-- **Now:** `PageTransition.tsx` exists; route changes feel abrupt on mobile.
-- **Propose:** Use framer-motion `AnimatePresence` with mode="wait": exit = scale 0.98 + fade + 6px upward, enter = scale 1.02→1 + fade + downward 6px settle. Add a thin aurora progress bar at the very top during navigation (1.5s).
+**Current** — `src/components/home/ModCard.tsx` is a 3D flip card with a small "Zap" button on hover for the back face. There is no swipe, no horizontal navigation between cards, no haptic, no swipe sound.
 
-### 3.2 Scroll-driven reveals *(Easy)*
-- **Now:** `.reveal` class with d1–d5 delays — manual.
-- **Propose:** Replace with IntersectionObserver hook `useReveal` that auto-staggers children by index. Add variants: `reveal-up`, `reveal-fade`, `reveal-scale`, `reveal-slide-left`.
+**What I will build (mobile-first, desktop falls back to flip button)**
 
-### 3.3 Hero entrance choreography *(Medium)*
-- **Now:** Logo + title + subtitle + pills fade up with delays.
-- **Propose:** Cinematic sequence — (1) aurora bloom expands from center 0→100% over 0.6s, (2) ring draws around logo via SVG `strokeDashoffset` 0.4s, (3) wordmark letters cascade in 40ms stagger, (4) subtitle fades, (5) pills slide up with spring (stiffness 220, damping 24). Total: 1.4s.
+1. **Gesture layer** — wrap `ModCard` in a `framer-motion` `motion.div` with `drag="x"`, `dragConstraints={{ left: 0, right: 0 }}`, `dragElastic={0.35}`. Track velocity + offset.
+2. **Visual feedback during drag**
+   - Card rotates `rotate: x / 20` (max ±12°) like a Tinder card.
+   - Aurora-cyan glow on the right edge when dragging right ("Open"), violet glow on the left ("Details/Flip").
+   - Two ghost icon overlays fade in based on drag distance: `→ Download` (right) and `← Info` (left), each at 40 % opacity at 30 px, full at 80 px.
+   - Background tint pulses (`backdropFilter: brightness(...)` proxy) with drag distance.
+3. **Commit thresholds**
+   - Swipe right > 90 px or velocity > 500 → fly-out animation (`x: +400, opacity: 0, rotate: 18`) → navigate to `/download?id=...`.
+   - Swipe left > 90 px → flip the card (existing back face) with a 3D `rotateY` and a subtle scale dip.
+   - Below threshold → spring back (`type: 'spring', stiffness: 320, damping: 28`).
+4. **Sound bindings** (using new sound palette — section 4)
+   - `onDragStart` → `sfx.lift` (soft pluck).
+   - Crossing 60 px threshold → `sfx.tickHigh` once (debounced).
+   - Right commit → `sfx.swipeOpen` (bright cyan whoosh + chime).
+   - Left commit → `sfx.flip` (paper-flip noise burst + low pluck).
+   - Spring-back → `sfx.cancel` (descending blip).
+5. **Haptics** (section 5)
+   - Drag start: `vibrate(8)`.
+   - Threshold crossing: `vibrate([12])`.
+   - Right commit: `vibrate([18, 30, 18])` (success).
+   - Left commit: `vibrate(15)` (single tap).
+   - Cancel: `vibrate(6)`.
+6. **Desktop affordance** — keep current 3D tilt + flip button; on touch devices auto-enable swipe and hide the corner Zap button (cleaner look).
+7. **Accessibility** — respect `prefers-reduced-motion`: disable rotation/fly-out, just navigate on tap. Keep keyboard Enter → open, → arrow keys flip.
+8. **Stack feel** — slightly scale the next card behind (1 px transform offset) so swiping reveals the one underneath, like Apple Wallet. Implemented purely with `transform` on the card behind in the grid (zero layout cost).
 
-### 3.4 Microinteractions catalog *(Medium)*
-Every interactive element gets a defined state:
-- Buttons: hover lift `-2px` + glow scale, active `0.97` + inner ring
-- Icons: hover spin/bounce based on semantic meaning (download = bounce-down, share = pop, refresh = 360°)
-- Toggle (sound, ambient): the icon morphs (Volume2 → VolumeX) with crossfade + scale, not a hard swap
-- Inputs: focus = aurora ring expand from center
-- Checkboxes: check appears with SVG `pathLength` draw
+**Why better** — turns flat cards into a tactile, premium gesture system that matches the "premium app" feel the user is asking for. Mobile-first and the only screen they're testing on.
 
-### 3.5 Number count-ups *(Easy)*
-- **Now:** `RollingNumber` ticks via setInterval — fine but linear.
-- **Propose:** Use `requestAnimationFrame` with `easeOutExpo` so big numbers slow gracefully. Add comma flash (briefly bold) on each thousand crossed.
-
-### 3.6 Magnetic cursor (desktop only) *(Medium)*
-- **Now:** `CursorGlow` exists.
-- **Propose:** Buttons within cursor radius gently pull toward it (max 6px translation). Disabled on touch via `pointer: coarse` media query.
-
-### 3.7 Scroll progress *(Easy)*
-- **Now:** `ScrollProgress.tsx` exists.
-- **Propose:** Replace solid bar with a 2px aurora gradient that *flows* (background-position animates).
-
-### 3.8 Back-to-top *(Easy)*
-- **Now:** Standard FAB.
-- **Propose:** Appears with spring scale-in + idle gentle bounce every 6s. Click triggers smooth scroll with custom easing curve and a brief upward whoosh.
-
-### 3.9 Mod grid layout transitions *(Medium)*
-- **Now:** Cards re-render on filter/sort with no animation.
-- **Propose:** Wrap grid in framer-motion `<LayoutGroup>`, give each card `layout` prop — cards now slide to new positions on filter change instead of pop-in/pop-out.
-
-### 3.10 Loading screen evolution *(Easy)*
-- **Now:** Aurora wordmark reveal (good).
-- **Propose:** Add a final “shutter” transition: instead of plain fade, the screen splits horizontally (top half slides up, bottom slides down) revealing the app behind — 600ms cinematic curtain.
-
-### 3.11 Achievement toast choreography *(Easy)*
-- **Now:** Slide in from top-right.
-- **Propose:** Trophy icon spins 360° on entry, particles burst from icon (8 small dots), text types in letter by letter (60ms stagger), exit = scale down + fade.
+**Difficulty:** Hard
 
 ---
 
-## 4 — Sound Design
+## 3. Admin Panel + Keys Page — bring to main-site theme
 
-### 4.1 Sound palette refinement *(Medium)*
-- **Now:** Web Audio tones — click 440Hz, hover 880Hz, success arpeggio, etc. Functional but harsh.
-- **Propose:** Apply a global lowpass filter (3000Hz) + soft reverb (convolver with synthesized impulse) to all tones → warmer, more “app-like” feel. Add stereo panning for spatial richness (e.g. notifications come from right, errors center, achievements wide).
+**Current problems**
 
-### 4.2 Ambient layer *(Easy)*
-- **Now:** Two-osc drone behind a toggle.
-- **Propose:** Add a slow LFO modulation on the filter cutoff (0.05Hz, ±200Hz) so the drone breathes. Add a third osc one octave up at 8% gain for shimmer. Already off by default — keep that.
+- `src/pages/AdminPage.tsx` sidebar uses solid `rgba(10,15,20,0.95)` flat panel with hard borders — no aurora, no glass, no gradient. Header is a plain `border-b` strip. Tabs are flat pills with no glow on active state. Login screen uses generic glass-panel but no aurora background — it sits on bare AuroraOrb but the form/sidebar look like a different app.
+- `src/pages/KeysPage.tsx` looks closer to the home aesthetic but cards are uniform glass with tiny colored icon tiles — no gradient borders, no hover glow, no aurora wash, no motion. Feels like a static settings list, not premium.
+- `LoadingScreen` for `/admin` shows the splash again every load (`ESTABLISHING UPLINK…`) — but admin sub-tabs (DMCATab, TutorialTab, etc.) all use a plain `Loader2` spin on a black void.
 
-### 4.3 Per-action sound mapping audit *(Easy)*
-Define and apply consistently:
-- `playClick`: short tap (existing 440Hz, soften)
-- `playHover`: only on cards/big targets (already throttled)
-- `playToggle`: new — square wave bleep, up for on / down for off
-- `playOpen`: glass swell (sine 200→600Hz + noise wash) — for modals/lightbox
-- `playClose`: reverse of open
-- `playAchievement`: existing fanfare
-- `playRipple`: short noise pluck — when ripple fires
-- `playTypeKey`: rare, 1 in 4 keystrokes only
+**What I will change**
 
-### 4.4 Sound-on hint *(Easy)*
-- **Propose:** First-visit gentle one-time toast “🔊 Sounds on — toggle anytime” with a tiny preview chime, dismissed forever after first interaction.
+### Admin Panel
+- Replace sidebar background with the same `glass-panel--strong` token (translucent violet/cyan, blur 22 px, gradient hairline border) used on the home cards.
+- Active tab pill: aurora gradient background (`linear-gradient(135deg, rgba(34,211,238,0.18), rgba(167,139,250,0.18))`), gradient hairline border, soft glow (`box-shadow: 0 0 18px rgba(34,211,238,0.25)`), aurora-shimmer text.
+- Inactive tab: ghost glass with hover lift (`translateY(-1px)`) + `playHover` sound.
+- Header: replace flat strip with a `glass-panel--sticky` (top bar that morphs to compact on scroll like the home compact header). Title gets `aurora-text` gradient.
+- Login screen: add the same `AuroraOrb` background that the home page uses (already global), plus a floating logo with the same liquid gradient ring used on the hero. Buttons get `btn-primary` with the gradient sweep + ripple.
+- All sub-tab tables (DMCA, Comments, Mods) — wrap rows in `glass-panel--soft`, replace flat `border-b` with hairline gradient dividers, add `hover:bg-aurora-tint` row hover.
+- Inputs (`.cmt-input` already exists) — give it a focus aurora ring (cyan→violet sweep) matching `SearchBar`.
+- Replace tab spinners with the small `NeonSpinner` component already in the project — no more naked `Loader2`.
 
-### 4.5 Reduced-motion / mute respect *(Easy)*
-- **Propose:** When `prefers-reduced-motion: reduce`, also mute all non-essential sounds automatically (keep success/error). Document in a single config.
+### Keys Page
+- Add a hero-style `AuroraOrb` corner glow + a liquid gradient ring around the central `Key` icon (mini version of hero treatment).
+- Each card: gradient hairline border (cyan → violet), inner highlight, subtle scroll-reveal stagger (60 ms each).
+- Hover: lift + aurora glow + the right arrow translates 4 px + plays `sfx.tickHigh`.
+- Add a microcopy footer with the same `aurora-text` brand line.
+- Replace the static "Dynamon Gamer · Secure Key System" with a minimal aurora divider (`.aurora-wave`).
 
----
+**Why better** — admin and keys feel like part of the same brand; the user's clients/admins get the same premium experience as the public site.
 
-## 5 — Effects & Polish
-
-### 5.1 Particle systems *(Medium)*
-- **Now:** No particles after the recent removal.
-- **Propose:** Three contextual particle micro-bursts (Canvas2D, ≤30 particles, GC-friendly):
-  - On download click: 12 cyan dust particles burst from button
-  - On achievement unlock: 20 violet stars from trophy icon
-  - On 1k download milestone: confetti aurora ribbon across card
-
-### 5.2 Glow & bloom *(Easy)*
-- **Propose:** Define `--glow-cyan-sm/md/lg` and `--glow-violet-sm/md/lg` tokens (multi-layer `box-shadow`s). Apply to focused inputs, hovered cards, active toggles uniformly.
-
-### 5.3 Gradient borders *(Easy)*
-- **Propose:** A `.gradient-border` utility using `::before` overlay with `mask-composite: exclude` so borders animate cyan→violet flow on hover (no jankier alternative needed).
-
-### 5.4 Cursor variants *(Medium)*
-- **Now:** Single CursorGlow.
-- **Propose:** Variants: default = small dot + soft halo; over button = halo expands 2x; over text = becomes vertical bar; over draggable = grab indicator. State changes via cursor context.
-
-### 5.5 Hover preview on mod cards *(Hard)*
-- **Propose:** After 1.2s hover, card image fades to a 3-image carousel (if `screenshots` exist) with smooth crossfade — no click required.
-
-### 5.6 Sticky header on scroll *(Medium)*
-- **Now:** No sticky compact header.
-- **Propose:** After scrolling 240px, condense site name + search into a thin glass bar that slides down from top (translate-Y -100% → 0). Hides on scroll-down, shows on scroll-up.
-
-### 5.7 Scroll-snap on featured carousel *(Easy)*
-- **Now:** TrendingCarousel exists; freely scrollable.
-- **Propose:** CSS `scroll-snap-type: x mandatory` + `scroll-snap-align: start` on each card. Add fade masks on left/right edges so cards fade out instead of cutting off.
-
-### 5.8 Confetti / celebration moments *(Easy)*
-- **Propose:** First download, 5th download, 10th download → milestone toast + small confetti. Use lightweight canvas (<2KB).
-
-### 5.9 Dark/light shimmer *(Easy)*
-- **Propose:** A 1px highlight scanline drifts diagonally across glass panels every 12s — barely visible but adds liveliness (like premium mobile UIs).
-
-### 5.10 Image quality *(Easy)*
-- **Propose:** Add `loading="lazy"` (already partially), `decoding="async"`, and `srcset` hints for mod cover images. Add `aspect-ratio: 16/10` to avoid CLS.
-
-### 5.11 Favicons + theme color *(Easy)*
-- **Propose:** Aurora-gradient SVG favicon, `<meta name="theme-color" content="#0A0A1A">` for mobile chrome bar, app-icon set for PWA install.
+**Difficulty:** Medium
 
 ---
 
-## 6 — Mobile Fluidity
+## 4. Sound palette rebuild — "warm $100k" feel
 
-### 6.1 Touch targets *(Easy)*
-- **Now:** Some icons 32×32 (below Apple HIG 44px).
-- **Propose:** Audit and pad all interactive elements to minimum 44×44 hit area. Use invisible padding to keep visual size unchanged.
+**Current problems** — `src/lib/sound.ts` uses single-oscillator sine/square tones at 440–2000 Hz with linear ramps. Result: thin, beepy, "8-bit alarm clock" vibe. No reverb, no detuning, no stereo, no envelopes. The lowpass at 3.2 kHz helps a little but the source tones are still naked. Click is a 14 ms square at 520 Hz — sounds like a calculator. Achievement is straight major-triad arpeggio — generic.
 
-### 6.2 Safe-area insets *(Easy)*
-- **Propose:** Use `env(safe-area-inset-*)` on the bottom sticky bar, header, BackToTop — proper iPhone notch/home-indicator avoidance.
+**New palette (still pure Web Audio, zero assets)**
 
-### 6.3 Pull-to-refresh interception *(Easy)*
-- **Now:** Default browser behavior on iOS may show ugly bounce.
-- **Propose:** `overscroll-behavior-y: contain` on body, optional custom pull-to-refresh that re-fetches mods with an aurora spinner.
+Architecture
+- Replace single output node with a chain: `dryGain → masterGain → destination` plus a parallel `convolverNode` (algorithmic reverb tail built from a generated 1.2 s exponential-decay noise buffer) → `wetGain (0.18)` → masterGain. Gives every sound an instant "room".
+- Add a global `lowShelfFilter` (+2 dB at 200 Hz) for warmth and a `highShelfFilter` (-3 dB at 7 kHz) to kill brittleness.
+- Helper `playVoice(opts)` that supports: 2 detuned oscillators (±6 cents), ADSR envelope (true exp ramps), optional FM modulator, optional pre-filter sweep, stereo `StereoPannerNode`, velocity.
 
-### 6.4 Tap feedback *(Easy)*
-- **Propose:** Add `:active { transform: scale(0.97) }` + brief radial highlight on every tappable surface (consistent with Material/Apple touch ripple).
+New sound vocabulary (every interaction maps here)
 
-### 6.5 Smooth momentum scroll *(Easy)*
-- **Propose:** `-webkit-overflow-scrolling: touch` on horizontal carousels; `scroll-behavior: smooth` on anchored scrolls; CSS `overscroll-behavior` tuned per region.
+| Token | Description | Where used |
+|---|---|---|
+| `sfx.tap` | 80 Hz sine + 320 Hz triangle, 40 ms, soft attack — warm "tok" | every button click (replaces playClick) |
+| `sfx.tapHigh` | bright variant for primary CTA | `btn-primary` |
+| `sfx.lift` | 3-osc detuned chord, slow attack, short tail | swipe start, drag |
+| `sfx.tickLow` / `sfx.tickHigh` | noise burst hi-passed at 4 kHz, 8 ms | category switch, slider, threshold |
+| `sfx.swipeOpen` | filtered noise sweep 200→4000 Hz + cyan chime (E5+G5) | mod card swipe-right |
+| `sfx.flip` | reverse-noise + low pluck | card flip / back navigate |
+| `sfx.cancel` | descending two-note minor 3rd | spring-back, modal close |
+| `sfx.success` | warm bell triad (root-3rd-5th) with 600 ms reverb tail, gentle | toast success, download fanfare |
+| `sfx.error` | detuned minor 2nd with subtle distortion | toast error |
+| `sfx.achievement` | 4-note ascending bell with shimmer (high noise burst at peak) | unlock + achievement |
+| `sfx.confirm` | single warm pluck, 220 Hz, 180 ms decay | switch toggles, save |
+| `sfx.notify` | two-note ping with reverb | new notification |
+| `sfx.hover` | almost inaudible 8 ms whisper at -28 dB | desktop hover only, throttled 120 ms |
+| `sfx.typewriter` | super short noise tick, randomized pitch ±10 % | search input keystroke |
+| `sfx.unlockProgress` | rising digital pulse per stage | UnlockPage stage advance |
+| `sfx.unlockComplete` | layered bell + sub-bass thump + reverb | UnlockPage allDone |
+| `sfx.ambient` | rebuild current drone with: 3 sines (55/82.5/110 Hz), LFO on lowpass cutoff (0.05 Hz, 200→500 Hz), stereo pan slow-drift, gain 0.018 | optional ambient |
 
-### 6.6 Bottom tab haptics (PWA) *(Easy)*
-- **Propose:** On tap, fire `navigator.vibrate(8)` for crisp tactile feedback (Android). Wrapped in feature detect.
+Implementation rules
+- All voices: master gain caps at 0.22, all envelopes use exponential ramps to avoid clicks.
+- Per-sound master volume table so no sound is louder than another by accident.
+- Throttle: any sound called > 8×/s gets dropped (prevents machine-gun on rapid clicks).
+- Auto-mute on `document.visibilityState !== 'visible'`.
+- One single shared `AudioContext` (already present) but build the whole graph lazily on first user gesture (avoids autoplay warnings).
 
-### 6.7 Mobile typography scale *(Easy)*
-- **Propose:** Slightly tighter line-height on small viewports (`1.5` → `1.45` for body) to reduce vertical scroll.
+**Why better** — warm, layered, reverb-soaked sounds replace the beepy calculator tones. Cohesive identity (cyan = "open/up", violet = "back/cancel"). Sounds like a high-end iOS app, not a tech demo.
 
-### 6.8 Drawer / bottom-sheet pattern *(Medium)*
-- **Now:** Modals center-screen on mobile.
-- **Propose:** On `<= 640px`, modals become bottom sheets with drag-handle, swipe-down dismiss, rubber-band physics. Feels native.
-
-### 6.9 Mobile cursor effects disabled *(Easy)*
-- **Propose:** Wrap `CursorGlow`, magnetic hover, tilt effects in `@media (hover: hover) and (pointer: fine)` so phones aren’t doing wasted work.
-
----
-
-## 7 — Performance & 60fps
-
-### 7.1 GPU compositing audit *(Medium)*
-- **Propose:** Add `will-change: transform, opacity` to animated elements only during animation (toggle on/off). Promote glass panels to their own layer (`transform: translateZ(0)`) to avoid backdrop-filter repaints.
-
-### 7.2 Backdrop-filter cost *(Medium)*
-- **Now:** Many `backdrop-filter: blur(22px)` panels; expensive on Safari iOS.
-- **Propose:** Reduce to `blur(14px)` on mobile, fall back to a tinted gradient on `prefers-reduced-transparency`. Memoize panels that don’t need blur (e.g. footer).
-
-### 7.3 Shader render budget *(Easy)*
-- **Now:** `AuroraOrb` already throttled to 30fps + pauses on hidden tab.
-- **Propose:** Drop to 24fps on touch devices, full 60fps on desktop with `prefers-reduced-motion: no-preference`. Skip render entirely when scrolled past hero (IntersectionObserver).
-
-### 7.4 Animation cleanup *(Easy)*
-- **Propose:** Audit every `setInterval`/`setTimeout` for cleanup. Replace `setInterval`-driven counters with `requestAnimationFrame` (fewer wakeups, syncs to vsync).
-
-### 7.5 Code splitting visual chunks *(Medium)*
-- **Propose:** Lazy-load Lightbox, AchievementHistory, AdminPage chunks. Defer particle scripts until first interaction.
-
-### 7.6 Image decode *(Easy)*
-- **Propose:** All `<img>` get `decoding="async"`, `fetchpriority="high"` for above-the-fold logo/hero, `fetchpriority="low"` for below-the-fold cards.
-
-### 7.7 Animation frame contention *(Medium)*
-- **Propose:** Single shared `rAF` ticker for cursor glow, scroll progress, and aurora orb mouse smoothing — instead of three independent loops. Cuts frame budget cost by ~60%.
-
-### 7.8 Reduced-motion respect *(Easy)*
-- **Propose:** A single CSS rule `@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }` plus turn off shader, particles, and ambient sounds.
-
-### 7.9 Font load strategy *(Easy)*
-- **Now:** Two `<link>` font requests, blocking text paint.
-- **Propose:** `font-display: swap` + preload only the two used weights (700 display, 400 body). Subset to Latin only.
-
-### 7.10 CSS containment *(Easy)*
-- **Propose:** Add `contain: layout paint style` to mod cards, comments, toasts — limits browser reflow scope, giant win on long lists.
+**Difficulty:** Medium
 
 ---
 
-## Files in scope (summary, no edits this round)
+## 5. Haptics — `navigator.vibrate()` patterns
 
-`src/index.css` · `src/components/system/{LoadingScreen,AuroraOrb,CursorGlow,PageTransition}.tsx` · `src/components/home/*` · `src/components/ui/*` · `src/components/download/*` · `src/components/comments/*` · `src/lib/sound.ts` · `index.html` (font preloads, theme-color)
+**Current** — zero haptic calls anywhere in the project.
 
-## Strict no-touch list
+**New** — add `src/lib/haptics.ts` with a tiny API:
+- `haptics.light()` → `vibrate(8)`
+- `haptics.medium()` → `vibrate(15)`
+- `haptics.heavy()` → `vibrate(30)`
+- `haptics.tick()` → `vibrate(4)`
+- `haptics.success()` → `vibrate([15, 25, 15])`
+- `haptics.error()` → `vibrate([40, 50, 40])`
+- `haptics.swipe()` → `vibrate([10, 15])`
+- `haptics.unlock()` → `vibrate([20, 40, 20, 40, 60])`
+- Auto-disabled on desktop (`!('ontouchstart' in window)`), respects a `localStorage('haptics_enabled')` flag, respects `prefers-reduced-motion`.
 
-Firebase (`src/lib/firebase.ts`), all `useDb`/`useModeration`/`useRatings` hooks, `cipher.ts`, `fingerprint.ts`, admin handlers, key/unlock logic, routing tree, session/auth flows.
+Mapping to interactions
+
+| Interaction | Haptic |
+|---|---|
+| Any button tap | `light` |
+| Primary CTA (Download, Submit) | `medium` |
+| Toggle switch (sound/ambient/theme) | `tick` |
+| Category pill switch | `tick` |
+| Search input clear | `light` |
+| ModCard swipe start | `light` |
+| ModCard swipe threshold cross | `tick` |
+| ModCard swipe-right commit | `success` |
+| ModCard swipe-left flip | `medium` |
+| ModCard spring-back cancel | `tick` |
+| Toast success | `success` |
+| Toast error | `error` |
+| UnlockPage stage advance | `tick` |
+| UnlockPage all-done | `unlock` |
+| Achievement triggered | `success` |
+| Notification bell ring | `medium` |
+| Banner dismiss | `light` |
+| Modal/lightbox open | `light` |
+| Modal/lightbox close | `tick` |
+| BackToTop press | `medium` |
+| Pull-to-refresh trigger (if added) | `medium` |
+
+Add a small "Haptics" toggle in the top-right cluster next to the sound icon.
+
+**Why better** — turns the site into a real app. Pairing haptic + sound + motion on the same trigger is the single biggest "premium" upgrade for mobile.
+
+**Difficulty:** Easy
+
+---
+
+## 6. Buffering / jank / performance — concrete causes I found
+
+| # | Cause | File / line | Fix | Difficulty |
+|---|---|---|---|---|
+| 6.1 | `AuroraOrb` runs a fragment shader full-screen at 30 fps even on tabs that aren't focused well. DPR capped at 1.5 but on the user's device DPR is 3.75 — actual canvas ≈ 1.5× pixels still costly. fbm runs 5 octaves. | `src/components/system/AuroraOrb.tsx` | Drop fbm to 3 octaves on mobile (`< 768 px`), DPR cap 1.0 on mobile, throttle to 24 fps on mobile / pause on `document.hidden` (already done) / drop entirely if `(prefers-reduced-motion)` — already done. Add `IntersectionObserver`-style pause when scrolled past 1.5× viewport (orb is fixed but body underneath is heavy). | Easy |
+| 6.2 | `MatrixRain` on `UnlockPage` runs a 22 fps `setInterval` redraw of full canvas with `fillRect` over the entire screen. Combined with `AuroraLayers` underneath = 3 stacked full-screen paints. | `src/pages/UnlockPage.tsx:29` | Switch to `requestAnimationFrame` with frame skipping; reduce columns by 1.5× on mobile; drop the AuroraLayers on UnlockPage (MatrixRain already provides atmosphere). | Easy |
+| 6.3 | `RollingNumber` and `CountUp` use `setInterval(18 ms)` per card — with 12 cards = 12 timers ticking 55×/s during initial render. Causes scroll jank. | `ModCard.tsx:20`, `ModGrid.tsx:27` | Replace with single shared `requestAnimationFrame` ticker driving all numbers via an easing function. One rAF instead of 12 intervals. | Medium |
+| 6.4 | `RevealCard` IntersectionObserver — one observer per card. Each card also has its own `IntersectionObserver` inside `CountUp`. = 24 observers on the homepage. | `ModGrid.tsx:48`, etc. | Single shared observer in `ModGrid` that broadcasts visibility events. | Medium |
+| 6.5 | Holographic foil overlay re-renders on every `mousemove` (state update in React on every pixel of movement). Repaints the entire card. | `ModCard.tsx:68–75` | Move tilt/foil to `useRef` + direct DOM `style` writes inside rAF; no React re-renders during hover. | Medium |
+| 6.6 | `transform-style: preserve-3d` + `box-shadow` animation on hover triggers paint on the whole card area every frame. | `ModCard.tsx:122–134` | Replace animated `box-shadow` with a separate sibling div that fades opacity (composited, not painted). Add `will-change: transform` only during hover, remove on leave. | Medium |
+| 6.7 | `aurora-text` shimmer gradient on huge H1 = 8 s `background-position` animation = continuous paint on a ~110 px tall element. | `index.css:126–137`, `HeroHeader.tsx:135` | Reduce animation to 18 s, pause when off-screen via `IntersectionObserver` on the H1, add `contain: paint`. | Easy |
+| 6.8 | `LoadingScreen` letters animate per-letter using inline CSS animations + a 600 px blurred radial gradient. On load this competes with React hydration + AuroraOrb startup. | `LoadingScreen.tsx` | Defer `AuroraOrb` mount until after `LoadingScreen` `onDone` (currently mounted in parallel inside `RootShell`). Saves ~400 ms TTI on mobile. | Easy |
+| 6.9 | Multiple full-screen blur layers stacked: `AuroraOrb` (fixed) + `bg-glow-top` + `cyber-grid` on each page. On mobile Chrome, stacked `backdrop-filter` causes scroll jank. | many pages | Audit: only one global background layer (AuroraOrb). Remove `bg-glow-top`/`cyber-grid` from inner pages or convert to a single static SVG. | Medium |
+| 6.10 | Fonts loaded as `<link>` but no `font-display: swap` confirmed; Space Grotesk + DM Sans = 2 families × multiple weights. FOIT on slow networks. | `index.html` | Self-host or add `&display=swap`, drop unused weights, preload only the display+body 400/700. | Easy |
+| 6.11 | Every button gets a touch-ripple `<span>` injected into the DOM on every tap (`App.tsx:80`). Element addition + style mutation forces layout. | `src/App.tsx:80` | Pool ripple elements (single re-used span per element) and use `transform: scale` instead of size animation. | Easy |
+| 6.12 | `framer-motion`'s page transitions wrapping the whole `<Outlet />` cause a full subtree re-mount on each route. Unlock/Download pages run heavy effects on mount. | `PageTransition.tsx` | Use `mode="popLayout"` or skip transitions on Unlock/Admin (those routes don't need it). | Easy |
+| 6.13 | `useMods` runs on every page (HeroHeader uses it) and sub-pages also call `useMod`. React Query default refetch on focus = extra Firebase fetches. | `HeroHeader.tsx:22` | Set `staleTime: 60_000` on `useMods` query (no logic change, just config). | Easy |
+| 6.14 | LQIP blur-up logic uses `data-loaded` attribute selector — fine, but the placeholder gradient runs an animation continuously even after load. | `ModCard.tsx:191` | Stop animation by toggling a class on `data-loaded='true'`. | Easy |
+
+**Why better** — eliminates scroll jank on mobile, brings FCP/TTI down a lot, no functional change.
+
+**Difficulty:** mostly Easy/Medium individually; the whole pass is Hard cumulatively.
+
+---
+
+## 7. Theme inconsistencies — every off-brand surface
+
+| Page / component | What's off | Fix |
+|---|---|---|
+| **AdminPage login & dashboard** | Solid black sidebar, flat tabs, no aurora, no glass | See section 3 |
+| **AdminPage sub-tabs** (DMCATab, CommentsTab, ModsTab, SettingsTab, TutorialTab, SecurityTab) | Plain tables, naked `Loader2`, hex colors instead of tokens, no glass on rows | Glass row hover, hairline gradient dividers, `NeonSpinner` everywhere, gradient header chips |
+| **KeysPage** | Static, no motion, plain icon tiles, no aurora ring | See section 3 |
+| **TutorialPage** | Uses `cyber-grid` + `bg-glow-top` instead of the global aurora; the icon tile uses a solid translucent cyan instead of gradient border | Drop cyber-grid, use the same hero ring icon, add scroll-reveal on `<h2>` and prose blocks |
+| **DMCAPage** | Same `cyber-grid` carryover; red icon tile is hard cornered; submit success state has no celebration | Match other pages; success state gets a soft confetti + `sfx.success` + `haptics.success` |
+| **DownloadPage** | Same `cyber-grid` overlay; `Loader2` naked; ModHero/CommentSection style not audited here but likely off-brand | Replace spinner, drop cyber-grid, audit ModHero (separate sub-task) for gradient border parity |
+| **NotFoundPage** | Uses its own `nf-aurora` blobs and `nf-glitch` instead of the global aurora system; CTA uses inline gradient instead of `btn-primary` | Reuse global AuroraOrb, replace CTA with `btn-primary`, keep glitch (it fits) but tone down |
+| **UnlockPage** | Stack of MatrixRain + AuroraLayers + glass — aesthetic is great but heavy and uses `'Syne'` font that's not loaded elsewhere | Drop the unused `'Syne'` reference (falls back to system serif → looks broken on some devices), drop AuroraLayers (keep MatrixRain), match button to global `btn-primary` |
+| **HomePage HeroHeader stat pills** | Use bespoke `rgba(20,20,50,0.45)` instead of `glass-panel--soft` token | Convert to token so a future palette change cascades |
+| **`bg-glow-top` + `cyber-grid` classes** | Sprinkled across 4 inner pages, inconsistent with home | Delete uses, rely on global AuroraOrb + per-page accent only when needed |
+| **Spinners** | `Loader2` + `NeonSpinner` + circular ring used inconsistently | Standardize: `NeonSpinner` for primary, `Loader2` only inside small inline buttons |
+| **Toast** | `glassToast` is used but its styling not verified to match aurora | Audit & align border/blur tokens |
+| **Inputs** | `.cmt-input` exists but admin uses it; home `SearchBar` uses different style | Make `SearchBar` use the same base + add aurora focus ring everywhere |
+| **Buttons** | `btn-primary`, `btn-ghost`, raw inline-gradient buttons mixed | Ban inline gradient buttons; everything goes through `btn-primary`/`btn-ghost` variants |
+| **Icons in tiles** | Each page invents its own `w-10 h-10 rounded-xl bg-[rgba(X,Y,Z,0.08)]` tile | Extract `<IconTile color="cyan|violet|red|green" icon={...}/>` reusable; auto-applies gradient border + aurora wash |
+| **Borders** | Mix of `rgba(255,255,255,0.06)`, `rgba(255,255,255,0.09)`, `rgba(167,139,250,0.14)` | Centralize in CSS vars `--border-hairline`, `--border-aurora` |
+| **Fonts** | `'Syne'` referenced in UnlockPage but never loaded; `'Space Grotesk'` + `'DM Sans'` are loaded; some places use `system-ui` fallback | Either load Syne and use intentionally for Unlock only, or remove |
+
+**Why better** — every page feels like one product. Right now Admin/Keys/Unlock look like three separate apps.
+
+**Difficulty:** Medium overall (lots of small surgical edits, no logic touched).
+
+---
 
 ## Suggested execution order
 
-1. Foundation — design tokens (1.3), typography (2.x), sound polish (4.1)
-2. Hero polish — 1.4, 3.3, 1.6
-3. Mod cards — 1.5, 3.9, 5.1
-4. Global feel — 3.x microinteractions, 5.2–5.4
-5. Mobile pass — section 6
-6. Performance pass — section 7
+1. Sound palette rebuild + haptics module (foundation other items hook into).
+2. Avatar fix (10-minute win).
+3. Performance pass (sections 6.1–6.14) — buys headroom for swipe gestures.
+4. ModCard swipe system.
+5. Theme unification (Admin, Keys, inner pages).
+6. Final QA pass on mobile viewport (the user is on 384 × 653 @ DPR 3.75).
 
-I’d ship 1 → 4 first (biggest visible jump), then 5–7 as a polish sweep.
+No code will be written until you approve. Tell me to proceed, or trim/expand any section.
