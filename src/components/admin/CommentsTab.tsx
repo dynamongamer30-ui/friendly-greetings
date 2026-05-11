@@ -33,7 +33,8 @@ function formatDate(iso: string) {
 type FilterId = 'pending' | 'approved' | 'all'
 
 export function CommentsTab() {
-  const { data: mods } = useMods()
+  const { data: modsData } = useMods()
+  const mods = modsData ?? []
   const { data: comments, isLoading } = useAllComments()
   const approve = useApproveComment()
   const reject = useRejectComment()
