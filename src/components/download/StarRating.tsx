@@ -5,7 +5,7 @@ import { glassToast as toast } from '@/components/ui/GlassToast'
 import { getFingerprint } from '@/lib/fingerprint'
 import { useSubmitRating } from '@/hooks/useRatings'
 import { playStarBurst } from '@/lib/sound'
-import { triggerAchievement } from '@/components/ui/AchievementToast'
+
 
 interface StarRatingProps { modId: string }
 
@@ -67,11 +67,6 @@ export function StarRating({ modId }: StarRatingProps) {
         gravity: 1.2,
       })
 
-      if (rating === 5) {
-        triggerAchievement({ title: 'Perfect Rating!', desc: 'You gave this mod 5 stars ⭐' })
-      } else {
-        triggerAchievement({ title: 'Thanks for Rating!', desc: `You rated this mod ${rating} stars` })
-      }
 
       toast.success(`Rated ${rating} ★`)
     } catch {

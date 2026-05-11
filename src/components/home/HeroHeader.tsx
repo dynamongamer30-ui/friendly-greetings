@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { Gamepad2, Volume2, VolumeX, Download, Package, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { getSoundEnabled, toggleSound, playClick } from '@/lib/sound'
-import { NotificationBell } from '@/components/ui/NotificationBell'
-import { AchievementHistory } from '@/components/ui/AchievementHistory'
 import { useMods } from '@/hooks/useDb'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -43,8 +41,6 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           boxShadow: '0 4px 18px rgba(0,0,0,0.35)',
         }}
       >
-        <NotificationBell bare />
-        <AchievementHistory bare />
         <button
           type="button"
           onClick={() => { playClick(); setSoundOn(toggleSound()) }}
