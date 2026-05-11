@@ -863,7 +863,7 @@
                 <p>Authenticated personnel only</p>
                 <div class="inp-group">
                     <label class="inp-label"><i class="fas fa-lock"></i> &nbsp;Password</label>
-                    <input type="password" class="input-std input-no-icon" id="loginPass" placeholder="Enter password" autocomplete="current-password" data-admin-email="yugvadecha30@gmail.com">
+                    <input type="password" class="input-std input-no-icon" id="loginPass" placeholder="Enter password" autocomplete="current-password" data-admin-email="yugvadecha30@gmail.com" onkeydown="if(event.key==='Enter')doLogin()">
                 </div>
                 <button class="btn-block" onclick="doLogin()">
                     <i class="fas fa-shield-alt"></i> &nbsp;AUTHENTICATE
@@ -1584,7 +1584,9 @@
         window._fbGet  = (path) => db.ref(path).once('value');
         window._fbSet  = (path, value) => db.ref(path).set(value);
         window._fbUpdt = (path, value) => db.ref(path).update(value);
-        window._fbSignIn = (email, pass) => auth.signInWithEmailAndPassword(email, pass);
+        window._fbSignIn = (email, pass) =>
+            auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+                .then(() => auth.signInWithEmailAndPassword(email, pass));
         window._fbSignOut = () => auth.signOut();
 
         // Wait for Firebase to check if we are logged in
@@ -1674,7 +1676,7 @@
             btn.disabled = true;
             btn.style.opacity = '0.7';
             btn.style.cursor = 'not-allowed';
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;AUTHENTICATING…';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;AUTHENTICATING...';
 
             try {
                 const loginTimeout = new Promise((_, reject) =>
@@ -1759,6 +1761,8 @@
         }
 
         function _showInitFailure(err) {
+            _appInitRunning = false;
+            _appInitCalled = false;
             hide('viewLoader');
             show('viewLogin');
             const code = (err && err.code) || '';
@@ -1782,7 +1786,10 @@
             _diagLog('FINAL FAILURE: ' + msg, true);
         }
 
+        let _appInitRunning = false;
         async function appInit(isManual = false) {
+            if (_appInitRunning && !isManual) return;
+            _appInitRunning = true;
             initDecryption();
             initParticles();
 
