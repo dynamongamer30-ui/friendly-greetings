@@ -123,7 +123,7 @@ function noise(durationMs: number, gainValue: number, lowpass = 1200) {
 
 export function playClick(): void {
   if (!isSoundEnabled) return
-  tone(440, 8, 0.15)
+  tone(520, 14, 0.09, 0, 420, 'sine')
 }
 
 export function playSuccess(): void {
