@@ -34,7 +34,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
     <header className="relative flex flex-col items-center pt-12 pb-10 px-4 text-center">
       {/* Top-right glass cluster — bell · trophy · sound (single pill) */}
       <div
-        className="absolute top-4 right-2 z-20 flex items-center gap-1 p-1.5 rounded-full"
+        className="absolute top-3 right-2 z-20 flex items-center gap-0.5 p-1 rounded-full"
         style={{
           background: 'rgba(20,20,50,0.55)',
           backdropFilter: 'blur(16px) saturate(140%)',
@@ -49,10 +49,10 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
           type="button"
           onClick={() => { playClick(); setSoundOn(toggleSound()) }}
           aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5"
+          className="w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/5"
           style={{ color: '#F59E0B' }}
         >
-          {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          {soundOn ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
         </button>
       </div>
 

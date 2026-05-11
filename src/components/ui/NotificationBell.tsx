@@ -47,7 +47,7 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
         aria-label="Notifications"
         className={
           bare
-            ? 'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
+            ? 'relative w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
             : 'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105'
         }
         style={
@@ -62,7 +62,7 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
               }
         }
       >
-        <Bell className={`w-4 h-4 ${unread > 0 ? 'bell-wiggle' : ''}`} />
+        <Bell className={`w-3.5 h-3.5 ${unread > 0 ? 'bell-wiggle' : ''}`} />
         {unread > 0 && (
           <span
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center num-tab"
@@ -75,11 +75,15 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
 
       {open && (
         <div
-          className="absolute top-12 max-h-[60vh] overflow-y-auto rounded-2xl"
+          className="max-h-[60vh] overflow-y-auto rounded-2xl"
           style={{
-            width: '288px',
-            right: 0,
-            maxWidth: 'calc(100vw - 16px)',
+            position: 'fixed',
+            top: '60px',
+            right: '8px',
+            left: '8px',
+            maxWidth: '320px',
+            marginLeft: 'auto',
+            zIndex: 10000,
             background: 'rgba(5,8,10,0.96)',
             border: '1px solid rgba(255, 69, 0,0.25)',
             boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(255, 69, 0,0.12)',
