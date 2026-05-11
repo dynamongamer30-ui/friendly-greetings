@@ -6,6 +6,7 @@
 type W = typeof window & { webkitAudioContext?: typeof AudioContext }
 
 let ctx: AudioContext | null = null
+let outputNode: AudioNode | null = null
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null
   if (ctx) return ctx
@@ -16,6 +17,24 @@ function getCtx(): AudioContext | null {
     return ctx
   } catch {
     return null
+  }
+}
+/** Shared warm output chain: lowpass + master gain → destination. Cached. */
+function getOutput(ac: AudioContext): AudioNode {
+  if (outputNode) return outputNode
+  try {
+    const lp = ac.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = 3200
+    lp.Q.value = 0.4
+    const master = ac.createGain()
+    master.gain.value = 0.85
+    lp.connect(master).connect(ac.destination)
+    outputNode = lp
+    return lp
+  } catch {
+    outputNode = ac.destination
+    return ac.destination
   }
 }
 
@@ -71,7 +90,7 @@ function tone(
     gain.gain.setValueAtTime(0, start)
     gain.gain.linearRampToValueAtTime(gainValue, start + 0.005)
     gain.gain.linearRampToValueAtTime(0, end)
-    osc.connect(gain).connect(ac.destination)
+    osc.connect(gain).connect(getOutput(ac))
     osc.start(start)
     osc.stop(end + 0.02)
   } catch {
@@ -95,7 +114,7 @@ function noise(durationMs: number, gainValue: number, lowpass = 1200) {
     filter.frequency.value = lowpass
     const gain = ac.createGain()
     gain.gain.value = gainValue
-    src.connect(filter).connect(gain).connect(ac.destination)
+    src.connect(filter).connect(gain).connect(getOutput(ac))
     src.start()
   } catch {
     /* silent */
