@@ -2759,5 +2759,182 @@
             }
         })();
     </script>
+
+    <!-- Custom Date/Time Picker Overlay -->
+    <div class="cdtp-overlay" id="cdtpOverlay">
+      <div class="cdtp-panel" onclick="event.stopPropagation()">
+        <div class="cdtp-head">
+          <h4 id="cdtpTitle">Pick Date &amp; Time</h4>
+          <div class="cdtp-nav">
+            <button type="button" onclick="cdtpShift(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button type="button" onclick="cdtpShift(1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:0.78rem;font-weight:700;color:#F59E0B;margin-bottom:8px;letter-spacing:0.5px;" id="cdtpMonthLabel"></div>
+        <div class="cdtp-grid" id="cdtpDow"></div>
+        <div class="cdtp-grid" id="cdtpDays"></div>
+        <div class="cdtp-time">
+          <input class="cdtp-time-input" id="cdtpHour" type="text" inputmode="numeric" maxlength="2" value="12">
+          <span class="cdtp-time-sep">:</span>
+          <input class="cdtp-time-input" id="cdtpMin" type="text" inputmode="numeric" maxlength="2" value="00">
+          <div class="cdtp-ampm">
+            <button type="button" id="cdtpAm" onclick="cdtpSetAmPm('am')">AM</button>
+            <button type="button" id="cdtpPm" class="active" onclick="cdtpSetAmPm('pm')">PM</button>
+          </div>
+        </div>
+        <div class="cdtp-actions">
+          <button class="btn-block btn-cancel" style="margin:0;" type="button" onclick="cdtpClose()">CANCEL</button>
+          <button class="btn-block" style="margin:0;" type="button" onclick="cdtpConfirm()">SET</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    // ============================================
+    // CUSTOM DROPDOWN
+    // ============================================
+    (function(){
+      function build(el){
+        if(el.dataset.cdropBuilt) return;
+        el.dataset.cdropBuilt = '1';
+        const opts = JSON.parse(el.dataset.cdrop || '[]');
+        const cur = el.dataset.value || (opts[0] && opts[0].v) || '';
+        const curLabel = (opts.find(o=>o.v===cur) || opts[0] || {l:''}).l;
+        el.innerHTML = `<button type="button" class="cdrop-btn">${curLabel}</button>
+          <div class="cdrop-menu">${opts.map(o=>`<div class="cdrop-opt${o.v===cur?' sel':''}" data-v="${o.v}">${o.l}</div>`).join('')}</div>`;
+        const btn = el.querySelector('.cdrop-btn');
+        btn.addEventListener('click', e=>{
+          e.stopPropagation();
+          document.querySelectorAll('.cdrop.open').forEach(x=>{ if(x!==el) x.classList.remove('open'); });
+          el.classList.toggle('open');
+        });
+        el.querySelectorAll('.cdrop-opt').forEach(o=>{
+          o.addEventListener('click', e=>{
+            e.stopPropagation();
+            const v = o.dataset.v;
+            const lbl = o.textContent;
+            el.dataset.value = v;
+            btn.textContent = lbl;
+            el.querySelectorAll('.cdrop-opt').forEach(x=>x.classList.toggle('sel', x.dataset.v===v));
+            // sync hidden input by id pattern: drop id "fooDrop" → hidden "foo"
+            const hiddenId = el.id.replace(/Drop$/,'');
+            const hidden = document.getElementById(hiddenId);
+            if (hidden) { hidden.value = v; hidden.dispatchEvent(new Event('change')); }
+            el.classList.remove('open');
+            const cb = el.dataset.onchange;
+            if (cb && typeof window[cb] === 'function') window[cb]();
+            try { window._haptics && window._haptics.light && window._haptics.light(); } catch(e){}
+          });
+        });
+      }
+      document.addEventListener('click', ()=> document.querySelectorAll('.cdrop.open').forEach(x=>x.classList.remove('open')));
+      window.initCustomDropdowns = function(){ document.querySelectorAll('.cdrop[data-cdrop]').forEach(build); };
+      // build on DOM ready and whenever a modal opens
+      if (document.readyState !== 'loading') window.initCustomDropdowns();
+      else document.addEventListener('DOMContentLoaded', window.initCustomDropdowns);
+    })();
+
+    // ============================================
+    // CUSTOM DATE / TIME PICKER
+    // ============================================
+    (function(){
+      let targetId = null;
+      let viewYear, viewMonth, selDate;
+      const DOW = ['S','M','T','W','T','F','S'];
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+      function pad(n){ return String(n).padStart(2,'0'); }
+      function render(){
+        const dowEl = document.getElementById('cdtpDow');
+        if (!dowEl.dataset.built){ dowEl.innerHTML = DOW.map(d=>`<div class="cdtp-dow">${d}</div>`).join(''); dowEl.dataset.built='1'; }
+        document.getElementById('cdtpMonthLabel').textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+        const first = new Date(viewYear, viewMonth, 1);
+        const startDow = first.getDay();
+        const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+        const prevDays = new Date(viewYear, viewMonth, 0).getDate();
+        const today = new Date(); today.setHours(0,0,0,0);
+        const cells = [];
+        for (let i=startDow-1; i>=0; i--) cells.push({d: prevDays-i, muted:true, mo:viewMonth-1});
+        for (let d=1; d<=daysInMonth; d++) cells.push({d, mo:viewMonth});
+        while (cells.length % 7 !== 0 || cells.length < 42) cells.push({d: cells.length-startDow-daysInMonth+1, muted:true, mo:viewMonth+1});
+        const html = cells.slice(0,42).map(c=>{
+          const dt = new Date(viewYear, c.mo, c.d); dt.setHours(0,0,0,0);
+          const isPast = dt < today;
+          const isSel = selDate && dt.getTime() === new Date(selDate.getFullYear(),selDate.getMonth(),selDate.getDate()).getTime();
+          const isToday = dt.getTime() === today.getTime();
+          const cls = ['cdtp-day'];
+          if (c.muted) cls.push('muted');
+          if (isPast) cls.push('disabled');
+          if (isSel) cls.push('sel');
+          if (isToday) cls.push('today');
+          return `<div class="${cls.join(' ')}" data-iso="${dt.toISOString()}">${c.d}</div>`;
+        }).join('');
+        const days = document.getElementById('cdtpDays');
+        days.innerHTML = html;
+        days.querySelectorAll('.cdtp-day:not(.disabled)').forEach(el=>{
+          el.addEventListener('click', ()=>{
+            selDate = new Date(el.dataset.iso);
+            render();
+            try { window._haptics && window._haptics.light && window._haptics.light(); } catch(e){}
+          });
+        });
+      }
+      window.cdtpShift = function(delta){
+        viewMonth += delta;
+        if (viewMonth < 0){ viewMonth = 11; viewYear--; }
+        if (viewMonth > 11){ viewMonth = 0; viewYear++; }
+        render();
+      };
+      window.cdtpSetAmPm = function(v){
+        document.getElementById('cdtpAm').classList.toggle('active', v==='am');
+        document.getElementById('cdtpPm').classList.toggle('active', v==='pm');
+      };
+      window.openCDTP = function(hiddenInputId){
+        targetId = hiddenInputId;
+        const now = new Date();
+        const existing = document.getElementById(hiddenInputId).value;
+        const start = existing ? new Date(existing) : new Date(now.getTime() + 3600*1000);
+        viewYear = start.getFullYear();
+        viewMonth = start.getMonth();
+        selDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        let h = start.getHours();
+        const m = start.getMinutes();
+        const ampm = h >= 12 ? 'pm' : 'am';
+        h = h % 12; if (h===0) h = 12;
+        document.getElementById('cdtpHour').value = pad(h);
+        document.getElementById('cdtpMin').value = pad(m);
+        cdtpSetAmPm(ampm);
+        render();
+        const ov = document.getElementById('cdtpOverlay');
+        ov.classList.add('show');
+      };
+      window.cdtpClose = function(){ document.getElementById('cdtpOverlay').classList.remove('show'); };
+      document.getElementById('cdtpOverlay').addEventListener('click', e=>{
+        if (e.target.id === 'cdtpOverlay') cdtpClose();
+      });
+      window.cdtpConfirm = function(){
+        if (!selDate) return (window.showToast||alert)('Select a date', true);
+        let h = parseInt(document.getElementById('cdtpHour').value,10);
+        let m = parseInt(document.getElementById('cdtpMin').value,10);
+        if (isNaN(h) || h<1 || h>12) h = 12;
+        if (isNaN(m) || m<0 || m>59) m = 0;
+        const isPm = document.getElementById('cdtpPm').classList.contains('active');
+        let H = h % 12; if (isPm) H += 12;
+        const dt = new Date(selDate.getFullYear(), selDate.getMonth(), selDate.getDate(), H, m, 0, 0);
+        if (dt.getTime() <= Date.now()) return (window.showToast||alert)('Pick a future time', true);
+        // datetime-local format YYYY-MM-DDTHH:mm
+        const iso = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+        const hidden = document.getElementById(targetId);
+        if (hidden){ hidden.value = iso; hidden.dispatchEvent(new Event('change')); }
+        const lbl = document.getElementById('keyCustomLabel');
+        if (lbl){
+          lbl.classList.remove('empty');
+          lbl.textContent = dt.toLocaleString([], {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'});
+        }
+        cdtpClose();
+        try { window._haptics && window._haptics.success && window._haptics.success(); } catch(e){}
+      };
+    })();
+    </script>
 </body>
 </html>
