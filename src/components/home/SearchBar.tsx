@@ -1,8 +1,16 @@
-import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { GlassSelect } from '@/components/ui/GlassSelect'
 
 const CATEGORIES = ['All', 'Gameplay', 'Cheats', 'General'] as const
+
+const PLACEHOLDERS = [
+  "Search mods, version…",
+  "Try 'Unlimited Coins'…",
+  "Try 'God Mode'…",
+  "Try 'Dynamons World'…",
+  "Try 'Latest Update'…",
+]
 
 interface SearchBarProps {
   searchTerm: string
@@ -19,6 +27,13 @@ export function SearchBar({
   category, setCategory,
 }: SearchBarProps) {
   const [focused, setFocused] = useState(false)
+  const [phIdx, setPhIdx] = useState(0)
+
+  useEffect(() => {
+    if (focused || searchTerm) return
+    const id = setInterval(() => setPhIdx(i => (i + 1) % PLACEHOLDERS.length), 3200)
+    return () => clearInterval(id)
+  }, [focused, searchTerm])
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 mb-8 space-y-4">
@@ -27,8 +42,11 @@ export function SearchBar({
         {/* Search input with neon sweep */}
         <div className="relative flex-1">
           <Search
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors duration-300"
-            style={{ color: focused ? '#22D3EE' : '#475569' }}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-all duration-300"
+            style={{
+              color: focused ? '#22D3EE' : '#475569',
+              filter: focused ? 'drop-shadow(0 0 6px rgba(34,211,238,0.6))' : 'none',
+            }}
           />
           <input
             type="text"
@@ -36,15 +54,14 @@ export function SearchBar({
             onChange={(e) => setSearchTerm(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Search mods, version..."
-            className="cmt-input pl-10 w-full"
+            placeholder={PLACEHOLDERS[phIdx]}
+            className="cmt-input pl-10 pr-10 w-full"
             style={{
               transition: 'box-shadow 0.4s ease, border-color 0.4s ease',
               boxShadow: focused
                 ? '0 0 0 1px rgba(34,211,238,0.5), 0 0 20px rgba(34,211,238,0.15), inset 0 0 20px rgba(34,211,238,0.03)'
                 : undefined,
               borderColor: focused ? 'rgba(34,211,238,0.5)' : undefined,
-              // Neon sweep via animated background-position
               backgroundImage: focused
                 ? 'linear-gradient(90deg, transparent 0%, rgba(34,211,238,0.06) 50%, transparent 100%)'
                 : 'none',
@@ -52,6 +69,18 @@ export function SearchBar({
               animation: focused ? 'search-sweep 1.5s ease-in-out infinite' : 'none',
             }}
           />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/10 transition-all"
+              style={{ color: '#94a3b8', animation: 'trophyBounce 0.3s var(--ease-spring)' }}
+              data-no-click-sound="true"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
         {/* Sort dropdown */}
