@@ -122,7 +122,6 @@ export function ModCard({ mod, index: _index }: ModCardProps) {
   const handleFirstDownload = () => {
     if (!localStorage.getItem('dg_first_click')) {
       localStorage.setItem('dg_first_click', '1')
-      setTimeout(() => triggerAchievement({ title: 'Explorer!', desc: "You opened your first mod — let's go!" }), 400)
     }
   }
 
