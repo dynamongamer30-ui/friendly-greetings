@@ -1861,16 +1861,18 @@
             else durHours = parseInt(mode);
 
             const now = Math.floor(Date.now() / 1000);
-            // Keys always expire at the next 12:00 AM (midnight) — one key per day
-            const _midnight = new Date(); _midnight.setHours(24, 0, 0, 0);
-            const midnightSec = Math.floor(_midnight.getTime() / 1000);
+            const isVipPrefix = prefix.toUpperCase().startsWith('VIP');
+            const isLifetime  = durHours >= 87600;
             const newKeys = [];
             for (let i = 0; i < qty; i++) {
                 const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
                 const k   = prefix ? `${prefix}-${rnd}` : rnd;
+                // VIP or Lifetime → never expires until linked (handled on link)
+                // All other admin-generated keys → expire exactly now + (durHours * 3600)
+                const expirySec = (isLifetime || isVipPrefix) ? 0 : (now + (durHours * 3600));
                 dbData.ValidKeys[k] = {
                     status: "active",
-                    expiry: durHours >= 87600 ? 0 : midnightSec,
+                    expiry: expirySec,
                     duration: durHours,
                     device: "",
                     date: new Date().toISOString(),
