@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Check, X, Trash2 } from 'lucide-react'
+import { Check, X, Trash2, RefreshCw } from 'lucide-react'
 import { NeonSpinner } from '@/components/ui/NeonSpinner'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { glassToast as toast } from '@/components/ui/GlassToast'
@@ -33,8 +34,10 @@ function formatDate(iso: string) {
 type FilterId = 'pending' | 'approved' | 'all'
 
 export function CommentsTab() {
-  const { data: mods } = useMods()
+  const { data: modsData } = useMods()
+  const mods = modsData ?? []
   const { data: comments, isLoading } = useAllComments()
+  const queryClient = useQueryClient()
   const approve = useApproveComment()
   const reject = useRejectComment()
   const del = useDeleteComment()
@@ -122,6 +125,18 @@ export function CommentsTab() {
 
   return (
     <div className="space-y-6">
+      {/* Refresh */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['allComments'] })}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-[rgba(255,69,0,0.08)] border border-[rgba(255,69,0,0.30)] text-[#FF4500] hover:bg-[rgba(255,69,0,0.15)] hover:shadow-[0_0_14px_rgba(245,158,11,0.25)]"
+          aria-label="Refresh comments"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Refresh
+        </button>
+      </div>
+
       {/* Filter tabs */}
       <div className="flex items-center gap-2 flex-wrap">
         {TABS.map((t) => {

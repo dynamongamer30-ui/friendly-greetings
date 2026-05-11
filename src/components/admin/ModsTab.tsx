@@ -26,7 +26,8 @@ const EMPTY: Partial<Mod> = {
 }
 
 export function ModsTab() {
-  const { data: mods } = useMods()
+  const { data: modsData } = useMods()
+  const mods = modsData ?? []
   const createMod = useCreateMod()
   const updateMod = useUpdateMod()
   const deleteMod = useDeleteMod()

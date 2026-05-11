@@ -9,7 +9,8 @@ interface TrendingCarouselProps {
 /* ════════════════════════════════════════════════════════════════════════════ */
 
 export function TrendingCarousel({ currentModId }: TrendingCarouselProps) {
-  const { data: mods, isLoading } = useMods()
+  const { data: modsData, isLoading } = useMods()
+  const mods = modsData ?? []
 
   const trending = useMemo(() => {
     return mods

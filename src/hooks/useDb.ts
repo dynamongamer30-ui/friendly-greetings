@@ -4,9 +4,7 @@
  * FIXED: Comments now write approved:true by default so they appear immediately.
  *        Admin can still reject from the admin panel.
  */
-import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import firebase from 'firebase/compat/app'
 import { db, auth } from '@/lib/firebase'
 import { Cipher } from '@/lib/cipher'
 import type {
@@ -21,45 +19,24 @@ function fetchOnce<T>(path: string): Promise<T | null> {
 
 // ─── Mods ────────────────────────────────────────────────────────────────────
 
-/** Real-time listener on /Mods */
+/** One-time fetch of /Mods (cached, manual refresh via invalidateQueries(['mods'])) */
 export function useMods() {
-  const [mods, setMods] = useState<Mod[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    const ref = db.ref('/Mods')
-
-    const onValue = (snap: firebase.database.DataSnapshot) => {
-      if (cancelled) return
+  return useQuery<Mod[]>({
+    queryKey: ['mods'],
+    queryFn: async () => {
+      const snap = await db.ref('/Mods').once('value')
       const data = snap.val()
-      if (!data) { setMods([]); setIsLoading(false); return }
+      if (!data) return []
       const list: Mod[] = Object.entries(data).map(([key, val]) => ({
         ...(val as Omit<Mod, 'id'>),
         id: key,
       }))
       list.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-      setMods(list)
-      setIsLoading(false)
-    }
-
-    const onError = (err: Error) => {
-      if (cancelled) return
-      console.error('[useMods] Firebase error:', err.message)
-      setIsError(true)
-      setIsLoading(false)
-    }
-
-    ref.on('value', onValue, onError)
-
-    return () => {
-      cancelled = true
-      ref.off('value', onValue)
-    }
-  }, [])
-
-  return { data: mods, isLoading, isError }
+      return list
+    },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  })
 }
 
 /** One-time fetch of a single mod */
@@ -132,26 +109,24 @@ export function useIncrementDownload() {
 
 // ─── Comments ────────────────────────────────────────────────────────────────
 
-/** Real-time listener on /Comments/{modId} */
+/** One-time fetch of /Comments/{modId} (cached, manual refresh via invalidateQueries(['comments', modId])) */
 export function useComments(modId: string | undefined) {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (!modId) { setIsLoading(false); return }
-    const ref = db.ref(`/Comments/${modId}`)
-    const handler = ref.on('value', (snap) => {
+  const query = useQuery<Comment[]>({
+    queryKey: ['comments', modId],
+    queryFn: async () => {
+      if (!modId) return []
+      const snap = await db.ref(`/Comments/${modId}`).once('value')
       const data = snap.val()
-      if (!data) { setComments([]); setIsLoading(false); return }
+      if (!data) return []
       const list: Comment[] = Object.values(data) as Comment[]
       list.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-      setComments(list)
-      setIsLoading(false)
-    })
-    return () => ref.off('value', handler)
-  }, [modId])
-
-  return { data: comments, isLoading }
+      return list
+    },
+    enabled: !!modId,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  })
+  return { data: query.data ?? [], isLoading: query.isLoading }
 }
 
 /**

@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
 import { useMods, useSiteMeta } from '@/hooks/useDb'
 import { AnnouncementBanner } from '@/components/home/AnnouncementBanner'
 import { HeroHeader } from '@/components/home/HeroHeader'
@@ -9,7 +11,9 @@ import { BackToTop } from '@/components/home/BackToTop'
 
 
 export default function HomePage() {
-  const { data: mods, isLoading, isError } = useMods()
+  const { data: modsData, isLoading, isError, isFetching } = useMods()
+  const mods = modsData ?? []
+  const queryClient = useQueryClient()
   const { data: siteMeta } = useSiteMeta()
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -92,6 +96,19 @@ export default function HomePage() {
         category={category}
         setCategory={setCategory}
       />
+
+      {/* Manual refresh */}
+      <div className="w-full max-w-4xl mx-auto px-4 -mt-4 mb-4 flex justify-end">
+        <button
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['mods'] })}
+          disabled={isFetching}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-[rgba(255,69,0,0.08)] border border-[rgba(255,69,0,0.30)] text-[#FF4500] hover:bg-[rgba(255,69,0,0.15)] hover:shadow-[0_0_14px_rgba(245,158,11,0.25)] disabled:opacity-50"
+          aria-label="Refresh mods"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
 
       {/* Mod Grid */}
       <section className="pb-10">

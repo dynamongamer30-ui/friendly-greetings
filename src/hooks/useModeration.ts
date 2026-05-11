@@ -3,22 +3,20 @@
  * Kept separate from useDb.ts to avoid touching existing data layer.
  */
 import { useEffect, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { db, auth } from '@/lib/firebase'
 import type { Comment, Reply } from '@/types/mod'
 
 export type ModeratedComment = Comment & { modId: string }
 
-/** Admin: real-time list of ALL comments (approved + pending) across every mod */
+/** Admin: cached one-time fetch of ALL comments (approved + pending). Manual refresh via invalidateQueries(['allComments']). */
 export function useAllComments() {
-  const [data, setData] = useState<ModeratedComment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const ref = db.ref('/Comments')
-    const handler = ref.on('value', (snap) => {
+  const query = useQuery<ModeratedComment[]>({
+    queryKey: ['allComments'],
+    queryFn: async () => {
+      const snap = await db.ref('/Comments').once('value')
       const raw = snap.val() as Record<string, Record<string, Comment>> | null
-      if (!raw) { setData([]); setIsLoading(false); return }
+      if (!raw) return []
       const out: ModeratedComment[] = []
       for (const [modId, byId] of Object.entries(raw)) {
         for (const c of Object.values(byId)) {
@@ -26,13 +24,12 @@ export function useAllComments() {
         }
       }
       out.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-      setData(out)
-      setIsLoading(false)
-    })
-    return () => ref.off('value', handler)
-  }, [])
-
-  return { data, isLoading }
+      return out
+    },
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  })
+  return { data: query.data ?? [], isLoading: query.isLoading }
 }
 
 /** Admin: approve a pending comment (sets approved: true) */
