@@ -2336,7 +2336,7 @@
             document.body.removeChild(el);
         }
 
-        function openModal(id)  { document.getElementById(id).classList.add('open'); log('Modal opened: ' + id); }
+        function openModal(id)  { document.getElementById(id).classList.add('open'); try { window.initCustomDropdowns && window.initCustomDropdowns(); } catch(e){} log('Modal opened: ' + id); }
         function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
         // Esc key closes all modals + drawer (Phase 2)
