@@ -20,12 +20,12 @@ import { DMCATab } from '@/components/admin/DMCATab'
 import { CommentsTab } from '@/components/admin/CommentsTab'
 
 const TABS = [
-  { id: 'mods', label: 'Mods', icon: <Package className="w-4 h-4" /> },
-  { id: 'comments', label: 'Comments', icon: <MessageSquare className="w-4 h-4" /> },
-  { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
-  { id: 'tutorial', label: 'Tutorial', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'security', label: 'Security', icon: <ShieldCheck className="w-4 h-4" /> },
-  { id: 'dmca', label: 'DMCA', icon: <FileWarning className="w-4 h-4" /> },
+  { id: 'mods', label: 'Mods', icon: <Package className="w-5 h-5" /> },
+  { id: 'comments', label: 'Comments', icon: <MessageSquare className="w-5 h-5" /> },
+  { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
+  { id: 'tutorial', label: 'Tutorial', icon: <BookOpen className="w-5 h-5" /> },
+  { id: 'security', label: 'Security', icon: <ShieldCheck className="w-5 h-5" /> },
+  { id: 'dmca', label: 'DMCA', icon: <FileWarning className="w-5 h-5" /> },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
