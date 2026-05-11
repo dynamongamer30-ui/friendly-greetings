@@ -543,7 +543,7 @@
         ============================================ */
         .modal-overlay {
             position: fixed; inset: 0;
-            background: rgba(7, 3, 10, 0.75); z-index: 200;
+            background: rgba(7, 3, 10, 0.75); z-index: 300;
             display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(16px) saturate(140%);
             -webkit-backdrop-filter: blur(16px) saturate(140%);
@@ -568,6 +568,7 @@
             background: var(--grad-aurora); opacity: 0.6;
         }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+        #modalAlert { z-index: 310; }
         .modal-content h3 {
             margin: 0 0 18px;
             font-family: 'Space Grotesk', sans-serif;
@@ -850,7 +851,7 @@
 
     <div class="container">
 
-        <div id="viewLoader" class="loader-view">
+        <div id="viewLoader" class="loader-view hidden">
             <i class="fas fa-circle-notch fa-spin"></i>
             <p>Establishing Uplink...</p>
         </div>
@@ -1589,13 +1590,17 @@
         // Wait for Firebase to check if we are logged in
         let isLoginInProgress = false;
         let _authInitialized = false;
+        let _appInitCalled = false;
         auth.onAuthStateChanged((user) => {
             if (user) {
                 if (isLoginInProgress) return; // doLogin() handles success path
+                if (_appInitCalled) return;
+                _appInitCalled = true;
                 _authInitialized = true;
                 appInit(); // Load dashboard
             } else {
                 _authInitialized = true;
+                _appInitCalled = false;
                 hide('viewLoader');
                 show('viewLogin'); // Show login screen
             }
@@ -1680,6 +1685,7 @@
                 log("Login successful", 'success');
                 hide('viewLogin');
                 show('viewLoader');
+                _appInitCalled = true;
                 appInit();
             } catch (error) {
                 console.error("Login error:", error.code, error.message);
@@ -2595,11 +2601,13 @@
             }
         });
         // Click outside modal content to close (Phase 2)
-        document.addEventListener('click', (e) => {
+        function _closeModalOnBackdrop(e) {
             if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('open')) {
                 e.target.classList.remove('open');
             }
-        });
+        }
+        document.addEventListener('click', _closeModalOnBackdrop);
+        document.addEventListener('touchend', _closeModalOnBackdrop, { passive: true });
 
         function editKey(key) {
             document.getElementById('editOld').value = key;
