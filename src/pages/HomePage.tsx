@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
 import { useMods, useSiteMeta } from '@/hooks/useDb'
 import { AnnouncementBanner } from '@/components/home/AnnouncementBanner'
 import { HeroHeader } from '@/components/home/HeroHeader'
@@ -9,7 +11,9 @@ import { BackToTop } from '@/components/home/BackToTop'
 
 
 export default function HomePage() {
-  const { data: mods, isLoading, isError } = useMods()
+  const { data: modsData, isLoading, isError, isFetching } = useMods()
+  const mods = modsData ?? []
+  const queryClient = useQueryClient()
   const { data: siteMeta } = useSiteMeta()
 
   const [searchTerm, setSearchTerm] = useState('')
