@@ -239,23 +239,47 @@
   .cmt-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 20, 50, 0.65);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(34, 211, 238, 0.18);
     border-radius: 0.75rem;
-    color: #e2e8f0;
+    color: #E8ECFF;
     font-size: 0.875rem;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     outline: none;
   }
 
   .cmt-input::placeholder {
-    color: #475569;
+    color: #64748b;
+  }
+
+  .cmt-input:hover {
+    border-color: rgba(34, 211, 238, 0.32);
   }
 
   .cmt-input:focus {
-    border-color: rgba(34, 211, 238, 0.4);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
+    border-color: rgba(34, 211, 238, 0.55);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12), 0 0 24px rgba(34, 211, 238, 0.08);
+    background: rgba(20, 20, 50, 0.78);
+  }
+
+  /* Admin shimmer skeleton */
+  .admin-skel {
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    background: rgba(20, 20, 50, 0.5);
+    border: 1px solid rgba(167, 139, 250, 0.10);
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-skel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(34,211,238,0.08), transparent);
+    animation: shimmer 1.6s ease-in-out infinite;
   }
 }
 

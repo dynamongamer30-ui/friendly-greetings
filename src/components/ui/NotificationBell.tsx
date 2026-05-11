@@ -3,7 +3,7 @@ import { Bell, X } from 'lucide-react'
 import { readNotifs, getUnread, clearUnread, type Notif } from '@/lib/notifications'
 import { formatDistanceToNow } from 'date-fns'
 
-export function NotificationBell() {
+export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState<Notif[]>([])
   const [unread, setUnread] = useState(0)
@@ -45,14 +45,22 @@ export function NotificationBell() {
         type="button"
         onClick={toggle}
         aria-label="Notifications"
-        className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
-        style={{
-          background: 'rgba(20,20,50,0.55)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(167,139,250,0.18)',
-          color: '#22D3EE',
-        }}
+        className={
+          bare
+            ? 'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-white/5'
+            : 'relative w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105'
+        }
+        style={
+          bare
+            ? { color: '#22D3EE' }
+            : {
+                background: 'rgba(20,20,50,0.55)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(167,139,250,0.18)',
+                color: '#22D3EE',
+              }
+        }
       >
         <Bell className={`w-4 h-4 ${unread > 0 ? 'bell-wiggle' : ''}`} />
         {unread > 0 && (
