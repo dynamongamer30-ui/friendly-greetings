@@ -1115,7 +1115,7 @@
         function rotateKey(oldKey) {
             if (!dbData.ValidKeys[oldKey]) return;
             const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const prefix = oldKey.includes('-') ? oldKey.split('-')[0] : 'DG';
+            const prefix = oldKey.includes('-') ? oldKey.split('-')[0] : 'VIP';
             const newKey = prefix + '-' + rnd;
             dbData.ValidKeys[newKey] = { ...dbData.ValidKeys[oldKey], date: new Date().toISOString() };
             delete dbData.ValidKeys[oldKey];
