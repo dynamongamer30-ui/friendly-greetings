@@ -1587,12 +1587,16 @@
         window._fbSignOut = () => auth.signOut();
 
         // Wait for Firebase to check if we are logged in
+        let isLoginInProgress = false;
+        let _authInitialized = false;
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Session managed by Firebase Auth — no localStorage token needed
+                if (isLoginInProgress) return; // doLogin() handles success path
+                _authInitialized = true;
                 appInit(); // Load dashboard
             } else {
-                hide('viewLoader'); 
+                _authInitialized = true;
+                hide('viewLoader');
                 show('viewLogin'); // Show login screen
             }
         });
