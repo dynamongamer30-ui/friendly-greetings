@@ -2353,3 +2353,314 @@ html, body {
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM POLISH PASS — design tokens, glow, glass v2, micro-interactions
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Aurora palette tokens */
+  --c-cyan:        #22D3EE;
+  --c-cyan-soft:   rgba(34,211,238,0.16);
+  --c-cyan-glow:   rgba(34,211,238,0.45);
+  --c-violet:      #A78BFA;
+  --c-violet-soft: rgba(167,139,250,0.16);
+  --c-violet-glow: rgba(167,139,250,0.45);
+  --c-text:        #E8ECFF;
+  --c-text-mute:   #8B92B8;
+  --c-text-faint:  #475569;
+  --c-surface-0:   #05080A;
+  --c-surface-1:   #0A0A1A;
+  --c-surface-2:   rgba(20,20,50,0.55);
+  --c-surface-3:   rgba(20,20,50,0.75);
+
+  /* Reusable gradients */
+  --grad-aurora:        linear-gradient(135deg, var(--c-cyan) 0%, var(--c-violet) 100%);
+  --grad-aurora-h:      linear-gradient(90deg, var(--c-cyan) 0%, var(--c-violet) 100%);
+  --grad-aurora-flow:   linear-gradient(110deg, var(--c-cyan) 0%, var(--c-violet) 35%, var(--c-cyan) 70%, var(--c-violet) 100%);
+  --grad-aurora-radial: radial-gradient(circle, var(--c-cyan-glow), var(--c-violet-soft) 45%, transparent 75%);
+
+  /* Layered glow shadows */
+  --glow-cyan-sm:   0 0 12px var(--c-cyan-soft);
+  --glow-cyan-md:   0 0 22px var(--c-cyan-soft), 0 0 48px rgba(34,211,238,0.10);
+  --glow-cyan-lg:   0 0 28px var(--c-cyan-glow), 0 0 70px rgba(34,211,238,0.18);
+  --glow-violet-sm: 0 0 12px var(--c-violet-soft);
+  --glow-violet-md: 0 0 22px var(--c-violet-soft), 0 0 48px rgba(167,139,250,0.10);
+  --glow-aurora:    0 0 24px var(--c-cyan-soft), 0 0 48px var(--c-violet-soft);
+
+  /* Fluid type scale */
+  --t-display: clamp(2.4rem, 7vw, 4.6rem);
+  --t-h1:      clamp(2rem, 5vw, 3rem);
+  --t-h2:      clamp(1.5rem, 3.5vw, 2.25rem);
+  --t-h3:      clamp(1.2rem, 2.6vw, 1.6rem);
+  --t-body:    clamp(0.95rem, 1.6vw, 1rem);
+  --t-small:   clamp(0.78rem, 1.2vw, 0.85rem);
+
+  /* Easing & timing */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Branded text selection */
+::selection { background: rgba(34,211,238,0.35); color: var(--c-text); }
+
+/* Tabular numerals everywhere counters live */
+.num-tab,
+.tag,
+.bdg,
+[class*="count"],
+[data-tabular-num] { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* ── Glass v2 — depth, gradient border, inner highlight ─────────────────── */
+.glass-panel {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 1px 1px rgba(0,0,0,0.20),
+    0 16px 40px -16px rgba(0,0,0,0.55);
+}
+.glass-panel--strong {
+  background: var(--c-surface-3) !important;
+  border-color: rgba(167,139,250,0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    0 24px 60px -20px rgba(0,0,0,0.7),
+    var(--glow-aurora);
+}
+.glass-panel--subtle {
+  background: rgba(20,20,50,0.32) !important;
+  border-color: rgba(167,139,250,0.08) !important;
+}
+
+/* ── Gradient border utility — animated aurora outline on hover ─────────── */
+.gradient-border {
+  position: relative;
+  isolation: isolate;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--grad-aurora-flow);
+  background-size: 220% 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out-expo);
+}
+.gradient-border:hover::before,
+.gradient-border:focus-within::before {
+  opacity: 0.85;
+  animation: aurora-shimmer 6s linear infinite;
+}
+
+/* ── Aurora wave divider (used in footer) ───────────────────────────────── */
+.aurora-wave {
+  position: absolute;
+  top: -1px; left: 0; right: 0; height: 28px;
+  pointer-events: none;
+  background:
+    radial-gradient(closest-side at 50% 100%, rgba(34,211,238,0.45), transparent 70%),
+    radial-gradient(closest-side at 50% 100%, rgba(167,139,250,0.35), transparent 70%);
+  background-size: 60% 100%, 80% 100%;
+  background-repeat: no-repeat;
+  background-position: 0% bottom, 100% bottom;
+  filter: blur(8px);
+  opacity: 0.7;
+  animation: aurora-wave-drift 14s ease-in-out infinite alternate;
+}
+@keyframes aurora-wave-drift {
+  0%   { background-position: -10% bottom, 110% bottom; }
+  100% { background-position: 110% bottom, -10% bottom; }
+}
+
+/* ── Liquid press for tactile buttons ───────────────────────────────────── */
+.btn-primary, .btn-ghost, .btn-aurora {
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary:active, .btn-ghost:active, .btn-aurora:active {
+  transform: scale(0.97);
+}
+
+/* ── btn-aurora — animated gradient flow ────────────────────────────────── */
+.btn-aurora {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem; padding: 0.625rem 1.5rem;
+  background: var(--grad-aurora-flow);
+  background-size: 220% 100%;
+  color: #05080A;
+  font-weight: 700; font-size: 0.8125rem;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  border-radius: 0.75rem; border: none; cursor: pointer;
+  box-shadow: var(--glow-aurora);
+  animation: aurora-shimmer 6s linear infinite;
+  transition: transform 0.2s var(--ease-out-expo), box-shadow 0.25s ease;
+}
+.btn-aurora:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -6px var(--c-cyan-glow), var(--glow-aurora);
+}
+
+/* ── Stat pill: gradient top edge + hover lift ──────────────────────────── */
+.stat-pill {
+  position: relative;
+  transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+}
+.stat-pill::before {
+  content: '';
+  position: absolute; top: 0; left: 12%; right: 12%; height: 1px;
+  background: var(--grad-aurora-h);
+  opacity: 0.55;
+}
+@media (hover: hover) and (pointer: fine) {
+  .stat-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-cyan-sm);
+    border-color: rgba(34,211,238,0.32) !important;
+  }
+}
+
+/* Soft pulsing dot */
+.pulse-dot {
+  display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--c-cyan);
+  box-shadow: 0 0 6px var(--c-cyan-glow);
+  animation: pulse-dot-anim 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot-anim {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50%      { transform: scale(1.45); opacity: 0.55; }
+}
+
+/* ── Loading screen shutter exit ────────────────────────────────────────── */
+@keyframes shutter-top    { to { transform: translateY(-100%); } }
+@keyframes shutter-bottom { to { transform: translateY(100%); } }
+.shutter-top    { animation: shutter-top    0.6s var(--ease-out-expo) forwards; }
+.shutter-bottom { animation: shutter-bottom 0.6s var(--ease-out-expo) forwards; }
+
+/* ── Aurora-tinted shimmer for skeletons ────────────────────────────────── */
+.shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34,211,238,0.05) 35%,
+    rgba(167,139,250,0.10) 50%,
+    rgba(34,211,238,0.05) 65%,
+    transparent 100%
+  ) !important;
+}
+
+/* ── Bell wiggle on unread ──────────────────────────────────────────────── */
+@keyframes bell-wiggle {
+  0%, 60%, 100% { transform: rotate(0); }
+  68%  { transform: rotate(-10deg); }
+  76%  { transform: rotate(8deg); }
+  84%  { transform: rotate(-6deg); }
+  92%  { transform: rotate(3deg); }
+}
+.bell-wiggle { animation: bell-wiggle 2.4s ease-in-out infinite; transform-origin: 50% 22%; }
+
+/* ── BackToTop idle bounce ──────────────────────────────────────────────── */
+@keyframes idle-bounce {
+  0%, 88%, 100% { transform: translateY(0); }
+  92%           { transform: translateY(-3px); }
+  96%           { transform: translateY(0); }
+}
+.idle-bounce { animation: idle-bounce 6s ease-in-out infinite; }
+
+/* ── Touch ripple ───────────────────────────────────────────────────────── */
+.lov-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,211,238,0.30), rgba(167,139,250,0.18) 60%, transparent 80%);
+  pointer-events: none;
+  transform: scale(0);
+  animation: lov-ripple-anim 0.45s cubic-bezier(0.4,0,0.2,1) forwards;
+  z-index: 0;
+}
+@keyframes lov-ripple-anim {
+  to { transform: scale(2.4); opacity: 0; }
+}
+
+/* ── CSS containment on heavy lists ─────────────────────────────────────── */
+.contain-card { contain: layout paint style; }
+
+/* ── Carousel edge fade masks ───────────────────────────────────────────── */
+.carousel-fade-edges {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
+
+/* ── Mod-card milestone progress bar ────────────────────────────────────── */
+.milestone-bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+  border-radius: 0 0 1rem 1rem;
+}
+.milestone-bar > span {
+  display: block; height: 100%;
+  background: var(--grad-aurora-h);
+  background-size: 200% 100%;
+  animation: aurora-shimmer 4s linear infinite;
+  box-shadow: 0 0 8px var(--c-cyan-glow);
+  transition: width 0.6s var(--ease-out-expo);
+}
+
+/* ── Mod-card gradient corner accent ────────────────────────────────────── */
+.corner-accent {
+  position: absolute; top: 0; right: 0;
+  width: 36px; height: 36px;
+  pointer-events: none;
+  background: linear-gradient(225deg, rgba(34,211,238,0.30), rgba(167,139,250,0.12) 50%, transparent 100%);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  border-top-right-radius: inherit;
+  z-index: 4;
+}
+
+/* ── Image LQIP blur-up ─────────────────────────────────────────────────── */
+.lqip {
+  background: linear-gradient(135deg, rgba(34,211,238,0.06), rgba(167,139,250,0.06));
+  filter: blur(6px) saturate(110%);
+  transform: scale(1.04);
+  transition: filter 0.5s ease, transform 0.5s ease, opacity 0.4s ease;
+}
+.lqip[data-loaded="true"] { filter: none; transform: scale(1); }
+
+/* ── Search bar — sparkle morph ─────────────────────────────────────────── */
+@keyframes search-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Hover-only guard: kill cursor/tilt on touch ────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .cursor-glow, canvas[style*="z-index:9997"] { display: none !important; }
+}
+
+/* ── Mobile: lighter blur for backdrop-filter perf ──────────────────────── */
+@media (max-width: 640px) {
+  .glass-panel,
+  .stat-pill,
+  .glass-toast-item {
+    backdrop-filter: blur(14px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(130%) !important;
+  }
+}
+
+/* ── Reduced transparency fallback ──────────────────────────────────────── */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(20,20,50,0.92) !important; }
+}
+
+/* ── Safe-area insets for fixed UI ──────────────────────────────────────── */
+.safe-bottom { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+.safe-top    { padding-top: max(0.5rem, env(safe-area-inset-top)); }
+
+/* ── Layout stability for card images ───────────────────────────────────── */
+.mod-card-image { aspect-ratio: 16 / 10; }
