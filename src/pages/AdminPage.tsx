@@ -137,7 +137,7 @@ export default function AdminPage() {
 
   /* ── Dashboard ──────────────────────────────────────────────────────── */
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ position: 'relative', zIndex: 1 }}>
       {/* Sidebar */}
       <aside
         className="w-full md:w-56 shrink-0 border-b md:border-b-0 md:border-r"
@@ -146,6 +146,8 @@ export default function AdminPage() {
           backdropFilter: 'blur(22px) saturate(140%)',
           WebkitBackdropFilter: 'blur(22px) saturate(140%)',
           borderColor: 'rgba(167,139,250,0.14)',
+          position: 'relative',
+          zIndex: 2,
         }}
       >
         <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(167,139,250,0.14)]">
@@ -184,9 +186,16 @@ export default function AdminPage() {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-h-0">
+      <main className="flex-1 min-h-0" style={{ position: 'relative', zIndex: 2 }}>
         {/* Header */}
-        <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[rgba(255,255,255,0.06)] gap-4">
+        <header
+          className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[rgba(255,255,255,0.06)] gap-4"
+          style={{
+            background: 'rgba(5,8,10,0.6)',
+            backdropFilter: 'blur(16px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+          }}
+        >
           <h2 className="text-base sm:text-lg font-bold text-[#E2E8F0] capitalize truncate">{activeTab}</h2>
           <button
             onClick={handleLogout}
@@ -197,13 +206,30 @@ export default function AdminPage() {
           </button>
         </header>
 
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 65px)' }}>
-          {activeTab === 'mods' && <ModsTab />}
-          {activeTab === 'comments' && <CommentsTab />}
-          {activeTab === 'settings' && <SettingsTab />}
-          {activeTab === 'tutorial' && <TutorialTab />}
-          {activeTab === 'security' && <SecurityTab />}
-          {activeTab === 'dmca' && <DMCATab />}
+        <div
+          className="p-4 sm:p-6 overflow-y-auto"
+          style={{ maxHeight: 'calc(100vh - 65px)', position: 'relative', zIndex: 2 }}
+        >
+          <div
+            style={{
+              background: 'rgba(5, 8, 10, 0.6)',
+              backdropFilter: 'blur(20px) saturate(140%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+              border: '1px solid rgba(0,240,255,0.15)',
+              borderRadius: '16px',
+              padding: '24px',
+              boxShadow: '0 12px 36px rgba(0,0,0,0.4)',
+              position: 'relative',
+              zIndex: 2,
+            }}
+          >
+            {activeTab === 'mods' && <ModsTab />}
+            {activeTab === 'comments' && <CommentsTab />}
+            {activeTab === 'settings' && <SettingsTab />}
+            {activeTab === 'tutorial' && <TutorialTab />}
+            {activeTab === 'security' && <SecurityTab />}
+            {activeTab === 'dmca' && <DMCATab />}
+          </div>
         </div>
       </main>
     </div>
