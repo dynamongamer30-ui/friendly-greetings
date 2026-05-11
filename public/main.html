@@ -82,7 +82,7 @@
             width: 36px; height: 36px; border-radius: var(--radius-sm);
             background: rgba(255,69,0,0.03); border: 1px solid var(--border);
             color: var(--muted); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); font-size: 0.85rem;
         }
         .icon-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--border-hover); }
         .icon-btn:active { transform: scale(0.94); }
@@ -120,7 +120,7 @@
         .input-std {
             width: 100%; background: rgba(255,69,0,0.03); border: 1px solid var(--border);
             padding: 11px 13px 11px 38px; color: var(--text); border-radius: var(--radius-md);
-            font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; transition: all 0.2s;
+            font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
         }
         .input-std::placeholder { color: var(--muted); }
         .input-std:focus { border-color: rgba(255,69,0,0.35); background: rgba(255,69,0,0.04); box-shadow: 0 0 0 3px rgba(255,69,0,0.06); }
@@ -137,7 +137,7 @@
             background: var(--accent); color: #07030A; border: none;
             padding: 0 18px; border-radius: var(--radius-md); font-weight: 800;
             font-size: 0.8rem; cursor: pointer; display: flex; align-items: center;
-            gap: 7px; white-space: nowrap; transition: all 0.2s; letter-spacing: 0.3px;
+            gap: 7px; white-space: nowrap; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); letter-spacing: 0.3px;
             box-shadow: 0 0 16px rgba(255,69,0,0.25);
         }
         .btn-main:active { transform: scale(0.96); opacity: 0.9; }
@@ -150,7 +150,7 @@
         .chip {
             padding: 7px 16px; border-radius: 20px; background: rgba(255,69,0,0.03);
             border: 1px solid var(--border); font-size: 0.72rem; font-weight: 600;
-            color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+            color: var(--muted); cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); white-space: nowrap;
         }
         .chip.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
 
@@ -165,15 +165,15 @@
         .chk-container { display: flex; align-items: center; gap: 9px; font-size: 0.72rem; color: var(--muted); font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .custom-chk {
             width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 5px;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); flex-shrink: 0;
         }
         .custom-chk.checked { background: var(--accent); border-color: var(--accent); }
-        .custom-chk i { font-size: 0.6rem; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.2s; }
+        .custom-chk i { font-size: 0.6rem; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.22s cubic-bezier(0.16,1,0.3,1); }
         .custom-chk.checked i { opacity: 1; transform: scale(1); color: #07030A; }
         .bulk-actions { display: flex; gap: 8px; }
         .btn-sm {
             padding: 7px 12px; border-radius: var(--radius-sm); font-size: 0.7rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; border: 1px solid transparent;
+            font-weight: 700; cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); letter-spacing: 0.3px; border: 1px solid transparent;
         }
         .btn-sm:active { transform: scale(0.95); }
         .btn-sm-danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: var(--red); }
@@ -188,9 +188,9 @@
             background: var(--card); border: 1px solid var(--border);
             border-radius: var(--radius-lg); padding: 16px 16px;
             margin-bottom: 10px; backdrop-filter: var(--glass);
-            position: relative; overflow: hidden; transition: border-color 0.2s;
+            position: relative; overflow: hidden; transition: border-color 0.22s cubic-bezier(0.16,1,0.3,1), transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
         }
-        .item-card:hover { border-color: var(--border-hover); }
+        .item-card:hover { border-color: var(--border-hover); transform: translateY(-1px); box-shadow: 0 10px 30px rgba(255,69,0,0.10); }
         .item-card.selected { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }
         .item-card.active-card::before {
             content:''; position:absolute; top:0; left:0; width:3px; height:100%;
@@ -249,7 +249,7 @@
         .card-icon-btn {
             width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border);
             background: transparent; color: var(--muted); display: flex; align-items: center;
-            justify-content: center; cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+            justify-content: center; cursor: pointer; font-size: 0.75rem; transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
         }
         .card-icon-btn:hover { color: var(--accent); border-color: var(--border-hover); }
         .card-icon-btn.danger:hover { color: var(--red); border-color: rgba(239,68,68,0.4); }
@@ -299,7 +299,7 @@
         .btn-block {
             width: 100%; padding: 14px; background: var(--accent); color: #07030A; border: none;
             border-radius: var(--radius-md); font-weight: 800; margin-top: 12px; cursor: pointer;
-            font-size: 0.85rem; transition: all 0.2s; letter-spacing: 0.3px;
+            font-size: 0.85rem; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); letter-spacing: 0.3px;
             box-shadow: 0 0 20px rgba(255,69,0,0.2);
         }
         .btn-block:active { transform: scale(0.98); opacity: 0.9; }
