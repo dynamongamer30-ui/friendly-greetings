@@ -2739,7 +2739,13 @@
             ];
             let last = performance.now();
             function loop(now) {
-                const dt = now - last; last = now;
+                if (document.hidden) {
+                    animationId = requestAnimationFrame(loop);
+                    last = now;
+                    return;
+                }
+                let dt = now - last; last = now;
+                if (dt > 100) dt = 100; // clamp after tab unhide
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.globalCompositeOperation = 'lighter';
                 blobs.forEach(b => {
