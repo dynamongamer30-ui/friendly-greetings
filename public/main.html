@@ -971,7 +971,10 @@
             <h3>Generate Keys</h3>
             <div class="inp-group">
                 <label class="inp-label">Prefix</label>
-                <input type="text" class="input-std input-no-icon" id="keyPrefix" value="VIP">
+                <div id="keyPrefixDrop" class="cdrop"
+                     data-cdrop='[{"v":"VIP","l":"VIP — Premium"},{"v":"DG","l":"DG — Standard"}]'
+                     data-value="VIP"></div>
+                <input type="hidden" id="keyPrefix" value="VIP">
             </div>
             <div class="inp-group">
                 <label class="inp-label">Quantity</label>
@@ -979,17 +982,19 @@
             </div>
             <div class="inp-group">
                 <label class="inp-label">Active Duration <span style="color:var(--muted);font-weight:500;text-transform:none;font-size:0.6rem;">(starts when key is used)</span></label>
-                <select id="keyDurationMode" class="select-std" onchange="toggleCustomDuration()">
-                    <option value="2h">2 Hours</option>
-                    <option value="7d" selected>7 Days</option>
-                    <option value="1m">1 Month</option>
-                    <option value="life">Lifetime</option>
-                    <option value="custom">Custom Date / Time</option>
-                </select>
+                <div id="keyDurationDrop" class="cdrop"
+                     data-cdrop='[{"v":"2h","l":"2 Hours"},{"v":"7d","l":"7 Days"},{"v":"1m","l":"1 Month"},{"v":"life","l":"Lifetime"},{"v":"custom","l":"Custom Date / Time"}]'
+                     data-value="7d"
+                     data-onchange="toggleCustomDuration"></div>
+                <input type="hidden" id="keyDurationMode" value="7d">
             </div>
             <div class="inp-group hidden" id="groupCustomDur">
                 <label class="inp-label">Custom Expiry Date &amp; Time</label>
-                <input type="datetime-local" class="input-std input-no-icon" id="keyCustomVal">
+                <button type="button" class="cdtp-trigger" id="keyCustomTrigger" onclick="openCDTP('keyCustomVal')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="cdtp-val empty" id="keyCustomLabel">Pick date &amp; time…</span>
+                </button>
+                <input type="hidden" id="keyCustomVal">
                 <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">Key will expire at this exact moment after activation.</div>
             </div>
             <div class="grid-2">
