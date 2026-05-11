@@ -75,11 +75,15 @@ export function NotificationBell({ bare = false }: { bare?: boolean } = {}) {
 
       {open && (
         <div
-          className="absolute top-12 max-h-[60vh] overflow-y-auto rounded-2xl"
+          className="max-h-[60vh] overflow-y-auto rounded-2xl"
           style={{
-            width: '288px',
-            right: 0,
-            maxWidth: 'calc(100vw - 16px)',
+            position: 'fixed',
+            top: '60px',
+            right: '8px',
+            left: '8px',
+            maxWidth: '320px',
+            marginLeft: 'auto',
+            zIndex: 10000,
             background: 'rgba(5,8,10,0.96)',
             border: '1px solid rgba(255, 69, 0,0.25)',
             boxShadow: '0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(255, 69, 0,0.12)',
