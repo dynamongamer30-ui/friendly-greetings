@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { Gamepad2, Volume2, VolumeX, Download, Package, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { getSoundEnabled, toggleSound, playClick } from '@/lib/sound'
-import { NotificationBell } from '@/components/ui/NotificationBell'
-import { AchievementHistory } from '@/components/ui/AchievementHistory'
 import { useMods } from '@/hooks/useDb'
 import { formatDistanceToNow } from 'date-fns'
 
