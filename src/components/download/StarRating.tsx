@@ -5,7 +5,7 @@ import { glassToast as toast } from '@/components/ui/GlassToast'
 import { getFingerprint } from '@/lib/fingerprint'
 import { useSubmitRating } from '@/hooks/useRatings'
 import { playStarBurst } from '@/lib/sound'
-import { triggerAchievement } from '@/components/ui/AchievementToast'
+
 
 interface StarRatingProps { modId: string }
 
