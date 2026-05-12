@@ -44,13 +44,12 @@ const variantsFor = (pathname: string) => {
 
 export default function PageTransition({ children }: { children: ReactNode }) {
   const location = useRouterState({ select: (s) => s.location })
-  // Skip wrapper on heavy / interactive routes — they have their own animations
   if (location.pathname.startsWith('/unlock') || location.pathname.startsWith('/admin')) {
     return <>{children}</>
   }
   const v = variantsFor(location.pathname)
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="sync" initial={false}>
       <motion.div
         key={location.pathname + location.searchStr}
         initial={v.initial}
