@@ -11,11 +11,12 @@ const VERT = /* glsl */ `
   void main() { gl_Position = vec4(position, 0.0, 1.0); }
 `
 
-const FRAG = /* glsl */ `
+const FRAG = (octaves: number) => /* glsl */ `
   precision highp float;
   uniform float uTime;
   uniform vec2  uRes;
   uniform vec2  uMouse;
+  #define FBM_OCTAVES ${octaves}
 
   // hash + value noise
   float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
@@ -30,7 +31,7 @@ const FRAG = /* glsl */ `
   }
   float fbm(vec2 p){
     float v = 0.0; float a = 0.5;
-    for(int i=0;i<5;i++){ v += a * noise(p); p *= 2.02; a *= 0.5; }
+    for(int i=0;i<FBM_OCTAVES;i++){ v += a * noise(p); p *= 2.02; a *= 0.5; }
     return v;
   }
 
@@ -84,6 +85,7 @@ export default function AuroraOrb() {
 
     let renderer: Renderer
     const isMobile = window.innerWidth < 768
+    const FBM_OCTAVES = isMobile ? 3 : 5
     const dprCap = isMobile ? 1.0 : 1.5
     try {
       renderer = new Renderer({ alpha: false, dpr: Math.min(window.devicePixelRatio, dprCap) })
@@ -101,7 +103,7 @@ export default function AuroraOrb() {
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 }
     const program = new Program(gl, {
       vertex: VERT,
-      fragment: FRAG,
+      fragment: FRAG(FBM_OCTAVES),
       uniforms: {
         uTime: { value: 0 },
         uRes: { value: [host.clientWidth, host.clientHeight] },
@@ -129,7 +131,7 @@ export default function AuroraOrb() {
 
     let raf = 0
     let last = performance.now()
-    const targetFps = isMobile ? 24 : 30
+    const targetFps = isMobile ? 20 : 30
     const frameMs = 1000 / targetFps
     let acc = 0
     const start = performance.now()

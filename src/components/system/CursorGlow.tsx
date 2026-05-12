@@ -56,34 +56,41 @@ export default function CursorGlow() {
     }
 
     const tick = () => {
-      // Smooth glow follow
-      x += (mouseRef.current.tx - x) * 0.14
-      y += (mouseRef.current.ty - y) * 0.14
-      if (el) el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`
+      const hasTrail = trailRef.current.length > 0
+      const isMoving = Math.abs(mouseRef.current.tx - x) > 0.5 || Math.abs(mouseRef.current.ty - y) > 0.5
 
-      // Draw trail
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      trailRef.current = trailRef.current.filter(d => d.life > 0.01)
-      trailRef.current.forEach(d => {
-        d.life -= 0.06
-        const a = Math.max(0, d.life)
-        const r = d.size * a
-        const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r * 3)
-        grad.addColorStop(0, d.color + Math.floor(a * 200).toString(16).padStart(2, '0'))
-        grad.addColorStop(1, 'transparent')
-        ctx.beginPath()
-        ctx.arc(d.x, d.y, r * 3, 0, Math.PI * 2)
-        ctx.fillStyle = grad
-        ctx.fill()
+      if (isMoving) {
+        x += (mouseRef.current.tx - x) * 0.14
+        y += (mouseRef.current.ty - y) * 0.14
+        if (el) el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`
+      }
 
-        // Core dot
-        ctx.beginPath()
-        ctx.arc(d.x, d.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = d.color
-        ctx.globalAlpha = a * 0.9
-        ctx.fill()
-        ctx.globalAlpha = 1
-      })
+      if (hasTrail) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        trailRef.current = trailRef.current.filter(d => d.life > 0.01)
+        trailRef.current.forEach(d => {
+          d.life -= 0.06
+          const a = Math.max(0, d.life)
+          const r = d.size * a
+          const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r * 3)
+          grad.addColorStop(0, d.color + Math.floor(a * 200).toString(16).padStart(2, '0'))
+          grad.addColorStop(1, 'transparent')
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, r * 3, 0, Math.PI * 2)
+          ctx.fillStyle = grad
+          ctx.fill()
+
+          // Core dot
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, r, 0, Math.PI * 2)
+          ctx.fillStyle = d.color
+          ctx.globalAlpha = a * 0.9
+          ctx.fill()
+          ctx.globalAlpha = 1
+        })
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      }
 
       rafRef.current = requestAnimationFrame(tick)
     }
