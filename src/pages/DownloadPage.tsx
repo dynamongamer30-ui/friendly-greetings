@@ -33,25 +33,41 @@ export default function DownloadPage() {
     try {
       // 1. Generate fingerprint
       const fingerprint = getFingerprint()
-
       const now = Date.now()
 
-      // 2a. Check if fingerprint is banned
-      const bannedSnap = await db.ref(`/Config/Banned/${fingerprint}`).once('value')
+      // 2. Get own stored token (to exclude it from active session check)
+      let ownToken: string | null = null
+      const existingRaw = localStorage.getItem('dg_token')
+      if (existingRaw) {
+        try {
+          const decrypted = Cipher.decrypt(existingRaw)
+          if (decrypted && isValidUUID(decrypted)) ownToken = decrypted
+        } catch {
+          // corrupted token — ignore
+        }
+      }
+
+      // 3. Run all read checks in parallel (banned + rate limit + active sessions + hourly cap)
+      const [bannedSnap, rlSnap, activeSnap, hourSnap] = await Promise.all([
+        db.ref(`/Config/Banned/${fingerprint}`).once('value'),
+        db.ref(`/RateLimit/${fingerprint}_${id}`).once('value'),
+        db.ref('/SecureSessions').orderByChild('fingerprint').equalTo(fingerprint).once('value').catch(() => null),
+        db.ref('/Stats/hourlyDownloads').once('value').catch(() => null),
+      ])
+
+      // 3a. Banned check
       if (bannedSnap.exists()) {
         toast.error('Your device has been blocked. Contact support.')
         setIsDownloading(false)
         return
       }
 
-      // 2b. Check rate limit per mod per device
+      // 3b. Rate limit check
       const rlKey = `${fingerprint}_${id}`
-      const rlSnap = await db.ref(`/RateLimit/${rlKey}`).once('value')
       const rlData = rlSnap.val() as { timestamps?: number[] } | null
       const timestamps: number[] = (rlData?.timestamps || []).filter(
         (t: number) => now - t < RATE_WINDOW_MS
       )
-
       if (timestamps.length >= RATE_LIMIT) {
         const oldest = Math.min(...timestamps)
         const resetIn = Math.ceil((oldest + RATE_WINDOW_MS - now) / 60000)
@@ -60,26 +76,15 @@ export default function DownloadPage() {
         return
       }
 
-      // 3. Delete any existing active session for this device
-      const existingRaw = localStorage.getItem('dg_token')
-      if (existingRaw) {
-        try {
-          const existingToken = Cipher.decrypt(existingRaw)
-          if (existingToken && isValidUUID(existingToken)) {
-            await db.ref(`/SecureSessions/${existingToken}`).remove()
-          }
-        } catch {
-          // ignore if already deleted
-        }
-      }
-
-      // Also block if fingerprint already has an active session in Firebase
-      try {
-        const activeSessions = await db.ref('/SecureSessions').orderByChild('fingerprint').equalTo(fingerprint).once('value')
-        const active = activeSessions.val()
+      // 3c. Active session check — exclude own previous token
+      if (activeSnap) {
+        const active = activeSnap.val()
         if (active) {
-          const hasActive = Object.values(active as Record<string, any>).some(
-            (s: any) => s.used === false && (Date.now() - s.timestamp) / 1000 < 900
+          const hasActive = Object.entries(active as Record<string, any>).some(
+            ([tokenId, s]: [string, any]) =>
+              tokenId !== ownToken &&
+              s.used === false &&
+              (now - s.timestamp) / 1000 < 900
           )
           if (hasActive) {
             toast.error('An active session already exists. Please wait before retrying.')
@@ -87,13 +92,10 @@ export default function DownloadPage() {
             return
           }
         }
-      } catch {
-        // index not configured — skip this check
       }
 
-      // 4a. Global hourly download cap
-      try {
-        const hourSnap = await db.ref('/Stats/hourlyDownloads').once('value')
+      // 3d. Hourly download cap
+      if (hourSnap) {
         const hourlyData = hourSnap.val() as { count: number; resetAt: number } | null
         const hourlyCount = hourlyData && now < hourlyData.resetAt ? hourlyData.count : 0
         if (hourlyCount >= 500) {
@@ -103,13 +105,11 @@ export default function DownloadPage() {
         }
         await db.ref('/Stats/hourlyDownloads').set({
           count: hourlyCount + 1,
-          resetAt: hourlyData && now < hourlyData.resetAt ? hourlyData.resetAt : now + 3600000
-        })
-      } catch {
-        // Stats not configured — skip
+          resetAt: hourlyData && now < hourlyData.resetAt ? hourlyData.resetAt : now + 3600000,
+        }).catch(() => {})
       }
 
-      // 4c. Check unlock attempt count
+      // 4. Attempt count (local)
       const attemptKey = `dg_attempts_${fingerprint}`
       const attemptRaw = localStorage.getItem(attemptKey)
       const attemptData = attemptRaw ? JSON.parse(attemptRaw) : { count: 0, resetAt: now + 3600000 }
@@ -125,31 +125,34 @@ export default function DownloadPage() {
       attemptData.count++
       localStorage.setItem(attemptKey, JSON.stringify(attemptData))
 
-      // 4d. Generate new UUID token
-      const token = generateUUID()
+      // 5. Delete own old session from Firebase (now safe — check already passed)
+      if (ownToken) {
+        db.ref(`/SecureSessions/${ownToken}`).remove().catch(() => {})
+      }
 
-      // 5. Store token + fingerprint in browser
+      // 6. Generate new token and store locally
+      const token = generateUUID()
       localStorage.setItem('dg_token', Cipher.encrypt(token))
 
-      // 6. Write new SecureSession
-      await db.ref(`/SecureSessions/${token}`).set({
-        fingerprint,
-        megaLink: mod.megaUrl || mod.downloadUrl,
-        timestamp: now,
-        used: false,
-        modId: id,
-        modVersion: mod.version,
-      })
-
-      // 7. Update rate limit timestamps
-      await db.ref(`/RateLimit/${rlKey}`).set({
-        timestamps: [...timestamps, now],
-      })
+      // 7. Write new session + update rate limit in parallel
+      await Promise.all([
+        db.ref(`/SecureSessions/${token}`).set({
+          fingerprint,
+          megaLink: mod.megaUrl || mod.downloadUrl,
+          timestamp: now,
+          used: false,
+          modId: id,
+          modVersion: mod.version,
+        }),
+        db.ref(`/RateLimit/${rlKey}`).set({
+          timestamps: [...timestamps, now],
+        }),
+      ])
 
       // 8. Increment download counter
       await incrementDownload.mutateAsync(id)
 
-      // 9. Redirect to shortener
+      // 9. Redirect
       window.location.href = mod.shortnerlink || `/unlock?v=${mod.version}&t=${Date.now()}`
 
     } catch {
