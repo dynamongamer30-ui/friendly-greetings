@@ -38,15 +38,22 @@ function CountUp({ target, duration = 1200 }: { target: number; duration?: numbe
 }
 
 // Scroll-reveal wrapper
+const hasAnimatedRef = { current: false }
+
 function RevealCard({ children, delay }: { children: React.ReactNode; delay: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(() => hasAnimatedRef.current)
 
   useEffect(() => {
+    if (hasAnimatedRef.current) return
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
+      if (entry.isIntersecting) {
+        setVisible(true)
+        hasAnimatedRef.current = true
+        observer.disconnect()
+      }
     }, { threshold: 0.08 })
     observer.observe(el)
     return () => observer.disconnect()
