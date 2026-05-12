@@ -38,6 +38,7 @@ function RouteSoundEffect() {
   useEffect(() => {
     if (prev.current !== null && prev.current !== pathname) {
       playWhoosh()
+      window.scrollTo({ top: 0, behavior: 'instant' })
     }
     prev.current = pathname
   }, [pathname])
