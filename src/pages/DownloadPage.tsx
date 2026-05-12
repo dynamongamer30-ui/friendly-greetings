@@ -76,21 +76,15 @@ export default function DownloadPage() {
         return
       }
 
-      // 3c. Active session check — exclude own previous token
+      // 3c. Clean up own old session silently — no block
       if (activeSnap) {
         const active = activeSnap.val()
         if (active) {
-          const hasActive = Object.entries(active as Record<string, any>).some(
-            ([tokenId, s]: [string, any]) =>
-              tokenId !== ownToken &&
-              s.used === false &&
-              (now - s.timestamp) / 1000 < 900
-          )
-          if (hasActive) {
-            toast.error('An active session already exists. Please wait before retrying.')
-            setIsDownloading(false)
-            return
-          }
+          Object.entries(active as Record<string, any>).forEach(([tokenId, s]: [string, any]) => {
+            if ((now - s.timestamp) > 30 * 60 * 1000) {
+              db.ref(`/SecureSessions/${tokenId}`).remove().catch(() => {})
+            }
+          })
         }
       }
 
