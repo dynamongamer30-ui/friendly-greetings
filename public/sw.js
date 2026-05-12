@@ -1,5 +1,5 @@
 /* Dynamon Gamer — minimal offline shell SW */
-const CACHE = 'dg-shell-v1'
+const CACHE = 'dg-shell-v2'
 const ASSETS = ['/', '/index.html', '/manifest.json']
 
 self.addEventListener('install', (e) => {
