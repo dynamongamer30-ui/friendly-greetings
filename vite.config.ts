@@ -10,7 +10,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['@tanstack/react-router'],
-          firebase: ['firebase/app', 'firebase/firestore'],
+          firebase: ['firebase/app', 'firebase/database'],
         }
       }
     }
