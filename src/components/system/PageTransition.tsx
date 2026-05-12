@@ -44,7 +44,11 @@ const variantsFor = (pathname: string) => {
 
 export default function PageTransition({ children }: { children: ReactNode }) {
   const location = useRouterState({ select: (s) => s.location })
-  if (location.pathname.startsWith('/unlock') || location.pathname.startsWith('/admin')) {
+  if (
+    location.pathname.startsWith('/unlock') ||
+    location.pathname.startsWith('/admin') ||
+    location.pathname === '/'
+  ) {
     return <>{children}</>
   }
   const v = variantsFor(location.pathname)
@@ -56,6 +60,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
         animate={v.animate}
         exit={v.exit}
         transition={v.transition}
+        style={{ width: '100%' }}
       >
         {children}
       </motion.div>
