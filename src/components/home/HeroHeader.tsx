@@ -54,7 +54,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
 
       {/* Logo — liquid gradient ring */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.85, y: 12 }}
+        initial={false}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 mt-6 mb-7"
@@ -169,7 +169,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
 
       {/* Title */}
       <motion.h1
-        initial={{ opacity: 0, y: 14 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         className="aurora-text relative z-10 text-[44px] sm:text-6xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-3"
@@ -181,7 +181,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
       {/* Subtitle */}
       {subtitle && (
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.25 }}
           className="relative z-10 text-sm sm:text-base max-w-md leading-relaxed mb-8"
@@ -193,7 +193,7 @@ export function HeroHeader({ siteMeta }: HeroHeaderProps) {
 
       {/* Stat pill row */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-md"
