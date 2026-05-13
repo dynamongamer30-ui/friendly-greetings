@@ -249,7 +249,8 @@ export default function UnlockPage() {
       } catch (err: unknown) {
         const e = err as { stage?: number; msg?: string }
         const idx = typeof e?.stage === 'number' ? e.stage : stages.length - 1
-        update(idx, { status: 'error', error: e?.msg || 'Unknown error.' })
+        const msg = e?.msg || (err instanceof Error ? err.message : JSON.stringify(err))
+        update(idx, { status: 'error', error: msg || 'Unknown error.' })
       }
     }
 
