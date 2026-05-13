@@ -46,7 +46,7 @@ export function ModsTab() {
     if (mod) {
       let plainMega = ''
       try {
-        plainMega = mod.megaUrl ? Cipher.decrypt(mod.megaUrl) : ''
+        plainMega = mod.megaUrl ? (Cipher.decrypt(mod.megaUrl) || mod.megaUrl) : ''
       } catch {
         plainMega = mod.megaUrl || ''
       }
