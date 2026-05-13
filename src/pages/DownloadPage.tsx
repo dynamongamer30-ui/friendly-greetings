@@ -132,7 +132,7 @@ export default function DownloadPage() {
       await Promise.all([
         db.ref(`/SecureSessions/${token}`).set({
           fingerprint,
-          megaLink: mod.megaUrl || mod.downloadUrl,
+          megaLink: Cipher.encrypt(mod.megaUrl || mod.downloadUrl),
           timestamp: now,
           used: false,
           modId: id,
