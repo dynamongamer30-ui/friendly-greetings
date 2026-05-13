@@ -214,8 +214,13 @@ export default function UnlockPage() {
         // Stage 5: Decrypt Payload
         update(5, { status: 'running' })
         await delay(600)
-        const url = Cipher.decrypt(session.megaLink)
-        if (!url) throw { stage: 5, msg: 'Decryption failed — invalid payload.' }
+        let url = ''
+        try {
+          url = Cipher.decrypt(session.megaLink)
+        } catch (cipherErr) {
+          throw { stage: 5, msg: `Cipher error: ${String(cipherErr)}` }
+        }
+        if (!url) throw { stage: 5, msg: 'Decryption returned empty.' }
         update(5, { status: 'done' })
 
         // Mark session as used then delete after 5 seconds
