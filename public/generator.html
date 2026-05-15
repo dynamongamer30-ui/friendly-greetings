@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dynamon Gamer | VIP Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=JetBrains+Mono:wght@700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
@@ -41,12 +41,13 @@
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Syne', sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             min-height: 100vh; overflow-x: hidden; padding: 24px 16px;
+            cursor: none;
         }
 
         /* ─── Canvas BG ─── */
@@ -54,6 +55,55 @@
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
+        }
+
+        /* ─── Cursor Glow ─── */
+        #cursorGlow {
+            position: fixed;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle,
+                rgba(255,69,0,0.18) 0%,
+                rgba(245,158,11,0.10) 30%,
+                transparent 70%);
+            transition: opacity 0.3s;
+        }
+        #cursorDot {
+            position: fixed;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            background: #FF4500;
+            box-shadow: 0 0 12px 3px rgba(255,69,0,0.8), 0 0 24px 6px rgba(245,158,11,0.4);
+            transition: width 0.15s, height 0.15s;
+        }
+
+        /* ─── Aurora Orb (center background piece) ─── */
+        #auroraOrb {
+            position: fixed;
+            width: 520px; height: 520px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at 40% 40%,
+                rgba(255,69,0,0.13) 0%,
+                rgba(245,158,11,0.09) 30%,
+                rgba(120,40,180,0.06) 60%,
+                transparent 75%);
+            animation: auroraOrbPulse 6s ease-in-out infinite;
+            filter: blur(2px);
+        }
+        @keyframes auroraOrbPulse {
+            0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+            33%      { transform: translate(-50%,-50%) scale(1.08) rotate(3deg); opacity: 1; }
+            66%      { transform: translate(-50%,-50%) scale(0.95) rotate(-2deg); opacity: 0.9; }
         }
 
         /* ─── Header ─── */
@@ -75,9 +125,9 @@
             font-size: 1.1rem; color: #050810;
         }
         .header h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 800; font-size: 1.55rem;
-            letter-spacing: -0.03em;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900; font-size: 1.55rem;
+            letter-spacing: 0.04em;
             background: linear-gradient(110deg, #FF4500 0%, #F59E0B 50%, #FF4500 100%);
             background-size: 200% auto;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -113,23 +163,15 @@
             opacity: 0.7;
         }
 
-        /* ambient corner blobs */
-        .card-blob {
-            position: absolute; border-radius: 50%;
-            pointer-events: none; z-index: 0;
-        }
-        .blob-1 { width: 180px; height: 180px; top: -60px; right: -50px;
-            background: radial-gradient(circle, rgba(255,69,0,0.18) 0%, transparent 70%); }
-        .blob-2 { width: 140px; height: 140px; bottom: -40px; left: -40px;
-            background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%); }
+        /* card-blobs removed — bg handled by aurora canvas */
 
         .card-content { position: relative; z-index: 1; }
 
         /* ─── Section title ─── */
         .section-title {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.05rem; font-weight: 700;
-            letter-spacing: -0.02em;
+            letter-spacing: 0.04em;
             margin-bottom: 4px;
         }
         .section-desc {
@@ -232,7 +274,7 @@
             animation: orbSpin 2s ease-in-out 0.2s both reverse;
         }
         .ts-check { font-size: 1.5rem; color: var(--green); z-index: 1; animation: checkBounce 0.4s 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
-        .ts-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--green); letter-spacing: 0.04em; text-transform: uppercase; }
+        .ts-text { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.76rem; color: var(--green); letter-spacing: 0.06em; text-transform: uppercase; }
         .ts-sub { font-size: 0.72rem; color: var(--muted); }
 
         /* particles that burst on turnstile pass */
@@ -244,8 +286,8 @@
         /* ─── Buttons ─── */
         .btn-main {
             width: 100%; border: none; border-radius: 16px;
-            padding: 16px; font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 0.88rem; letter-spacing: 0.04em;
+            padding: 16px; font-family: 'Orbitron', sans-serif;
+            font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em;
             text-transform: uppercase; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
@@ -259,23 +301,7 @@
         .btn-main:active::after { background: rgba(255,255,255,0.08); }
         .btn-main:active { transform: scale(0.965); }
 
-        .btn-generate {
-            background: var(--gradient);
-            color: #05080A;
-            box-shadow: 0 0 28px rgba(255,69,0,0.38), 0 4px 20px rgba(0,0,0,0.4);
-            margin-top: 12px;
-        }
-        .btn-generate:hover:not(:disabled) {
-            box-shadow: 0 0 40px rgba(255,69,0,0.55), 0 4px 24px rgba(0,0,0,0.5);
-            transform: translateY(-1px);
-        }
-        .btn-generate:disabled {
-            background: rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.25);
-            cursor: not-allowed; transform: none;
-            box-shadow: none;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
+        /* btn-generate removed — key auto-generates after turnstile */
 
         .btn-open-app {
             background: linear-gradient(135deg, #FF4500, #F59E0B);
@@ -312,10 +338,9 @@
             color: var(--text);
             border: 1px solid rgba(255,69,0,0.25);
             padding: 12px 22px; border-radius: 30px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 0.84rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700; font-size: 0.72rem;
             box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(255,69,0,0.1);
-            transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
             z-index: 200; display: flex; align-items: center; gap: 7px;
         }
         #toast.show { transform: translateX(-50%) translateY(0); }
@@ -333,7 +358,7 @@
 
         /* ─── Blocked card ─── */
         .blocked-icon { font-size: 3rem; margin-bottom: 12px; }
-        .blocked-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--err); margin-bottom: 8px; }
+        .blocked-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--err); margin-bottom: 8px; }
         .blocked-msg { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
 
         /* ═══ KEYFRAMES ═══ */
@@ -356,6 +381,9 @@
 <body oncontextmenu="return false">
 
     <canvas id="bgCanvas"></canvas>
+    <div id="auroraOrb"></div>
+    <div id="cursorGlow"></div>
+    <div id="cursorDot"></div>
 
     <!-- Header -->
     <div class="header">
@@ -368,8 +396,6 @@
 
     <!-- Card -->
     <div class="generator-card" id="mainCard">
-        <div class="card-blob blob-1"></div>
-        <div class="card-blob blob-2"></div>
 
         <!-- UI — shown after init -->
         <div id="uiContainer" class="card-content hidden">
@@ -407,13 +433,9 @@
                     <i class="fas fa-shield-check ts-check"></i>
                 </div>
                 <span class="ts-text">Human Verified</span>
-                <span class="ts-sub">You're cleared — tap Generate below</span>
+                <span class="ts-sub">Verified — generating your key…</span>
             </div>
 
-            <!-- Generate button -->
-            <button class="btn-main btn-generate" id="btnGenerate" onclick="_startGen()" disabled>
-                <i class="fas fa-fingerprint"></i> GENERATE NOW
-            </button>
 
             <!-- Copy & Open button -->
             <button class="btn-main btn-open-app" id="btnOpenApp" onclick="copyAndOpenApp()">
@@ -633,12 +655,13 @@
         Audio.verified();
         Haptics.success();
 
+        // Auto-generate if access granted
         if (accessGranted && !sessionStorage.getItem('dg_key_generated')) {
-            const btn = document.getElementById('btnGenerate');
-            btn.disabled = false;
-            // small pulse on button
-            btn.style.animation = 'none';
-            setTimeout(() => { btn.style.animation = ''; }, 10);
+            setTimeout(() => {
+                if (accessGranted && turnstileOk && !sessionStorage.getItem('dg_key_generated')) {
+                    _startGen();
+                }
+            }, 800);
         }
     }
 
@@ -808,8 +831,6 @@
             if (sessionStorage.getItem('dg_key_generated')) {
                 document.getElementById('secLoader').classList.add('hidden');
                 document.getElementById('uiContainer').classList.remove('hidden');
-                document.getElementById('btnGenerate').disabled = true;
-                document.getElementById('btnGenerate').innerHTML = '<i class="fas fa-check"></i> Already generated this session';
                 pill.classList.remove('hidden');
                 return;
             }
@@ -827,8 +848,7 @@
                 lockGenerator(60 * 60 * 1000 - elapsed); return;
             }
 
-            if (turnstileOk) document.getElementById('btnGenerate').disabled = false;
-
+            // turnstile will auto-trigger generation when ready
         } catch (err) {
             showBlocked("Connection Error", "Failed to verify access. Try again later.");
             console.error('Init error:', err);
@@ -857,20 +877,21 @@
 
     function lockGenerator(remainingMs) {
         const mins = Math.ceil(remainingMs / (1000 * 60));
-        const btn = document.getElementById('btnGenerate');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-clock"></i> COME BACK IN ' + mins + ' MIN';
+        // show locked state in ui
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.classList.add('active');
+            loader.innerHTML = '<i class="fas fa-clock spin-icon"></i> Come back in ' + mins + ' min';
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
     // KEY GENERATION
     // ═══════════════════════════════════════════════════════════
     async function startGeneration() {
-        const btnGen = document.getElementById('btnGenerate');
         const keyBox = document.getElementById('keyBox');
         const loader = document.getElementById('loader');
 
-        btnGen.classList.add('hidden');
         loader.classList.add('active');
 
         let scramCount = 0;
@@ -1042,88 +1063,190 @@
     }
 
     // ═══════════════════════════════════════════════════════════
-    // BACKGROUND — animated particle field (orange/amber)
+    // CURSOR GLOW
+    // ═══════════════════════════════════════════════════════════
+    const cursorGlow = document.getElementById('cursorGlow');
+    const cursorDot  = document.getElementById('cursorDot');
+    let mouseX = -999, mouseY = -999;
+    let glowX = -999, glowY = -999;
+
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX; mouseY = e.clientY;
+        cursorDot.style.left = mouseX + 'px';
+        cursorDot.style.top  = mouseY + 'px';
+    });
+
+    (function animCursor() {
+        glowX += (mouseX - glowX) * 0.10;
+        glowY += (mouseY - glowY) * 0.10;
+        cursorGlow.style.left = glowX + 'px';
+        cursorGlow.style.top  = glowY + 'px';
+        requestAnimationFrame(animCursor);
+    })();
+
+    document.addEventListener('mousedown', () => {
+        cursorDot.style.width  = '14px';
+        cursorDot.style.height = '14px';
+    });
+    document.addEventListener('mouseup', () => {
+        cursorDot.style.width  = '8px';
+        cursorDot.style.height = '8px';
+    });
+
+    // Hide cursor glow on touch devices
+    if ('ontouchstart' in window) {
+        cursorGlow.style.display = 'none';
+        cursorDot.style.display  = 'none';
+        document.body.style.cursor = 'auto';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // AURORA NEBULA BACKGROUND
     // ═══════════════════════════════════════════════════════════
     const canvas = document.getElementById('bgCanvas');
     const ctx2d  = canvas.getContext('2d');
-    let particles2 = [], animId = null;
+    let animId = null;
+
+    // Aurora bands — large slow-moving color waves
+    const AURORA_BANDS = [
+        { y: 0.25, vy: 0.00012, amp: 0.06, freq: 0.0008, phase: 0,    color: [255, 69,  0],   a: 0.045 },
+        { y: 0.45, vy: 0.00009, amp: 0.05, freq: 0.0012, phase: 1.2,  color: [245,158, 11],   a: 0.038 },
+        { y: 0.60, vy: 0.00007, amp: 0.07, freq: 0.0007, phase: 2.5,  color: [140, 50,200],   a: 0.030 },
+        { y: 0.75, vy: 0.00010, amp: 0.04, freq: 0.0015, phase: 0.8,  color: [255, 69,  0],   a: 0.028 },
+    ];
+
+    // Large nebula orbs
+    const NEBULA_ORBS = [];
+    function buildOrbs() {
+        NEBULA_ORBS.length = 0;
+        const W = canvas.width, H = canvas.height;
+        const configs = [
+            { xr: 0.15, yr: 0.20, r: 0.32, color: [255, 69,  0], a: 0.12, speed: 0.00006 },
+            { xr: 0.85, yr: 0.30, r: 0.28, color: [245,158, 11], a: 0.10, speed: 0.00005 },
+            { xr: 0.50, yr: 0.70, r: 0.35, color: [120, 40,200], a: 0.08, speed: 0.00004 },
+            { xr: 0.78, yr: 0.80, r: 0.22, color: [255, 69,  0], a: 0.07, speed: 0.00007 },
+            { xr: 0.22, yr: 0.75, r: 0.20, color: [245,158, 11], a: 0.06, speed: 0.00008 },
+        ];
+        configs.forEach((c, i) => {
+            NEBULA_ORBS.push({
+                x: c.xr * W, y: c.yr * H,
+                baseX: c.xr * W, baseY: c.yr * H,
+                r: Math.min(W, H) * c.r,
+                color: c.color, a: c.a,
+                phase: i * 1.3,
+                speed: c.speed,
+            });
+        });
+    }
+
+    // Floating star particles
+    const STARS = [];
+    function buildStars() {
+        STARS.length = 0;
+        for (let i = 0; i < 55; i++) {
+            STARS.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: 0.5 + Math.random() * 1.5,
+                a: 0.04 + Math.random() * 0.18,
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.004 + Math.random() * 0.008,
+                color: Math.random() > 0.65 ? '#FF4500' : Math.random() > 0.5 ? '#F59E0B' : '#ffffff'
+            });
+        }
+    }
+
+    let t = 0;
+
+    function drawFrame() {
+        const W = canvas.width, H = canvas.height;
+        ctx2d.clearRect(0, 0, W, H);
+
+        // 1. Deep space base gradient
+        const bg = ctx2d.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0,   '#04010A');
+        bg.addColorStop(0.4, '#07030D');
+        bg.addColorStop(0.7, '#0A0208');
+        bg.addColorStop(1,   '#06010A');
+        ctx2d.fillStyle = bg;
+        ctx2d.fillRect(0, 0, W, H);
+
+        // 2. Nebula orbs
+        NEBULA_ORBS.forEach(orb => {
+            orb.phase += orb.speed;
+            orb.x = orb.baseX + Math.sin(orb.phase * 1.1) * W * 0.035;
+            orb.y = orb.baseY + Math.cos(orb.phase * 0.9) * H * 0.028;
+            const [r,g,b] = orb.color;
+            const grad = ctx2d.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.r);
+            grad.addColorStop(0,   `rgba(${r},${g},${b},${orb.a})`);
+            grad.addColorStop(0.4, `rgba(${r},${g},${b},${orb.a * 0.5})`);
+            grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+            ctx2d.fillStyle = grad;
+            ctx2d.beginPath();
+            ctx2d.arc(orb.x, orb.y, orb.r, 0, Math.PI * 2);
+            ctx2d.fill();
+        });
+
+        // 3. Aurora bands (horizontal wavy light sheets)
+        AURORA_BANDS.forEach(band => {
+            band.phase += band.vy * 16;
+            const [r,g,b] = band.color;
+            const yc = band.y * H + Math.sin(band.phase) * band.amp * H;
+            const bh = H * 0.12;
+            const grad = ctx2d.createLinearGradient(0, yc - bh, 0, yc + bh);
+            grad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
+            grad.addColorStop(0.4, `rgba(${r},${g},${b},${band.a})`);
+            grad.addColorStop(0.6, `rgba(${r},${g},${b},${band.a})`);
+            grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+
+            ctx2d.beginPath();
+            ctx2d.moveTo(0, yc - bh);
+            for (let x = 0; x <= W; x += 4) {
+                const wave = Math.sin(x * band.freq + band.phase * 2.5) * bh * 0.35
+                           + Math.sin(x * band.freq * 1.7 + band.phase) * bh * 0.15;
+                ctx2d.lineTo(x, yc + wave);
+            }
+            ctx2d.lineTo(W, yc + bh * 2);
+            ctx2d.lineTo(0, yc + bh * 2);
+            ctx2d.closePath();
+            ctx2d.fillStyle = grad;
+            ctx2d.fill();
+        });
+
+        // 4. Stars
+        STARS.forEach(s => {
+            s.phase += s.speed;
+            const alpha = s.a * (0.5 + 0.5 * Math.sin(s.phase));
+            ctx2d.beginPath();
+            ctx2d.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx2d.fillStyle = s.color;
+            ctx2d.globalAlpha = alpha;
+            ctx2d.fill();
+        });
+        ctx2d.globalAlpha = 1;
+
+        t++;
+        animId = requestAnimationFrame(drawFrame);
+    }
 
     function initParticles() {
         canvas.width  = window.innerWidth;
         canvas.height = window.innerHeight;
-        particles2 = [];
-
-        // dot particles
-        for (let i = 0; i < 35; i++) {
-            particles2.push({
-                type: 'dot',
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                v: 0.12 + Math.random() * 0.35,
-                s: 1 + Math.random() * 2.2,
-                o: 0.05 + Math.random() * 0.15,
-                color: Math.random() > 0.5 ? '#FF4500' : '#F59E0B'
-            });
-        }
-        // big glowing orbs
-        for (let i = 0; i < 4; i++) {
-            particles2.push({
-                type: 'orb',
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vy: 0.04 + Math.random() * 0.08,
-                vx: (Math.random() - 0.5) * 0.06,
-                r: 80 + Math.random() * 120,
-                phase: Math.random() * Math.PI * 2,
-                color: i % 2 === 0 ? 'rgba(255,69,0,' : 'rgba(245,158,11,'
-            });
-        }
-
-        function loop() {
-            ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-
-            particles2.forEach(p => {
-                if (p.type === 'dot') {
-                    p.y -= p.v;
-                    if (p.y < -5) p.y = canvas.height + 5;
-                    ctx2d.beginPath();
-                    ctx2d.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-                    ctx2d.fillStyle = p.color;
-                    ctx2d.globalAlpha = p.o;
-                    ctx2d.fill();
-                } else {
-                    p.phase += 0.005;
-                    p.x += p.vx + Math.sin(p.phase) * 0.04;
-                    p.y -= p.vy;
-                    if (p.y < -p.r * 2) p.y = canvas.height + p.r;
-                    if (p.x < -p.r) p.x = canvas.width + p.r;
-                    if (p.x > canvas.width + p.r) p.x = -p.r;
-
-                    const g = ctx2d.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-                    g.addColorStop(0, p.color + '0.07)');
-                    g.addColorStop(1, p.color + '0)');
-                    ctx2d.globalAlpha = 1;
-                    ctx2d.fillStyle = g;
-                    ctx2d.beginPath();
-                    ctx2d.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx2d.fill();
-                }
-            });
-
-            ctx2d.globalAlpha = 1;
-            animId = requestAnimationFrame(loop);
-        }
-        loop();
+        buildOrbs();
+        buildStars();
+        if (animId) cancelAnimationFrame(animId);
+        drawFrame();
     }
 
     window.addEventListener('resize', () => {
         canvas.width  = window.innerWidth;
         canvas.height = window.innerHeight;
+        buildOrbs();
     });
 
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && animId) { cancelAnimationFrame(animId); animId = null; }
-        else if (!document.hidden && !animId) initParticles();
+        else if (!document.hidden && !animId) drawFrame();
     });
 
     // unlock audio on first touch (iOS requires user gesture)
