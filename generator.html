@@ -4,602 +4,1133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dynamon Gamer | VIP Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- #43: Cloudflare Turnstile -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <style>
+        /* ═══════════════════════════════════════════
+           BRAND TOKENS — Dynamon Gamer
+           aurora-red: #FF4500  aurora-amber: #F59E0B
+        ═══════════════════════════════════════════ */
         :root {
-            --bg: #05080a;
-            --card: rgba(10, 18, 26, 0.75);
-            --border: rgba(0, 240, 255, 0.1);
-            --border-hover: rgba(0, 240, 255, 0.25);
-            --accent: #FF4500;
-            --accent-dim: rgba(0, 240, 255, 0.1);
-            --text: #e2e8f0;
-            --muted: #4a6278;
-            --green: #22c55e;
-            --red: #ef4444;
-            --orange: #f97316;
-            --glass: blur(24px) saturate(160%);
+            --bg:            #07030A;
+            --bg-elev:       #120408;
+            --card:          rgba(18, 4, 8, 0.80);
+            --glass:         blur(28px) saturate(170%);
+            --border:        rgba(245,158,11,0.14);
+            --border-hover:  rgba(255,69,0,0.35);
+            --red:           #FF4500;
+            --amber:         #F59E0B;
+            --red-dim:       rgba(255,69,0,0.12);
+            --amber-dim:     rgba(245,158,11,0.10);
+            --text:          #E8ECFF;
+            --muted:         #6B7280;
+            --green:         #22c55e;
+            --err:           #ef4444;
+            --orange:        #f97316;
+            --gradient:      linear-gradient(135deg, #FF4500 0%, #F59E0B 100%);
+            --glow-red:      0 0 40px -8px rgba(255,69,0,0.55);
+            --glow-amber:    0 0 40px -8px rgba(245,158,11,0.45);
         }
-        /* #37: Disable text selection globally */
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; padding: 20px; }
-        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.2; pointer-events: none; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
-        .header p { color: var(--muted); font-size: 0.85rem; }
-        .generator-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px 24px; width: 100%; max-width: 340px; text-align: center; backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,240,255,0.05); position: relative; overflow: hidden; }
-        .key-display { background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.2); border-radius: 16px; padding: 20px 10px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: var(--accent); transition: all 0.3s; box-shadow: inset 0 0 20px rgba(0,240,255,0.04); }
-        .btn-main { width: 100%; background: var(--accent); color: #050810; border: none; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 20px rgba(0,240,255,0.3); }
-        .btn-main:active { transform: scale(0.96); opacity: 0.9; }
-        .btn-main:disabled { background: rgba(0,240,255,0.08); color: rgba(0,240,255,0.3); cursor: not-allowed; transform: none; box-shadow: none; border: 1px solid rgba(0,240,255,0.1); }
-        .btn-open-app { background: linear-gradient(90deg, #F97316, #FF4500); color: #050810; margin-top: 12px; display: none; box-shadow: 0 0 24px rgba(0,240,255,0.25); font-weight: 800; }
-        .loader { display: none; color: var(--muted); font-size: 0.85rem; font-weight: 600; margin: 10px 0; }
-        .fa-spin { color: var(--accent); margin-right: 8px; }
-        #toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(5,12,20,0.97); color: var(--text); border: 1px solid rgba(0,240,255,0.2); padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(0,240,255,0.08); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; display: flex; align-items: center; gap: 6px; }
-        #toast.show { transform: translateX(-50%) translateY(0); }
-        .hidden { display: none !important; }
-        /* #41: Countdown timer */
-        .countdown { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--orange); margin-top: 8px; padding: 6px 12px; border: 1px solid rgba(249,115,22,0.3); border-radius: 10px; background: rgba(249,115,22,0.08); display: none; }
-        .countdown.expired { color: var(--red); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
-        /* #43: Turnstile container */
-        .cf-turnstile { margin: 14px auto; display: flex; justify-content: center; }
 
-        /* Q10: Loading skeleton */
-        .skeleton { background: linear-gradient(90deg, rgba(0,240,255,0.04) 25%, rgba(0,240,255,0.1) 50%, rgba(0,240,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .skeleton-key { height: 72px; margin: 20px 0; }
-        .skeleton-btn { height: 52px; margin-top: 8px; }
-        .skeleton-text { height: 14px; width: 70%; margin: 6px auto; }
-        #skeletonLoader { padding: 10px 0; }
-        /* Status badges */
-        .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-pill.ok { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
-        .status-pill.warn { background: rgba(249,115,22,0.1); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
-        .status-pill.fail { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+        *, *::before, *::after {
+            box-sizing: border-box; margin: 0; padding: 0; outline: none;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            min-height: 100vh; overflow-x: hidden; padding: 24px 16px;
+        }
+
+        /* ─── Canvas BG ─── */
+        #bgCanvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+            animation: fadeDown 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .header-logo {
+            display: inline-flex; align-items: center; gap: 10px;
+            margin-bottom: 6px;
+        }
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--glow-red);
+            font-size: 1.1rem; color: #050810;
+        }
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800; font-size: 1.55rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(110deg, #FF4500 0%, #F59E0B 50%, #FF4500 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: aurora-shimmer 6s linear infinite;
+        }
+        .header-sub {
+            color: var(--muted); font-size: 0.78rem;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* ─── Card ─── */
+        .generator-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 30px 24px 26px;
+            width: 100%; max-width: 360px;
+            text-align: center;
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7), var(--glow-red), inset 0 1px 0 rgba(255,255,255,0.04);
+            position: relative; overflow: hidden;
+            animation: cardRise 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.15s both;
+        }
+
+        /* top-edge glow line */
+        .generator-card::before {
+            content: '';
+            position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, #FF4500 40%, #F59E0B 60%, transparent);
+            opacity: 0.7;
+        }
+
+        /* ambient corner blobs */
+        .card-blob {
+            position: absolute; border-radius: 50%;
+            pointer-events: none; z-index: 0;
+        }
+        .blob-1 { width: 180px; height: 180px; top: -60px; right: -50px;
+            background: radial-gradient(circle, rgba(255,69,0,0.18) 0%, transparent 70%); }
+        .blob-2 { width: 140px; height: 140px; bottom: -40px; left: -40px;
+            background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%); }
+
+        .card-content { position: relative; z-index: 1; }
+
+        /* ─── Section title ─── */
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem; font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .section-desc {
+            color: var(--muted); font-size: 0.74rem;
+            line-height: 1.5; margin-bottom: 14px;
+        }
+
+        /* ─── Key Display ─── */
+        .key-wrap { position: relative; margin: 16px 0 4px; }
+        .key-display {
+            background: rgba(255,69,0,0.05);
+            border: 1px solid rgba(255,69,0,0.22);
+            border-radius: 16px;
+            padding: 22px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.45rem; font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--red);
+            transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: inset 0 0 24px rgba(255,69,0,0.06);
+            position: relative; overflow: hidden;
+        }
+        .key-display.revealed {
+            color: var(--green);
+            border-color: rgba(34,197,94,0.4);
+            box-shadow: inset 0 0 24px rgba(34,197,94,0.06), 0 0 30px rgba(34,197,94,0.18);
+            animation: keyReveal 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+
+        /* scanline shimmer on key */
+        .key-display::after {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: keyScan 3s ease-in-out infinite;
+        }
+
+        /* ─── Countdown ─── */
+        .countdown {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.77rem; font-weight: 700;
+            color: var(--amber);
+            margin: 8px 0 0;
+            padding: 6px 14px;
+            border: 1px solid rgba(245,158,11,0.28);
+            border-radius: 10px;
+            background: rgba(245,158,11,0.07);
+            display: none;
+            gap: 6px; align-items: center; justify-content: center;
+        }
+        .countdown.visible { display: inline-flex; }
+        .countdown.expired { color: var(--err); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.07); }
+
+        /* ─── Loader line ─── */
+        .loader {
+            display: none; color: var(--muted);
+            font-size: 0.83rem; font-weight: 600;
+            margin: 10px 0; align-items: center; justify-content: center; gap: 8px;
+        }
+        .loader.active { display: flex; }
+        .spin-icon { color: var(--red); animation: spin 0.8s linear infinite; }
+
+        /* ─── Turnstile container ─── */
+        .cf-turnstile { margin: 14px auto 4px; display: flex; justify-content: center; }
+
+        /* ─── Turnstile SUCCESS overlay ─── */
+        .turnstile-success {
+            display: none; flex-direction: column; align-items: center;
+            gap: 8px; padding: 14px;
+            background: rgba(34,197,94,0.06);
+            border: 1px solid rgba(34,197,94,0.25);
+            border-radius: 16px;
+            margin: 14px 0 4px;
+            animation: none;
+        }
+        .turnstile-success.show {
+            display: flex;
+            animation: successPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .ts-orb {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34,197,94,0.25) 0%, transparent 70%);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .ts-orb-ring {
+            position: absolute; inset: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--green);
+            border-right-color: var(--green);
+            animation: orbSpin 1.2s ease-in-out both;
+        }
+        .ts-orb-ring-2 {
+            position: absolute; inset: -8px;
+            border-radius: 50%;
+            border: 1px solid transparent;
+            border-bottom-color: rgba(34,197,94,0.4);
+            animation: orbSpin 2s ease-in-out 0.2s both reverse;
+        }
+        .ts-check { font-size: 1.5rem; color: var(--green); z-index: 1; animation: checkBounce 0.4s 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .ts-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--green); letter-spacing: 0.04em; text-transform: uppercase; }
+        .ts-sub { font-size: 0.72rem; color: var(--muted); }
+
+        /* particles that burst on turnstile pass */
+        .ts-particle {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            animation: tsParticle 0.8s ease-out forwards;
+        }
+
+        /* ─── Buttons ─── */
+        .btn-main {
+            width: 100%; border: none; border-radius: 16px;
+            padding: 16px; font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 0.88rem; letter-spacing: 0.04em;
+            text-transform: uppercase; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+            position: relative; overflow: hidden;
+        }
+        .btn-main::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.2s;
+        }
+        .btn-main:active::after { background: rgba(255,255,255,0.08); }
+        .btn-main:active { transform: scale(0.965); }
+
+        .btn-generate {
+            background: var(--gradient);
+            color: #05080A;
+            box-shadow: 0 0 28px rgba(255,69,0,0.38), 0 4px 20px rgba(0,0,0,0.4);
+            margin-top: 12px;
+        }
+        .btn-generate:hover:not(:disabled) {
+            box-shadow: 0 0 40px rgba(255,69,0,0.55), 0 4px 24px rgba(0,0,0,0.5);
+            transform: translateY(-1px);
+        }
+        .btn-generate:disabled {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.25);
+            cursor: not-allowed; transform: none;
+            box-shadow: none;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-open-app {
+            background: linear-gradient(135deg, #FF4500, #F59E0B);
+            color: #05080A;
+            margin-top: 12px; display: none;
+            box-shadow: 0 0 28px rgba(245,158,11,0.38);
+        }
+        .btn-open-app:hover { box-shadow: 0 0 40px rgba(245,158,11,0.55); transform: translateY(-1px); }
+
+        /* ripple */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            transform: scale(0); animation: rippleAnim 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        /* ─── Status pill ─── */
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.65rem; font-weight: 700;
+            padding: 4px 10px; border-radius: 20px;
+            margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .status-pill.ok     { background: rgba(34,197,94,0.09);  color: var(--green); border: 1px solid rgba(34,197,94,0.22); }
+        .status-pill.warn   { background: rgba(249,115,22,0.09); color: var(--orange); border: 1px solid rgba(249,115,22,0.22); }
+        .status-pill.fail   { background: rgba(239,68,68,0.09);  color: var(--err); border: 1px solid rgba(239,68,68,0.22); }
+
+        /* ─── Toast ─── */
+        #toast {
+            position: fixed; bottom: 40px; left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: rgba(12,4,8,0.97);
+            color: var(--text);
+            border: 1px solid rgba(255,69,0,0.25);
+            padding: 12px 22px; border-radius: 30px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 0.84rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(255,69,0,0.1);
+            transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            z-index: 200; display: flex; align-items: center; gap: 7px;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ─── Skeleton ─── */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,69,0,0.04) 25%, rgba(255,69,0,0.10) 50%, rgba(255,69,0,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: 12px;
+        }
+        .skeleton-key  { height: 76px; margin: 16px 0; }
+        .skeleton-btn  { height: 54px; margin-top: 10px; border-radius: 16px; }
+        .skeleton-text { height: 13px; margin: 6px auto; }
+
+        /* ─── Blocked card ─── */
+        .blocked-icon { font-size: 3rem; margin-bottom: 12px; }
+        .blocked-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--err); margin-bottom: 8px; }
+        .blocked-msg { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+
+        /* ═══ KEYFRAMES ═══ */
+        @keyframes fadeDown   { from { opacity:0; transform: translateY(-18px); } to { opacity:1; transform: none; } }
+        @keyframes cardRise   { from { opacity:0; transform: translateY(32px) scale(0.97); } to { opacity:1; transform: none; } }
+        @keyframes shimmer    { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes spin       { to { transform: rotate(360deg); } }
+        @keyframes keyScan    { 0%,100% { left:-100%; } 50% { left:160%; } }
+        @keyframes keyReveal  { 0%   { transform: scale(0.96); opacity:0.5; } 60%  { transform: scale(1.03); } 100% { transform: scale(1); opacity:1; } }
+        @keyframes rippleAnim { to { transform: scale(4); opacity:0; } }
+        @keyframes successPop { from { opacity:0; transform: scale(0.9) translateY(6px); } to { opacity:1; transform: none; } }
+        @keyframes orbSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes checkBounce{ from { transform: scale(0); opacity:0; } to { transform: scale(1); opacity:1; } }
+        @keyframes tsParticle { 0% { transform: translate(0,0) scale(1); opacity:1; } 100% { opacity:0; } }
+        @keyframes aurora-shimmer { to { background-position: 200% center; } }
+        @keyframes pulseGlow  { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+        @keyframes floatOrb   { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.04); } }
     </style>
 </head>
-<!-- #37: Disable right-click -->
 <body oncontextmenu="return false">
 
     <canvas id="bgCanvas"></canvas>
 
+    <!-- Header -->
     <div class="header">
-        <h1 style="background: linear-gradient(90deg, #FF4500, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Dynamon Gamer</h1>
-        <p>VIP Access Generator</p>
+        <div class="header-logo">
+            <div class="logo-icon"><i class="fas fa-bolt"></i></div>
+            <h1>Dynamon Gamer</h1>
+        </div>
+        <p class="header-sub">VIP Access Generator</p>
     </div>
 
+    <!-- Card -->
     <div class="generator-card" id="mainCard">
+        <div class="card-blob blob-1"></div>
+        <div class="card-blob blob-2"></div>
 
-        <div id="uiContainer" class="hidden">
-            <h2 style="font-size:1.1rem; margin-bottom:5px;">Generate 24H Key</h2>
-            <p style="color:var(--muted); font-size:0.75rem; margin-bottom:10px;">Valid for 1 device. Expires 10 mins after generation if unused.</p>
+        <!-- UI — shown after init -->
+        <div id="uiContainer" class="card-content hidden">
+            <p class="section-title">Generate 24H Key</p>
+            <p class="section-desc">Valid for 1 device · Expires 10 min after generation if unused</p>
 
-            <div class="key-display" id="keyBox">????-XXXXXX</div>
+            <!-- Key display -->
+            <div class="key-wrap">
+                <div class="key-display" id="keyBox">????-XXXXXX</div>
+            </div>
 
-            <!-- #41: Visible countdown timer -->
-            <div class="countdown" id="keyCountdown"><i class="fas fa-hourglass-half"></i> <span id="countdownText">10:00</span></div>
+            <!-- Countdown -->
+            <div class="countdown" id="keyCountdown">
+                <i class="fas fa-hourglass-half"></i>
+                <span id="countdownText">10:00</span>
+            </div>
 
-            <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Generating secure key...</div>
+            <!-- Loader -->
+            <div class="loader" id="loader">
+                <i class="fas fa-circle-notch spin-icon"></i> Generating secure key…
+            </div>
 
-            <!-- #43: Cloudflare Turnstile CAPTCHA — button stays disabled until solved -->
-            <div class="cf-turnstile" id="turnstileBox" data-sitekey="0x4AAAAAACvwLjfvQPoyvVFE" data-callback="onTurnstilePass" data-theme="dark"></div>
+            <!-- Turnstile CAPTCHA widget -->
+            <div class="cf-turnstile" id="turnstileBox"
+                 data-sitekey="0x4AAAAAACvwLjfvQPoyvVFE"
+                 data-callback="onTurnstilePass"
+                 data-theme="dark">
+            </div>
 
-            <button class="btn-main" id="btnGenerate" onclick="_startGen()" disabled>
+            <!-- Turnstile success state (shown after pass) -->
+            <div class="turnstile-success" id="turnstileSuccess">
+                <div class="ts-orb" id="tsOrb">
+                    <div class="ts-orb-ring"></div>
+                    <div class="ts-orb-ring-2"></div>
+                    <i class="fas fa-shield-check ts-check"></i>
+                </div>
+                <span class="ts-text">Human Verified</span>
+                <span class="ts-sub">You're cleared — tap Generate below</span>
+            </div>
+
+            <!-- Generate button -->
+            <button class="btn-main btn-generate" id="btnGenerate" onclick="_startGen()" disabled>
                 <i class="fas fa-fingerprint"></i> GENERATE NOW
             </button>
 
+            <!-- Copy & Open button -->
             <button class="btn-main btn-open-app" id="btnOpenApp" onclick="copyAndOpenApp()">
-                <i class="fas fa-rocket"></i> COPY & OPEN APP
+                <i class="fas fa-rocket"></i> COPY &amp; OPEN APP
             </button>
 
-            <!-- Rate limit status -->
-            <div id="ratePill" class="status-pill warn hidden"><i class="fas fa-shield-alt"></i> <span id="rateText"></span></div>
+            <!-- Rate limit pill -->
+            <div id="ratePill" class="status-pill warn hidden">
+                <i class="fas fa-shield-alt"></i>
+                <span id="rateText"></span>
+            </div>
         </div>
 
-        <div id="secLoader">
+        <!-- Skeleton loader -->
+        <div id="secLoader" class="card-content">
             <div id="skeletonLoader">
-                <div class="skeleton skeleton-text" style="width:50%;"></div>
-                <div class="skeleton skeleton-text" style="width:80%;margin-top:4px;"></div>
+                <div class="skeleton skeleton-text" style="width:48%;"></div>
+                <div class="skeleton skeleton-text" style="width:75%;margin-top:5px;"></div>
                 <div class="skeleton skeleton-key"></div>
                 <div class="skeleton skeleton-btn"></div>
                 <div class="skeleton skeleton-btn" style="margin-top:10px;opacity:0.5;"></div>
             </div>
         </div>
-
     </div>
 
-    <div id="toast"><i class="fas fa-check-circle" style="color:var(--green);"></i> <span>Copied & Opening App!</span></div>
+    <!-- Toast -->
+    <div id="toast">
+        <i class="fas fa-check-circle" style="color:var(--green);"></i>
+        <span>Copied &amp; Opening App!</span>
+    </div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
     <script>
-        // ═══════════════════════════════════════════════════════════
-        // FIREBASE INIT
-        // ═══════════════════════════════════════════════════════════
-        const firebaseConfig = window.__FIREBASE_CONFIG || {
-            apiKey:            "AIzaSyD0o0Bsr8dB6goTVshvcLZqwUCraf9SDxs",
-            authDomain:        "admin-panel-d762b.firebaseapp.com",
-            databaseURL:       "https://admin-panel-d762b-default-rtdb.firebaseio.com",
-            projectId:         "admin-panel-d762b",
-            storageBucket:     "admin-panel-d762b.firebasestorage.app",
-            messagingSenderId: "978340087147",
-            appId:             "1:978340087147:web:030f4ded37f2e22dafb82e"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    // ═══════════════════════════════════════════════════════════
+    // FIREBASE INIT
+    // ═══════════════════════════════════════════════════════════
+    const firebaseConfig = window.__FIREBASE_CONFIG || {
+        apiKey:            "AIzaSyD0o0Bsr8dB6goTVshvcLZqwUCraf9SDxs",
+        authDomain:        "admin-panel-d762b.firebaseapp.com",
+        databaseURL:       "https://admin-panel-d762b-default-rtdb.firebaseio.com",
+        projectId:         "admin-panel-d762b",
+        storageBucket:     "admin-panel-d762b.firebasestorage.app",
+        messagingSenderId: "978340087147",
+        appId:             "1:978340087147:web:030f4ded37f2e22dafb82e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        // ═══════════════════════════════════════════════════════════
-        // STATE
-        // ═══════════════════════════════════════════════════════════
-        let generatedKey  = "";
-        let accessGranted = false;
-        let turnstileOk   = false;
-        let userIP        = "unknown";
-        let fingerprint   = "";
-        let refToken      = "";
-        let countdownId   = null;
-        let autoHideId    = null;
+    // ═══════════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════════
+    let generatedKey  = "";
+    let accessGranted = false;
+    let turnstileOk   = false;
+    let userIP        = "unknown";
+    let fingerprint   = "";
+    let refToken      = "";
+    let countdownId   = null;
+    let autoHideId    = null;
 
-        // ═══════════════════════════════════════════════════════════
-        // #35: BROWSER FINGERPRINT
-        // ═══════════════════════════════════════════════════════════
-        function getFingerprint() {
-            const raw = [
-                screen.width, screen.height, screen.colorDepth,
-                Intl.DateTimeFormat().resolvedOptions().timeZone,
-                navigator.userAgent, navigator.language,
-                navigator.hardwareConcurrency || 0
-            ].join('|');
-            // Simple hash
-            let h = 0;
-            for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h) + raw.charCodeAt(i); h |= 0; }
-            return 'fp_' + Math.abs(h).toString(36);
-        }
+    // ═══════════════════════════════════════════════════════════
+    // WEB AUDIO ENGINE — fully synthesized, no assets
+    // ═══════════════════════════════════════════════════════════
+    const Audio = (function () {
+        let ctx = null, masterIn = null;
 
-        // ═══════════════════════════════════════════════════════════
-        // #43: TURNSTILE CALLBACK
-        // ═══════════════════════════════════════════════════════════
-        function onTurnstilePass(token) {
-            turnstileOk = true;
-            if (accessGranted && !sessionStorage.getItem('dg_key_generated')) {
-                document.getElementById('btnGenerate').disabled = false;
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // #44: HONEYPOT — fake function visible in source
-        // ═══════════════════════════════════════════════════════════
-        async function generateKey() {
-            // ⚠ Honeypot — anyone calling this via console gets flagged
+        function getCtx() {
+            if (ctx) return ctx;
             try {
-                const ip = userIP || 'unknown';
-                await db.ref('/HoneypotLog/' + ip.replace(/\./g,'_') + '/' + Date.now()).set({
-                    ua: navigator.userAgent,
-                    time: new Date().toISOString(),
-                    referrer: document.referrer
+                const Ctor = window.AudioContext || window.webkitAudioContext;
+                if (!Ctor) return null;
+                ctx = new Ctor();
+            } catch { return null; }
+            return ctx;
+        }
+
+        function makeBus(ac) {
+            if (masterIn) return masterIn;
+            const inp = ac.createGain(); inp.gain.value = 0.85;
+            const lp  = ac.createBiquadFilter(); lp.type = 'lowshelf'; lp.frequency.value = 200; lp.gain.value = 2;
+            const hp  = ac.createBiquadFilter(); hp.type = 'highshelf'; hp.frequency.value = 7000; hp.gain.value = -3;
+            const out = ac.createGain(); out.gain.value = 0.55;
+            inp.connect(lp).connect(hp).connect(out).connect(ac.destination);
+            masterIn = inp;
+            return inp;
+        }
+
+        function osc(ac, bus, type, freq, vol, atk, sus, rel, detune=0) {
+            try {
+                const o = ac.createOscillator();
+                const g = ac.createGain();
+                o.type = type; o.frequency.value = freq;
+                if (detune) o.detune.value = detune;
+                g.gain.setValueAtTime(0, ac.currentTime);
+                g.gain.linearRampToValueAtTime(vol, ac.currentTime + atk);
+                g.gain.setValueAtTime(vol, ac.currentTime + atk + sus);
+                g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + atk + sus + rel);
+                o.connect(g).connect(bus);
+                o.start(); o.stop(ac.currentTime + atk + sus + rel + 0.05);
+            } catch {}
+        }
+
+        function play(fn) {
+            const ac = getCtx(); if (!ac) return;
+            if (ac.state === 'suspended') ac.resume();
+            const bus = makeBus(ac);
+            fn(ac, bus);
+        }
+
+        return {
+            // tap — quick tick
+            tap() { play((ac,bus) => { osc(ac,bus,'triangle',900,0.18,0.005,0,0.06); }); },
+            // hover — subtle hi-freq
+            hover() { play((ac,bus) => { osc(ac,bus,'sine',1200,0.07,0.005,0,0.04); }); },
+            // generate — dramatic power-up
+            generate() {
+                play((ac,bus) => {
+                    [220,330,440,660].forEach((f,i) => {
+                        setTimeout(() => osc(ac,bus,'sawtooth',f,0.12,0.01,0.04,0.2), i*60);
+                    });
+                    setTimeout(() => osc(ac,bus,'square',880,0.08,0.01,0.02,0.15), 280);
                 });
-            } catch(e) {}
-            showBlocked("Access Denied", "Unauthorized access attempt logged.");
-        }
+            },
+            // scramble — fast random bleeps
+            scramble() { play((ac,bus) => { osc(ac,bus,'square',200+Math.random()*600,0.06,0.003,0.01,0.04); }); },
+            // success — triumphant chime
+            success() {
+                play((ac,bus) => {
+                    [[523,0],[659,80],[784,160],[1047,260]].forEach(([f,d]) => {
+                        setTimeout(() => osc(ac,bus,'triangle',f,0.18,0.01,0.05,0.35), d);
+                    });
+                    setTimeout(() => osc(ac,bus,'sine',1568,0.12,0.01,0.08,0.5), 320);
+                });
+            },
+            // verified — soft confirm ding
+            verified() {
+                play((ac,bus) => {
+                    osc(ac,bus,'triangle',880,0.15,0.01,0.06,0.3);
+                    setTimeout(() => osc(ac,bus,'triangle',1100,0.10,0.01,0.04,0.3), 100);
+                });
+            },
+            // copy — sharp click
+            copy() { play((ac,bus) => { osc(ac,bus,'square',1200,0.12,0.005,0.02,0.12); setTimeout(()=>osc(ac,bus,'square',1600,0.08,0.005,0,0.10),80); }); },
+            // error
+            error() { play((ac,bus) => { osc(ac,bus,'sawtooth',200,0.18,0.01,0.04,0.3); setTimeout(()=>osc(ac,bus,'sawtooth',160,0.14,0.01,0.04,0.35),120); }); }
+        };
+    })();
 
-        // ═══════════════════════════════════════════════════════════
-        // TOAST HELPER
-        // ═══════════════════════════════════════════════════════════
-        function showToast(msg, isError) {
-            const t = document.getElementById('toast');
-            t.innerHTML = '';
-            const icon = document.createElement('i');
-            icon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-            icon.style.color = isError ? 'var(--red)' : 'var(--green)';
-            t.appendChild(icon);
-            t.appendChild(document.createTextNode(' ' + msg));
-            t.classList.add('show');
-            clearTimeout(t._timer);
-            t._timer = setTimeout(() => t.classList.remove('show'), 3000);
-        }
+    // ═══════════════════════════════════════════════════════════
+    // HAPTICS — navigator.vibrate wrapper
+    // ═══════════════════════════════════════════════════════════
+    const Haptics = (function () {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        function buzz(p) { try { if (isTouch && navigator.vibrate) navigator.vibrate(p); } catch {} }
+        return {
+            light:   () => buzz(8),
+            medium:  () => buzz(15),
+            heavy:   () => buzz(30),
+            tick:    () => buzz(4),
+            success: () => buzz([15,25,15]),
+            error:   () => buzz([40,50,40]),
+            unlock:  () => buzz([20,40,20,40,60])
+        };
+    })();
 
-        // ═══════════════════════════════════════════════════════════
-        // #36: DEVTOOLS DETECTION
-        // ═══════════════════════════════════════════════════════════
-        function checkDevTools() {
-            const threshold = 160;
-            const devOpen = (window.outerWidth - window.innerWidth > threshold) ||
-                            (window.outerHeight - window.innerHeight > threshold);
-            if (devOpen && generatedKey) {
-                document.getElementById('keyBox').innerText = '????-XXXXXX';
-                document.getElementById('keyBox').style.color = 'var(--accent)';
-                accessGranted = false;
-                generatedKey = '';
-                document.getElementById('btnOpenApp').style.display = 'none';
-                const cd = document.getElementById('keyCountdown');
-                cd.style.display = 'none';
-                if (countdownId) clearInterval(countdownId);
-                if (autoHideId) clearTimeout(autoHideId);
+    // ═══════════════════════════════════════════════════════════
+    // RIPPLE EFFECT
+    // ═══════════════════════════════════════════════════════════
+    document.querySelectorAll('.btn-main').forEach(btn => {
+        btn.addEventListener('pointerdown', e => {
+            if (btn.disabled) return;
+            const r = document.createElement('span');
+            r.className = 'ripple';
+            const rect = btn.getBoundingClientRect();
+            const sz = Math.max(rect.width, rect.height);
+            r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+            btn.appendChild(r);
+            r.addEventListener('animationend', () => r.remove());
+        });
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // FINGERPRINT
+    // ═══════════════════════════════════════════════════════════
+    function getFingerprint() {
+        const raw = [
+            screen.width, screen.height, screen.colorDepth,
+            Intl.DateTimeFormat().resolvedOptions().timeZone,
+            navigator.userAgent, navigator.language,
+            navigator.hardwareConcurrency || 0
+        ].join('|');
+        let h = 0;
+        for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h) + raw.charCodeAt(i); h |= 0; }
+        return 'fp_' + Math.abs(h).toString(36);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // TURNSTILE CALLBACK — with success animation
+    // ═══════════════════════════════════════════════════════════
+    function onTurnstilePass(token) {
+        turnstileOk = true;
+
+        // hide widget, show success state
+        const box = document.getElementById('turnstileBox');
+        const suc = document.getElementById('turnstileSuccess');
+        if (box) box.style.display = 'none';
+        if (suc) suc.classList.add('show');
+
+        // burst particles
+        spawnTurnstileParticles();
+
+        // sounds & haptics
+        Audio.verified();
+        Haptics.success();
+
+        if (accessGranted && !sessionStorage.getItem('dg_key_generated')) {
+            const btn = document.getElementById('btnGenerate');
+            btn.disabled = false;
+            // small pulse on button
+            btn.style.animation = 'none';
+            setTimeout(() => { btn.style.animation = ''; }, 10);
+        }
+    }
+
+    function spawnTurnstileParticles() {
+        const suc = document.getElementById('turnstileSuccess');
+        if (!suc) return;
+        const colors = ['#FF4500','#F59E0B','#22c55e','#ffffff'];
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.className = 'ts-particle';
+            const size = 4 + Math.random() * 6;
+            const angle = (Math.PI * 2 * i) / 18;
+            const dist = 40 + Math.random() * 40;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            p.style.cssText = `
+                width:${size}px; height:${size}px;
+                background:${colors[i % colors.length]};
+                left:50%; top:30%;
+                --tx:${tx}px; --ty:${ty}px;
+                animation-duration:${0.6+Math.random()*0.4}s;
+                animation-delay:${Math.random()*0.1}s;
+            `;
+            p.style.setProperty('--tx', tx + 'px');
+            p.style.setProperty('--ty', ty + 'px');
+            // inline keyframe via style
+            p.animate([
+                { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+                { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+            ], { duration: 700 + Math.random() * 400, easing: 'ease-out', fill: 'forwards',
+                 delay: Math.random() * 100 });
+            suc.appendChild(p);
+            setTimeout(() => p.remove(), 1200);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // HONEYPOT (kept from original)
+    // ═══════════════════════════════════════════════════════════
+    async function generateKey() {
+        try {
+            await db.ref('/HoneypotLog/' + (userIP||'u').replace(/\./g,'_') + '/' + Date.now()).set({
+                ua: navigator.userAgent, time: new Date().toISOString(), referrer: document.referrer
+            });
+        } catch(e) {}
+        showBlocked("Access Denied", "Unauthorized access attempt logged.");
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // TOAST
+    // ═══════════════════════════════════════════════════════════
+    function showToast(msg, isError) {
+        const t = document.getElementById('toast');
+        t.innerHTML = '';
+        const icon = document.createElement('i');
+        icon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        icon.style.color = isError ? 'var(--err)' : 'var(--green)';
+        t.appendChild(icon);
+        t.appendChild(document.createTextNode(' ' + msg));
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+        if (!isError) { Audio.copy(); Haptics.medium(); }
+        else { Audio.error(); Haptics.error(); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // DEVTOOLS DETECTION
+    // ═══════════════════════════════════════════════════════════
+    function checkDevTools() {
+        const threshold = 160;
+        const open = (window.outerWidth - window.innerWidth > threshold) ||
+                     (window.outerHeight - window.innerHeight > threshold);
+        if (open && generatedKey) {
+            const kb = document.getElementById('keyBox');
+            kb.innerText = '????-XXXXXX';
+            kb.style.color = 'var(--red)';
+            kb.classList.remove('revealed');
+            accessGranted = false; generatedKey = '';
+            document.getElementById('btnOpenApp').style.display = 'none';
+            document.getElementById('keyCountdown').classList.remove('visible');
+            if (countdownId) clearInterval(countdownId);
+            if (autoHideId) clearTimeout(autoHideId);
+        }
+    }
+    setInterval(checkDevTools, 1500);
+
+    // ═══════════════════════════════════════════════════════════
+    // MAIN INIT
+    // ═══════════════════════════════════════════════════════════
+    window.onload = async () => {
+        initParticles();
+        fingerprint = getFingerprint();
+
+        try {
+            const maintSnap = await db.ref('/Config/Maintenance').once('value');
+            if (maintSnap.val() === true) {
+                showBlocked("System Down", "The generator is currently under maintenance."); return;
             }
-        }
-        setInterval(checkDevTools, 1500);
 
-        // ═══════════════════════════════════════════════════════════
-        // MAIN INIT
-        // ═══════════════════════════════════════════════════════════
-        window.onload = async () => {
-            initParticles();
-            fingerprint = getFingerprint();
+            const allowedReferrers = ['linkvertise.com','link-to.net','link-hub.net','loot-link.com','lootdest.com'];
+            const ref = document.referrer.toLowerCase();
+            const hasReferer = ref && allowedReferrers.some(d => ref.includes(d));
+
+            const params = new URLSearchParams(window.location.search);
+            refToken = params.get('ref') || '';
+
+            if (refToken) {
+                const tokenSnap = await db.ref('/AccessTokens/' + refToken).once('value');
+                const tokenData = tokenSnap.val();
+                if (!tokenData) {
+                    showBlocked("Invalid Token", "This access link has expired or was already used.");
+                    await logAttempt('token_invalid'); return;
+                }
+                if (tokenData.createdAt && (Date.now() - tokenData.createdAt > 600000)) {
+                    try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
+                    showBlocked("Token Expired", "This link expired. Please use the shortlink again.");
+                    await logAttempt('token_expired'); return;
+                }
+                try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
+                accessGranted = true;
+            } else if (hasReferer) {
+                accessGranted = true;
+            } else {
+                showBlocked("Access Denied", "You must use the official shortlink to access the generator.");
+                await logAttempt('no_token_no_referer'); return;
+            }
 
             try {
-                // Maintenance check
-                const maintSnap = await db.ref('/Config/Maintenance').once('value');
-                if (maintSnap.val() === true) {
-                    showBlocked("System Down", "The generator is currently under maintenance.");
-                    return;
-                }
+                const ipResp = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResp.json();
+                userIP = ipData.ip;
+            } catch(e) { userIP = 'unknown_' + fingerprint; }
 
-                // #42: Client-side referer check (basic layer — real check in edge function)
-                const allowedReferrers = ['linkvertise.com', 'link-to.net', 'link-hub.net', 'loot-link.com', 'lootdest.com'];
-                const ref = document.referrer.toLowerCase();
-                const hasReferer = ref && allowedReferrers.some(d => ref.includes(d));
+            const rateCfgSnap = await db.ref('/Config/RateLimit').once('value');
+            const rateCfg = rateCfgSnap.val();
+            const rateLimitEnabled = (rateCfg && rateCfg.enabled === false) ? false : true;
 
-                // #31: Token from URL
-                const params = new URLSearchParams(window.location.search);
-                refToken = params.get('ref') || '';
+            const ipKey = userIP.replace(/[\.\\:]/g, '_');
+            const combinedKey = ipKey + '__' + fingerprint;
+            const rateSnap = await db.ref('/RateLimits/' + combinedKey).once('value');
+            const rateData = rateSnap.val() || { count: 0, timestamps: [] };
+            const TWO_HOURS = 2 * 60 * 60 * 1000;
+            const now = Date.now();
 
-                if (refToken) {
-                    // #31-33: Validate token in Firebase
-                    const tokenSnap = await db.ref('/AccessTokens/' + refToken).once('value');
-                    const tokenData = tokenSnap.val();
+            const whitelistSnap = await db.ref('/Config/IPWhitelist').once('value');
+            const whitelist = whitelistSnap.val() || [];
+            const isWhitelisted = Array.isArray(whitelist)
+                ? whitelist.includes(userIP)
+                : Object.values(whitelist).includes(userIP);
 
-                    if (!tokenData) {
-                        showBlocked("Invalid Token", "This access link has expired or was already used.");
-                        await logAttempt('token_invalid');
-                        return;
-                    }
+            let ts = Array.isArray(rateData.timestamps) ? rateData.timestamps.filter(t => now - t < TWO_HOURS) : [];
+            if (rateLimitEnabled && !isWhitelisted && ts.length >= 5) {
+                const oldest = ts[0];
+                const resetIn = Math.ceil((TWO_HOURS - (now - oldest)) / 60000);
+                showBlocked("Rate Limited", "You've reached the maximum generations. Try again in " + resetIn + " minutes.");
+                await logAttempt('rate_limited'); return;
+            }
 
-                    // #33: Check 10-minute expiry
-                    if (tokenData.createdAt && (Date.now() - tokenData.createdAt > 600000)) {
-                        try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
-                        showBlocked("Token Expired", "This link expired. Please use the shortlink again.");
-                        await logAttempt('token_expired');
-                        return;
-                    }
+            const remaining = 5 - ts.length;
+            const pill = document.getElementById('ratePill');
+            const pillText = document.getElementById('rateText');
+            pill.classList.remove('hidden');
+            pillText.textContent = remaining + '/5 remaining today';
+            pill.className = 'status-pill ' + (remaining <= 2 ? 'warn' : 'ok');
 
-                    // #32: Burn token — delete after use
-                    try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
-                    accessGranted = true;
-
-                } else if (hasReferer) {
-                    // Allowed via shortlink referer
-                    accessGranted = true;
-                } else {
-                    showBlocked("Access Denied", "You must use the official shortlink to access the generator.");
-                    await logAttempt('no_token_no_referer');
-                    return;
-                }
-
-                // #34: IP-based rate limiting
-                try {
-                    const ipResp = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipResp.json();
-                    userIP = ipData.ip;
-                } catch(e) { userIP = 'unknown_' + fingerprint; }
-
-                // R2: Check if rate limiting is enabled in Firebase Config
-                const rateCfgSnap = await db.ref('/Config/RateLimit').once('value');
-                const rateCfg = rateCfgSnap.val();
-                const rateLimitEnabled = (rateCfg && rateCfg.enabled === false) ? false : true;
-
-                const ipKey = userIP.replace(/[\.\:]/g, '_');
-                // R6: combined fingerprint+IP key
-                const combinedKey = ipKey + '__' + fingerprint;
-                const rateSnap = await db.ref('/RateLimits/' + combinedKey).once('value');
-                const rateData = rateSnap.val() || { count: 0, timestamps: [] };
-                // R1: 2-hour window
-                const TWO_HOURS = 2 * 60 * 60 * 1000;
-                const now = Date.now();
-
-                // R5: Check IP whitelist
-                const whitelistSnap = await db.ref('/Config/IPWhitelist').once('value');
-                const whitelist = whitelistSnap.val() || [];
-                const isWhitelisted = Array.isArray(whitelist)
-                    ? whitelist.includes(userIP)
-                    : Object.values(whitelist).includes(userIP);
-
-                // Filter to last 2h
-                let ts = Array.isArray(rateData.timestamps) ? rateData.timestamps.filter(t => now - t < TWO_HOURS) : [];
-                if (rateLimitEnabled && !isWhitelisted && ts.length >= 5) {
-                    const oldest = ts[0];
-                    const resetIn = Math.ceil((TWO_HOURS - (now - oldest)) / 60000);
-                    showBlocked("Rate Limited", "You've reached the maximum generations. Try again in " + resetIn + " minutes.");
-                    await logAttempt('rate_limited');
-                    return;
-                }
-
-                // Show remaining count
-                const remaining = 5 - ts.length;
-                const pill = document.getElementById('ratePill');
-                const pillText = document.getElementById('rateText');
-                pill.classList.remove('hidden');
-                pillText.textContent = remaining + '/5 remaining today';
-                pill.className = 'status-pill ' + (remaining <= 2 ? 'warn' : 'ok');
-
-                // #40: One generation per shortlink visit
-                if (sessionStorage.getItem('dg_key_generated')) {
-                    document.getElementById('secLoader').classList.add('hidden');
-                    document.getElementById('uiContainer').classList.remove('hidden');
-                    document.getElementById('btnGenerate').disabled = true;
-                    document.getElementById('btnGenerate').innerHTML = '<i class="fas fa-check"></i> Already generated this session';
-                    pill.classList.remove('hidden');
-                    return;
-                }
-
-                // Local cooldown (3/hour)
-                const genHistoryStr = localStorage.getItem('dg_gen_history');
-                let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
-                genHistory = genHistory.filter(t => now - t < 60 * 60 * 1000);
-                localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
-
+            if (sessionStorage.getItem('dg_key_generated')) {
                 document.getElementById('secLoader').classList.add('hidden');
                 document.getElementById('uiContainer').classList.remove('hidden');
+                document.getElementById('btnGenerate').disabled = true;
+                document.getElementById('btnGenerate').innerHTML = '<i class="fas fa-check"></i> Already generated this session';
+                pill.classList.remove('hidden');
+                return;
+            }
 
-                if (genHistory.length >= 3) {
-                    const elapsed = now - genHistory[0];
-                    lockGenerator(60 * 60 * 1000 - elapsed);
-                    return;
-                }
+            const genHistoryStr = localStorage.getItem('dg_gen_history');
+            let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
+            genHistory = genHistory.filter(t => now - t < 60 * 60 * 1000);
+            localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
 
-                // Enable button only if Turnstile passed
-                if (turnstileOk) {
-                    document.getElementById('btnGenerate').disabled = false;
-                }
+            document.getElementById('secLoader').classList.add('hidden');
+            document.getElementById('uiContainer').classList.remove('hidden');
+
+            if (genHistory.length >= 3) {
+                const elapsed = now - genHistory[0];
+                lockGenerator(60 * 60 * 1000 - elapsed); return;
+            }
+
+            if (turnstileOk) document.getElementById('btnGenerate').disabled = false;
+
+        } catch (err) {
+            showBlocked("Connection Error", "Failed to verify access. Try again later.");
+            console.error('Init error:', err);
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // OBFUSCATED ENTRY
+    // ═══════════════════════════════════════════════════════════
+    function _startGen() {
+        if (!accessGranted || !turnstileOk) return;
+        if (sessionStorage.getItem('dg_key_generated')) return;
+        Audio.generate(); Haptics.heavy();
+        startGeneration();
+    }
+
+    function showBlocked(title, msg) {
+        const card = document.getElementById('mainCard');
+        card.innerHTML =
+            '<div class="card-content" style="padding:10px 0">' +
+            '<div class="blocked-icon" style="color:var(--err)"><i class="fas fa-lock"></i></div>' +
+            '<div class="blocked-title">' + title + '</div>' +
+            '<p class="blocked-msg">' + msg + '</p>' +
+            '</div>';
+    }
+
+    function lockGenerator(remainingMs) {
+        const mins = Math.ceil(remainingMs / (1000 * 60));
+        const btn = document.getElementById('btnGenerate');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-clock"></i> COME BACK IN ' + mins + ' MIN';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // KEY GENERATION
+    // ═══════════════════════════════════════════════════════════
+    async function startGeneration() {
+        const btnGen = document.getElementById('btnGenerate');
+        const keyBox = document.getElementById('keyBox');
+        const loader = document.getElementById('loader');
+
+        btnGen.classList.add('hidden');
+        loader.classList.add('active');
+
+        let scramCount = 0;
+        let scrambler = setInterval(() => {
+            const fake = "DG-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            keyBox.innerText = fake;
+            scramCount++;
+            if (scramCount % 3 === 0) Audio.scramble();
+        }, 55);
+
+        setTimeout(async () => {
+            clearInterval(scrambler);
+
+            const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
+            generatedKey = "DG-" + rnd;
+
+            try {
+                const nowSec = Math.floor(Date.now() / 1000);
+
+                await db.ref('/ValidKeys/' + generatedKey).set({
+                    status:      "active",
+                    expiry:      nowSec + (24 * 3600),
+                    duration:    24,
+                    device:      "",
+                    date:        new Date().toISOString(),
+                    fingerprint: fingerprint,
+                    sourceIP:    userIP,
+                    source:      "web"
+                });
+
+                const ipKey2 = userIP.replace(/[\.\\:]/g, '_');
+                const combinedKey2 = ipKey2 + '__' + fingerprint;
+                const rateSnap2 = await db.ref('/RateLimits/' + combinedKey2).once('value');
+                const rateData2 = rateSnap2.val() || { count: 0, timestamps: [] };
+                let ts2 = Array.isArray(rateData2.timestamps) ? rateData2.timestamps : [];
+                ts2.push(Date.now());
+                ts2 = ts2.filter(t => Date.now() - t < 2 * 60 * 60 * 1000);
+                await db.ref('/RateLimits/' + combinedKey2).set({
+                    count: ts2.length, timestamps: ts2,
+                    ip: userIP, fingerprint: fingerprint,
+                    lastSeen: new Date().toISOString()
+                });
+
+                const genHistoryStr = localStorage.getItem('dg_gen_history');
+                let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
+                genHistory = genHistory.filter(t => Date.now() - t < 60 * 60 * 1000);
+                genHistory.push(Date.now());
+                localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
+
+                sessionStorage.setItem('dg_key_generated', 'true');
+
+                await logAttempt('success');
+                await checkSuspicious();
+
+                // Reveal key
+                keyBox.innerText = generatedKey;
+                keyBox.classList.add('revealed');
+                loader.classList.remove('active');
+                document.getElementById('btnOpenApp').style.display = 'flex';
+
+                Audio.success(); Haptics.unlock();
+
+                const pill = document.getElementById('ratePill');
+                const remaining = 5 - ts2.length;
+                document.getElementById('rateText').textContent = remaining + '/5 remaining today';
+                pill.className = 'status-pill ' + (remaining <= 1 ? 'fail' : remaining <= 2 ? 'warn' : 'ok');
+
+                startCountdown(10 * 60);
+
+                autoHideId = setTimeout(() => {
+                    keyBox.innerText = '•••••-••••••';
+                    keyBox.style.color = 'var(--muted)';
+                    keyBox.classList.remove('revealed');
+                    document.getElementById('btnOpenApp').style.display = 'none';
+                    showToast('Key hidden for security — already copied');
+                }, 30000);
 
             } catch (err) {
-                showBlocked("Connection Error", "Failed to verify access. Try again later.");
-                console.error('Init error:', err);
+                loader.classList.remove('active');
+                keyBox.innerText = "ERROR";
+                keyBox.style.color = "var(--err)";
+                console.error("Gen error:", err);
+                showToast('Failed to generate key. Try again.', true);
+                await logAttempt('error_write');
             }
-        };
+        }, 2600);
+    }
 
-        // ═══════════════════════════════════════════════════════════
-        // #38: REAL GENERATION (obfuscated entry point name)
-        // ═══════════════════════════════════════════════════════════
-        function _startGen() {
-            if (!accessGranted || !turnstileOk) return;
-            if (sessionStorage.getItem('dg_key_generated')) return;
-            startGeneration();
+    // ═══════════════════════════════════════════════════════════
+    // COUNTDOWN
+    // ═══════════════════════════════════════════════════════════
+    function startCountdown(totalSec) {
+        const el = document.getElementById('keyCountdown');
+        const txt = document.getElementById('countdownText');
+        el.classList.add('visible');
+        el.classList.remove('expired');
+        let sec = totalSec;
+        function tick() {
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            txt.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+            if (sec <= 0) {
+                clearInterval(countdownId);
+                txt.textContent = 'EXPIRED';
+                el.classList.add('expired');
+                return;
+            }
+            sec--;
+        }
+        tick();
+        countdownId = setInterval(tick, 1000);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // LOGGING
+    // ═══════════════════════════════════════════════════════════
+    async function logAttempt(result) {
+        try {
+            await db.ref('/GenerationLogs/' + Date.now() + '_' + Math.random().toString(36).substring(2,6)).set({
+                timestamp: Date.now(), date: new Date().toISOString(),
+                ip: userIP, userAgent: navigator.userAgent.substring(0,200),
+                referrer: document.referrer.substring(0,200),
+                fingerprint, token: refToken || 'none', result
+            });
+        } catch(e) { console.error('Log error:', e); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // SUSPICIOUS ACTIVITY
+    // ═══════════════════════════════════════════════════════════
+    async function checkSuspicious() {
+        try {
+            const ipKey = userIP.replace(/[\.\\:]/g, '_');
+            const rateSnap = await db.ref('/RateLimits/' + ipKey).once('value');
+            const rateData = rateSnap.val();
+            if (!rateData || !rateData.timestamps) return;
+            const TEN_MIN = 10 * 60 * 1000;
+            const recentCount = rateData.timestamps.filter(t => Date.now() - t < TEN_MIN).length;
+            if (recentCount > 2) {
+                await db.ref('/SuspiciousActivity/' + ipKey + '/' + Date.now()).set({
+                    ip: userIP, fingerprint, count: recentCount,
+                    window: '10min', time: new Date().toISOString(),
+                    ua: navigator.userAgent.substring(0,150)
+                });
+            }
+        } catch(e) { console.error('Suspicious check error:', e); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // COPY & OPEN APP
+    // ═══════════════════════════════════════════════════════════
+    function copyAndOpenApp() {
+        if (!generatedKey) return;
+        Audio.copy(); Haptics.medium();
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(generatedKey)
+                .then(() => showToast('Copied & Opening App!'))
+                .catch(() => fallbackCopy());
+        } else { fallbackCopy(); }
+        setTimeout(() => { window.location.href = "dynamongamer://verify?key=" + generatedKey; }, 800);
+    }
+    function fallbackCopy() {
+        const el = document.createElement("textarea");
+        el.value = generatedKey; el.style.cssText = "position:fixed;opacity:0;";
+        document.body.appendChild(el); el.focus(); el.select();
+        try { document.execCommand('copy'); showToast('Copied!'); }
+        catch(e) { showToast('Copy failed', true); }
+        document.body.removeChild(el);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // BACKGROUND — animated particle field (orange/amber)
+    // ═══════════════════════════════════════════════════════════
+    const canvas = document.getElementById('bgCanvas');
+    const ctx2d  = canvas.getContext('2d');
+    let particles2 = [], animId = null;
+
+    function initParticles() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particles2 = [];
+
+        // dot particles
+        for (let i = 0; i < 35; i++) {
+            particles2.push({
+                type: 'dot',
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                v: 0.12 + Math.random() * 0.35,
+                s: 1 + Math.random() * 2.2,
+                o: 0.05 + Math.random() * 0.15,
+                color: Math.random() > 0.5 ? '#FF4500' : '#F59E0B'
+            });
+        }
+        // big glowing orbs
+        for (let i = 0; i < 4; i++) {
+            particles2.push({
+                type: 'orb',
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vy: 0.04 + Math.random() * 0.08,
+                vx: (Math.random() - 0.5) * 0.06,
+                r: 80 + Math.random() * 120,
+                phase: Math.random() * Math.PI * 2,
+                color: i % 2 === 0 ? 'rgba(255,69,0,' : 'rgba(245,158,11,'
+            });
         }
 
-        function showBlocked(title, msg) {
-            const card = document.getElementById('mainCard');
-            card.innerHTML = '<i class="fas fa-lock" style="color: var(--red); font-size: 3rem; margin-bottom: 10px;"></i>' +
-                '<h2 style="color: var(--red); font-size: 1.2rem; margin-bottom: 8px;">' + title + '</h2>' +
-                '<p style="color: var(--muted); font-size: 0.85rem;">' + msg + '</p>';
-        }
+        function loop() {
+            ctx2d.clearRect(0, 0, canvas.width, canvas.height);
 
-        function lockGenerator(remainingMs) {
-            const mins = Math.ceil(remainingMs / (1000 * 60));
-            const btn = document.getElementById('btnGenerate');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-clock"></i> COME BACK IN ' + mins + ' MIN';
-        }
+            particles2.forEach(p => {
+                if (p.type === 'dot') {
+                    p.y -= p.v;
+                    if (p.y < -5) p.y = canvas.height + 5;
+                    ctx2d.beginPath();
+                    ctx2d.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                    ctx2d.fillStyle = p.color;
+                    ctx2d.globalAlpha = p.o;
+                    ctx2d.fill();
+                } else {
+                    p.phase += 0.005;
+                    p.x += p.vx + Math.sin(p.phase) * 0.04;
+                    p.y -= p.vy;
+                    if (p.y < -p.r * 2) p.y = canvas.height + p.r;
+                    if (p.x < -p.r) p.x = canvas.width + p.r;
+                    if (p.x > canvas.width + p.r) p.x = -p.r;
 
-        // ═══════════════════════════════════════════════════════════
-        // KEY GENERATION
-        // ═══════════════════════════════════════════════════════════
-        async function startGeneration() {
-            const btnGen = document.getElementById('btnGenerate');
-            const keyBox = document.getElementById('keyBox');
-            const loader = document.getElementById('loader');
-
-            btnGen.classList.add('hidden');
-            loader.style.display = 'block';
-
-            let scrambler = setInterval(() => {
-                keyBox.innerText = "DG-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            }, 50);
-
-            setTimeout(async () => {
-                clearInterval(scrambler);
-
-                const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
-                generatedKey = "DG-" + rnd;
-
-                try {
-                    const nowSec = Math.floor(Date.now() / 1000);
-
-                    // #35: Store key with fingerprint binding
-                    await db.ref('/ValidKeys/' + generatedKey).set({
-                        status:      "active",
-                        expiry:      nowSec + (24 * 3600),
-                        duration:    24,
-                        device:      "",
-                        date:        new Date().toISOString(),
-                        fingerprint: fingerprint,
-                        sourceIP:    userIP,
-                        source:      "web"
-                    });
-
-                    // R1+R6: Update combined rate counter (2H window)
-                    const ipKey2 = userIP.replace(/[\.\:]/g, '_');
-                    const combinedKey2 = ipKey2 + '__' + fingerprint;
-                    const rateSnap2 = await db.ref('/RateLimits/' + combinedKey2).once('value');
-                    const rateData2 = rateSnap2.val() || { count: 0, timestamps: [] };
-                    let ts2 = Array.isArray(rateData2.timestamps) ? rateData2.timestamps : [];
-                    ts2.push(Date.now());
-                    ts2 = ts2.filter(t => Date.now() - t < 2 * 60 * 60 * 1000);
-                    await db.ref('/RateLimits/' + combinedKey2).set({ count: ts2.length, timestamps: ts2, ip: userIP, fingerprint: fingerprint, lastSeen: new Date().toISOString() });
-
-                    // Update local cooldown
-                    const genHistoryStr = localStorage.getItem('dg_gen_history');
-                    let genHistory = genHistoryStr ? JSON.parse(genHistoryStr) : [];
-                    genHistory = genHistory.filter(t => Date.now() - t < 60 * 60 * 1000);
-                    genHistory.push(Date.now());
-                    localStorage.setItem('dg_gen_history', JSON.stringify(genHistory));
-
-                    // #40: Mark session — one gen per visit
-                    sessionStorage.setItem('dg_key_generated', 'true');
-
-                    // #45: Log generation
-                    await logAttempt('success');
-
-                    // #46: Suspicious activity check
-                    await checkSuspicious();
-
-                    // Show key
-                    keyBox.innerText = generatedKey;
-                    keyBox.style.color = "var(--green)";
-                    keyBox.style.borderColor = "rgba(74, 222, 128, 0.4)";
-                    keyBox.style.boxShadow = "0 0 20px rgba(74, 222, 128, 0.2)";
-                    loader.style.display = 'none';
-                    document.getElementById('btnOpenApp').style.display = 'flex';
-
-                    // Update rate pill
-                    const pill = document.getElementById('ratePill');
-                    const remaining = 5 - ts2.length;
-                    document.getElementById('rateText').textContent = remaining + '/5 remaining today';
-                    pill.className = 'status-pill ' + (remaining <= 1 ? 'fail' : remaining <= 2 ? 'warn' : 'ok');
-
-                    // #41: Start visible 10-min countdown
-                    startCountdown(10 * 60);
-
-                    // #39: Auto-hide key after 30 seconds
-                    autoHideId = setTimeout(() => {
-                        keyBox.innerText = '•••••-••••••';
-                        keyBox.style.color = 'var(--muted)';
-                        keyBox.style.borderColor = 'rgba(0,240,255,0.2)';
-                        keyBox.style.boxShadow = 'none';
-                        document.getElementById('btnOpenApp').style.display = 'none';
-                        showToast('Key hidden for security — already copied');
-                    }, 30000);
-
-                } catch (err) {
-                    loader.style.display = 'none';
-                    keyBox.innerText = "ERROR";
-                    keyBox.style.color = "var(--red)";
-                    console.error("Gen error:", err);
-                    showToast('Failed to generate key. Try again.', true);
-                    await logAttempt('error_write');
+                    const g = ctx2d.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+                    g.addColorStop(0, p.color + '0.07)');
+                    g.addColorStop(1, p.color + '0)');
+                    ctx2d.globalAlpha = 1;
+                    ctx2d.fillStyle = g;
+                    ctx2d.beginPath();
+                    ctx2d.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx2d.fill();
                 }
-            }, 2500);
-        }
+            });
 
-        // ═══════════════════════════════════════════════════════════
-        // #41: VISIBLE COUNTDOWN (10 min auto-delete)
-        // ═══════════════════════════════════════════════════════════
-        function startCountdown(totalSec) {
-            const el = document.getElementById('keyCountdown');
-            const txt = document.getElementById('countdownText');
-            el.style.display = 'block';
-            el.classList.remove('expired');
-            let sec = totalSec;
-            function tick() {
-                const m = Math.floor(sec / 60);
-                const s = sec % 60;
-                txt.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-                if (sec <= 0) {
-                    clearInterval(countdownId);
-                    txt.textContent = 'EXPIRED';
-                    el.classList.add('expired');
-                    return;
-                }
-                sec--;
-            }
-            tick();
-            countdownId = setInterval(tick, 1000);
+            ctx2d.globalAlpha = 1;
+            animId = requestAnimationFrame(loop);
         }
+        loop();
+    }
 
-        // ═══════════════════════════════════════════════════════════
-        // #45: GENERATION LOGGING
-        // ═══════════════════════════════════════════════════════════
-        async function logAttempt(result) {
-            try {
-                const logData = {
-                    timestamp:   Date.now(),
-                    date:        new Date().toISOString(),
-                    ip:          userIP,
-                    userAgent:   navigator.userAgent.substring(0, 200),
-                    referrer:    document.referrer.substring(0, 200),
-                    fingerprint: fingerprint,
-                    token:       refToken || 'none',
-                    result:      result
-                };
-                await db.ref('/GenerationLogs/' + Date.now() + '_' + Math.random().toString(36).substring(2,6)).set(logData);
-            } catch(e) { console.error('Log error:', e); }
-        }
+    window.addEventListener('resize', () => {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
 
-        // ═══════════════════════════════════════════════════════════
-        // #46: SUSPICIOUS ACTIVITY ALERT (Telegram)
-        // ═══════════════════════════════════════════════════════════
-        async function checkSuspicious() {
-            try {
-                const ipKey = userIP.replace(/[\.\:]/g, '_');
-                const rateSnap = await db.ref('/RateLimits/' + ipKey).once('value');
-                const rateData = rateSnap.val();
-                if (!rateData || !rateData.timestamps) return;
-                const now = Date.now();
-                const TEN_MIN = 10 * 60 * 1000;
-                const recentCount = rateData.timestamps.filter(t => now - t < TEN_MIN).length;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && animId) { cancelAnimationFrame(animId); animId = null; }
+        else if (!document.hidden && !animId) initParticles();
+    });
 
-                if (recentCount > 2) {
-                    // Flag in Firebase for admin panel to see
-                    await db.ref('/SuspiciousActivity/' + ipKey + '/' + Date.now()).set({
-                        ip:          userIP,
-                        fingerprint: fingerprint,
-                        count:       recentCount,
-                        window:      '10min',
-                        time:        new Date().toISOString(),
-                        ua:          navigator.userAgent.substring(0, 150)
-                    });
-                }
-            } catch(e) { console.error('Suspicious check error:', e); }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // COPY & OPEN APP
-        // ═══════════════════════════════════════════════════════════
-        function copyAndOpenApp() {
-            if (!generatedKey) return;
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(generatedKey).then(() => showToast('Copied & Opening App!')).catch(() => fallbackCopy());
-            } else {
-                fallbackCopy();
-            }
-            setTimeout(() => { window.location.href = "dynamongamer://verify?key=" + generatedKey; }, 800);
-        }
-        function fallbackCopy() {
-            const el = document.createElement("textarea");
-            el.value = generatedKey; el.style.position = "fixed"; el.style.opacity = "0";
-            document.body.appendChild(el); el.focus(); el.select();
-            try { document.execCommand('copy'); showToast('Copied!'); } catch(e) { showToast('Copy failed', true); }
-            document.body.removeChild(el);
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // BACKGROUND PARTICLES
-        // ═══════════════════════════════════════════════════════════
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let animId = null;
-        function initParticles() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            particles = [];
-            for (let i = 0; i < 30; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, v: Math.random()*0.5+0.1, s: Math.random()*2+1 });
-            function loop() {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.fillStyle = "#FF4500"; ctx.globalAlpha = 0.12;
-                particles.forEach(p => { p.y -= p.v; if (p.y < 0) p.y = canvas.height; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill(); });
-                animId = requestAnimationFrame(loop);
-            }
-            loop();
-        }
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && animId) { cancelAnimationFrame(animId); animId = null; }
-            else if (!document.hidden && !animId) initParticles();
-        });
+    // unlock audio on first touch (iOS requires user gesture)
+    document.addEventListener('pointerdown', () => {
+        const ac = window.AudioContext || window.webkitAudioContext;
+        if (!ac) return;
+    }, { once: true });
     </script>
 </body>
 </html>
