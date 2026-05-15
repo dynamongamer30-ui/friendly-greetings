@@ -262,14 +262,14 @@
 
                     // #33: Check 10-minute expiry
                     if (tokenData.createdAt && (Date.now() - tokenData.createdAt > 600000)) {
-                        await db.ref('/AccessTokens/' + refToken).remove();
+                        try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
                         showBlocked("Token Expired", "This link expired. Please use the shortlink again.");
                         await logAttempt('token_expired');
                         return;
                     }
 
                     // #32: Burn token — delete after use
-                    await db.ref('/AccessTokens/' + refToken).remove();
+                    try { await db.ref('/AccessTokens/' + refToken).remove(); } catch(e) {}
                     accessGranted = true;
 
                 } else if (hasReferer) {
